@@ -702,16 +702,31 @@
     </div>
   </div>
 
-  <!-- Download button -->
-  <a
-    href="https://github.com/amrutcm1-mumbai/aimazze-app/releases/download/v0.1.0/AIMAZZE_0.1.0_x64-setup.exe"
-    style="display:inline-flex;align-items:center;gap:10px;padding:12px 24px;background:#0f1016;border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-size:13px;color:#f0f2f8;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;margin-bottom:1rem;transition:all 0.2s;text-decoration:none"
-    onmouseover="this.style.borderColor='rgba(0,212,232,0.4)';this.style.background='#161820'"
-    onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.background='#0f1016'"
-  >
-    ⬇ Download for Windows — v0.1.0
-    <span style="font-size:11px;color:#6b6e80;font-family:'JetBrains Mono',monospace">Free · ~8MB · x64</span>
-  </a>
+
+  <!-- Download button — desktop only -->
+  <div id="download-wrap">
+    <a
+      href="https://github.com/amrutcm1-mumbai/aimazze-app/releases/download/v0.1.0/AIMAZZE_0.1.0_x64-setup.exe"
+      style="display:inline-flex;align-items:center;gap:10px;padding:12px 24px;background:#0f1016;border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-size:13px;color:#f0f2f8;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;margin-bottom:6px;transition:all 0.2s;text-decoration:none"
+      onmouseover="this.style.borderColor='rgba(0,212,232,0.4)';this.style.background='#161820'"
+      onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.background='#0f1016'"
+    >
+      ⬇ Download for Windows — v0.1.0
+      <span style="font-size:11px;color:#6b6e80;font-family:'JetBrains Mono',monospace">Free · ~8MB · x64</span>
+    </a>
+    <p style="font-size:11px;color:#6b6e80;font-family:'JetBrains Mono',monospace;margin-bottom:1rem">
+      ⓘ Windows may show a security prompt — click "More info" → "Run anyway"
+    </p>
+  </div>
+  <div id="mobile-wrap" style="display:none;margin-bottom:1rem;padding:12px 20px;background:#0f1016;border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-size:13px;color:#6b6e80;font-family:'JetBrains Mono',monospace;text-align:center">
+    📱 Mobile app coming soon — join the waitlist to be notified
+  </div>
+  <script>
+    if (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+      document.getElementById('download-wrap').style.display = 'none';
+      document.getElementById('mobile-wrap').style.display = 'block';
+    }
+  </script>
 
   <div class="pill-row">
     <span class="pill hot">🔒 Local-first</span>
