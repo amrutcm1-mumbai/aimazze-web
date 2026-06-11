@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIMAZZE — The AI Workstation for Professionals</title>
+<meta name="description" content="Compare every major AI model side by side, pick the winner, keep going. Local-first. Your data never leaves your device. Built for doctors, lawyers, engineers and scientists.">
+<meta property="og:title" content="AIMAZZE — The AI Workstation for Professionals">
+<meta property="og:description" content="Compare every major AI model side by side. Local-first. Data never leaves your device.">
+<meta property="og:url" content="https://www.aimazze.com">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080910;
+    --surface: #0f1016;
+    --surface2: #161820;
+    --surface3: #1e2030;
+    --border: rgba(255,255,255,0.06);
+    --border2: rgba(255,255,255,0.1);
+    --cyan: #00d4e8;
+    --cyan-dim: rgba(0,212,232,0.1);
+    --cyan-glow: rgba(0,212,232,0.15);
+    --white: #f0f2f8;
+    --muted: #6b6e80;
+    --muted2: #3a3d52;
+    --green: #22c55e;
+    --orange: #f59e0b;
+    --navy: #0a0f1e;
+    --ff: 'Bricolage Grotesque', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--ff);
+    background: var(--bg);
+    color: var(--white);
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    background: rgba(8,9,16,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-brand {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+  .nav-brand .cyan { color: var(--cyan); }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .nav-links a:hover { color: var(--white); transition: color 0.15s; }
+
+  .nav-cta {
+    padding: 8px 20px;
+    background: var(--cyan);
+    color: #000;
+    font-weight: 700;
+    font-size: 13px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .nav-cta:hover { background: #00eeff; transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 7rem 2rem 4rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Ambient glow */
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(0,212,232,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--cyan);
+    background: var(--cyan-dim);
+    border: 1px solid rgba(0,212,232,0.2);
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+  }
+
+  .hero-badge .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    animation: pulse 2s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  .hero h1 {
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.0;
+    margin-bottom: 1.5rem;
+    max-width: 820px;
+  }
+
+  .hero h1 .cyan { color: var(--cyan); }
+
+  .hero h1 .outline {
+    -webkit-text-stroke: 1px rgba(255,255,255,0.25);
+    color: transparent;
+  }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.75;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-sub strong { color: var(--white); font-weight: 600; }
+
+  /* ── WAITLIST FORM ── */
+  .waitlist-form {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 460px;
+    margin-bottom: 1.25rem;
+  }
+
+  .waitlist-form input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-family: var(--ff);
+    color: var(--white);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .waitlist-form input::placeholder { color: var(--muted2); }
+  .waitlist-form input:focus { border-color: rgba(0,212,232,0.4); }
+
+  .waitlist-form button {
+    padding: 12px 24px;
+    background: var(--cyan);
+    color: #000;
+    font-weight: 700;
+    font-size: 14px;
+    font-family: var(--ff);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .waitlist-form button:hover { background: #00eeff; transform: translateY(-1px); }
+
+  .waitlist-note {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .waitlist-success {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.25);
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-size: 14px;
+    color: var(--green);
+    max-width: 460px;
+    width: 100%;
+    margin-bottom: 1.25rem;
+  }
+
+  /* ── PILL ROW ── */
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 2rem;
+    max-width: 600px;
+  }
+
+  .pill {
+    font-size: 12px;
+    padding: 5px 13px;
+    border-radius: 20px;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    background: var(--surface2);
+    font-family: var(--mono);
+  }
+
+  .pill.hot {
+    border-color: rgba(0,212,232,0.25);
+    color: var(--cyan);
+    background: var(--cyan-dim);
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 5rem 2rem;
+  }
+
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 0.75rem;
+  }
+
+  .section-title {
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 0.75rem;
+  }
+
+  .section-sub {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+  }
+
+  /* ── ARENA DEMO ── */
+  .arena-demo {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+  }
+
+  .arena-topbar {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .arena-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .arena-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--cyan);
+    margin-left: 4px;
+  }
+
+  .arena-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .arena-col {
+    border-right: 1px solid var(--border);
+    padding: 16px;
+  }
+
+  .arena-col:last-child { border-right: none; }
+
+  .arena-col-head {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .model-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .model-name { font-family: var(--mono); font-size: 11px; color: var(--white); flex: 1; }
+  .model-time { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+
+  .winner-btn {
+    padding: 3px 9px;
+    border-radius: 5px;
+    background: rgba(34,197,94,0.15);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: var(--green);
+    font-size: 10px;
+    font-weight: 700;
+    font-family: var(--mono);
+    cursor: default;
+  }
+
+  .arena-text {
+    font-size: 12px;
+    color: #9ca3b8;
+    line-height: 1.7;
+  }
+
+  .arena-text strong { color: var(--white); }
+
+  .arena-prompt {
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    padding: 12px 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .arena-prompt-text { color: var(--white); }
+
+  /* ── FEATURES GRID ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .feat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .feat-card:hover {
+    border-color: rgba(0,212,232,0.2);
+    transform: translateY(-3px);
+  }
+
+  .feat-icon {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .feat-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.4rem;
+  }
+
+  .feat-body {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* ── PERSONAS ── */
+  .personas-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .persona-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.1rem;
+    transition: border-color 0.2s;
+  }
+
+  .persona-card:hover { border-color: var(--border2); }
+
+  .persona-emoji { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .persona-name { font-size: 13px; font-weight: 700; color: var(--white); margin-bottom: 2px; }
+  .persona-role { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+
+  /* ── PRICING ── */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+
+  .price-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+
+  .price-card:hover { border-color: var(--border2); }
+
+  .price-card.featured {
+    border-color: rgba(0,212,232,0.35);
+    background: linear-gradient(160deg, var(--surface2) 0%, rgba(0,212,232,0.04) 100%);
+  }
+
+  .price-badge {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--cyan);
+    color: #000;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 10px;
+    border-radius: 10px;
+    white-space: nowrap;
+    font-family: var(--mono);
+    letter-spacing: 0.05em;
+  }
+
+  .price-name { font-size: 13px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+  .price-amount { font-size: 1.3rem; font-weight: 800; color: var(--cyan); font-family: var(--mono); }
+  .price-period { font-size: 10px; color: var(--muted); margin-bottom: 0.75rem; font-family: var(--mono); }
+
+  .price-feature {
+    font-size: 11px;
+    color: var(--muted);
+    padding: 3px 0;
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    line-height: 1.45;
+  }
+
+  .price-feature::before { content: '·'; color: var(--cyan); flex-shrink: 0; margin-top: 1px; }
+
+  /* ── MOAT BAR ── */
+  .moat-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 2rem 2.5rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .moat-stat { }
+  .moat-num {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--cyan);
+    letter-spacing: -0.03em;
+    font-family: var(--mono);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .moat-label { font-size: 12px; color: var(--muted); }
+
+  /* ── FAQ ── */
+  .faq-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .faq-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .faq-q {
+    width: 100%;
+    text-align: left;
+    padding: 14px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--ff);
+    transition: color 0.15s;
+  }
+
+  .faq-q:hover { color: var(--cyan); }
+  .faq-chevron { color: var(--muted); font-size: 12px; transition: transform 0.2s; flex-shrink: 0; }
+  .faq-item.open .faq-chevron { transform: rotate(180deg); color: var(--cyan); }
+
+  .faq-a {
+    display: none;
+    padding: 0 18px 14px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+
+  .faq-item.open .faq-a { display: block; }
+
+  /* ── FINAL CTA ── */
+  .final-cta {
+    text-align: center;
+    padding: 6rem 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .final-cta::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--border2));
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--mono);
+    position: relative;
+    z-index: 1;
+  }
+
+  footer a { color: var(--muted); }
+  footer a:hover { color: var(--cyan); }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .pricing-grid { grid-template-columns: 1fr 1fr; }
+    .personas-grid { grid-template-columns: 1fr 1fr; }
+    .arena-cols { grid-template-columns: 1fr; }
+    .arena-col { border-right: none; border-bottom: 1px solid var(--border); }
+    .arena-col:last-child { border-bottom: none; }
+    .moat-bar { grid-template-columns: 1fr 1fr; }
+    .nav-links { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .personas-grid { grid-template-columns: 1fr 1fr; }
+    .moat-bar { grid-template-columns: 1fr 1fr; }
+    .waitlist-form { flex-direction: column; }
+    .hero h1 { font-size: 2.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand"><span class="cyan">AI</span>MAZZE</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#arena">The Arena</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <a href="#waitlist" class="nav-cta">Get Early Access</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <div class="dot"></div>
+    Early Access — Windows · Mac coming soon
+  </div>
+
+  <h1>
+    The AI market<br>
+    is a <span class="cyan">maze</span>.<br>
+    <span class="outline">Untangle it safely.</span>
+  </h1>
+
+  <p class="hero-sub">
+    The only AI workstation built for <strong>doctors, lawyers, engineers, and scientists</strong> — compare every major model side by side, pick the winner, keep going. <strong>Your data never leaves your device.</strong>
+  </p>
+
+  <!-- Waitlist form -->
+  <div id="waitlist-form-wrap">
+    <form
+      class="waitlist-form"
+      action="https://formspree.io/f/xgoblpoa"
+      method="POST"
+      id="waitlist-form"
+    >
+      <input
+        type="email"
+        name="email"
+        placeholder="Your work email"
+        required
+        autocomplete="email"
+      >
+      <input type="hidden" name="_subject" value="AIMAZZE Early Access Request">
+      <input type="hidden" name="source" value="Landing Page Hero">
+      <button type="submit">Join Waitlist →</button>
+    </form>
+    <p class="waitlist-note">No credit card · No spam · Early access ships to waitlist first</p>
+  </div>
+
+  <div class="waitlist-success" id="waitlist-success">
+    <span style="font-size:1.2rem">🎉</span>
+    <div>
+      <strong style="color:#fff">You're on the list.</strong><br>
+      We'll notify you the moment early access opens.
+    </div>
+  </div>
+
+  <div class="pill-row">
+    <span class="pill hot">🔒 Local-first</span>
+    <span class="pill hot">⚡ Native desktop</span>
+    <span class="pill hot">400+ models</span>
+    <span class="pill hot">🏠 Offline capable</span>
+    <span class="pill">No credit card for trial</span>
+    <span class="pill">₹ UPI accepted</span>
+    <span class="pill">HIPAA · GDPR · DPDP</span>
+    <span class="pill">Mac coming soon</span>
+  </div>
+</section>
+
+<!-- STATS -->
+<section style="padding: 2rem 2rem 4rem;">
+  <div class="container">
+    <div class="moat-bar reveal">
+      <div class="moat-stat">
+        <div class="moat-num">400+</div>
+        <div class="moat-label">AI models accessible</div>
+      </div>
+      <div class="moat-stat">
+        <div class="moat-num">8</div>
+        <div class="moat-label">Professional personas</div>
+      </div>
+      <div class="moat-stat">
+        <div class="moat-num">~8MB</div>
+        <div class="moat-label">App bundle (vs 150MB Electron)</div>
+      </div>
+      <div class="moat-stat">
+        <div class="moat-num">₹0</div>
+        <div class="moat-label">Data sent to AIMAZZE servers</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARENA -->
+<section id="arena" style="padding: 4rem 2rem;">
+  <div class="container">
+    <div class="section-label">The killer feature</div>
+    <div class="section-title">One prompt.<br>Every model. Pick the winner.</div>
+    <p class="section-sub">Send one prompt to up to 8 AI models simultaneously. See responses side by side. Kill the losers. Continue with the winner. No switching tabs. No copy-pasting. No context loss.</p>
+
+    <div class="arena-demo reveal">
+      <div class="arena-topbar">
+        <div class="arena-dot" style="background:#ef4444"></div>
+        <div class="arena-dot" style="background:#f59e0b"></div>
+        <div class="arena-dot" style="background:#22c55e"></div>
+        <span class="arena-label">⚔ The Arena — 3 models · parallel streaming</span>
+      </div>
+      <div class="arena-cols">
+        <div class="arena-col">
+          <div class="arena-col-head">
+            <div class="model-dot" style="background:#00d4e8"></div>
+            <div class="model-name">Claude Sonnet</div>
+            <div class="model-time">1.2s</div>
+            <div class="winner-btn">⭐ Winner</div>
+          </div>
+          <div class="arena-text">
+            The NDA contains <strong>three concerning clauses</strong>: an overly broad definition of confidential information in §2.1, an excessive 10-year duration in §4, and one-sided injunctive relief in §8. Recommend capping the confidentiality period at 36 months and adding mutual obligations before signing.
+          </div>
+        </div>
+        <div class="arena-col">
+          <div class="arena-col-head">
+            <div class="model-dot" style="background:#10a37f"></div>
+            <div class="model-name">GPT-4o</div>
+            <div class="model-time">0.8s</div>
+          </div>
+          <div class="arena-text">
+            Quick review: ✓ Reasonable scope · ✗ Duration too long (negotiate to 3yr) · ✗ Missing mutual obligations · ⚠ Jurisdiction clause incomplete. Add governing law clause before proceeding.
+          </div>
+        </div>
+        <div class="arena-col">
+          <div class="arena-col-head">
+            <div class="model-dot" style="background:#4285f4"></div>
+            <div class="model-name">Gemini Flash</div>
+            <div class="model-time">1.8s</div>
+          </div>
+          <div class="arena-text">
+            NDA looks standard but the 10-year clause is unusual. Most software services agreements cap this at 2–3 years. The definition of confidential information could also be tightened to exclude publicly available information.
+          </div>
+        </div>
+      </div>
+      <div class="arena-prompt">
+        <span>↑ Prompt sent to all 3 simultaneously:</span>
+        <span class="arena-prompt-text">"Review this NDA for a software services agreement and flag any concerning clauses"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" style="padding: 4rem 2rem;">
+  <div class="container">
+    <div class="section-label">Built different</div>
+    <div class="section-title">Everything a professional needs.<br>Nothing they don't.</div>
+    <p class="section-sub">Every feature was designed around the constraints of regulated professions — where data confidentiality is not optional.</p>
+
+    <div class="features-grid reveal">
+      <div class="feat-card">
+        <div class="feat-icon">🔒</div>
+        <div class="feat-title">Local-first by architecture</div>
+        <div class="feat-body">Your conversations, documents, and API keys live on your device only. AIMAZZE has no server that receives your data. Independently auditable. HIPAA, GDPR, and DPDP compliant by design — not just by policy.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⚔</div>
+        <div class="feat-title">The Arena</div>
+        <div class="feat-body">Compare up to 8 models simultaneously. One prompt, parallel streaming, pick the winner, continue that thread. No other native desktop AI client offers this cleanly.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🎭</div>
+        <div class="feat-title">Professional personas</div>
+        <div class="feat-body">Docs, Law Upkeeper, Tech Innovator, Scientific Discoverer and more — each pre-loaded with profession-specific reasoning. The app greets you by your persona when you return.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🗄</div>
+        <div class="feat-title">The Vault</div>
+        <div class="feat-body">Upload any document — PDF, DOCX, CSV, images. Local vector embeddings mean semantic search runs entirely on your machine. Attach documents to any chat. Nothing uploaded to a server.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔑</div>
+        <div class="feat-title">Bring your own keys</div>
+        <div class="feat-body">Connect Anthropic, OpenAI, Google, Groq, Mistral and more. API calls go directly from your device to the provider. AIMAZZE is never in the data path. Your keys are stored in OS Keychain, never in plaintext.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⚡</div>
+        <div class="feat-title">Native desktop · ~8MB</div>
+        <div class="feat-body">Built with Tauri — not Electron. The entire app bundle is ~8MB vs 150MB for Electron apps. Blazing fast startup, lower memory, and full offline capability via local open-source models.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PERSONAS -->
+<section style="padding: 3rem 2rem;">
+  <div class="container">
+    <div class="section-label">Professional personas</div>
+    <div class="section-title">The app knows who you are.</div>
+    <p class="section-sub">Select your profession once. Every session is shaped by a system prompt tuned for your field. The app greets you by name and persona every time you return.</p>
+
+    <div class="personas-grid reveal">
+      <div class="persona-card">
+        <div class="persona-emoji">⚕️</div>
+        <div class="persona-name">Docs</div>
+        <div class="persona-role">Doctor · Clinician</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-emoji">⚖️</div>
+        <div class="persona-name">Law Upkeeper</div>
+        <div class="persona-role">Lawyer · Legal</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-emoji">🔧</div>
+        <div class="persona-name">Tech Innovator</div>
+        <div class="persona-role">Engineer · Developer</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-emoji">🔬</div>
+        <div class="persona-name">Scientific Discoverer</div>
+        <div class="persona-role">Scientist · R&D</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-emoji">📊</div>
+        <div class="persona-name">Number Cruncher</div>
+        <div class="persona-role">Analyst · Data</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-emoji">🧪</div>
+        <div class="persona-name">R&D Wiz</div>
+        <div class="persona-role">Researcher</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-emoji">🎓</div>
+        <div class="persona-name">Academician</div>
+        <div class="persona-role">Professor · Academic</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-emoji">💰</div>
+        <div class="persona-name">Financial Wizard</div>
+        <div class="persona-role">CA · Banker · CFO</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" style="padding: 4rem 2rem;">
+  <div class="container">
+    <div class="section-label">Pricing</div>
+    <div class="section-title">Less than one subscription.<br>All the models.</div>
+    <p class="section-sub">Claude Pro alone costs ₹1,670/month. AIMAZZE Pro at ₹799/month gives you Claude plus 7 more models, local AI, and full professional features.</p>
+
+    <div class="pricing-grid reveal">
+      <div class="price-card">
+        <div class="price-name">Free</div>
+        <div class="price-amount">₹0</div>
+        <div class="price-period">forever</div>
+        <div class="price-feature">Local AI models — zero cost</div>
+        <div class="price-feature">3 BYOK connections</div>
+        <div class="price-feature">Arena: 2 models</div>
+        <div class="price-feature">30-day history</div>
+        <div class="price-feature">5 Vault files</div>
+        <div class="price-feature">Offline capable</div>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Starter</div>
+        <div class="price-amount">₹499</div>
+        <div class="price-period">/ month · 7-day trial · no CC</div>
+        <div class="price-feature">All BYOK providers</div>
+        <div class="price-feature">Managed multi-model access</div>
+        <div class="price-feature">Arena: 2 models</div>
+        <div class="price-feature">Unlimited history</div>
+        <div class="price-feature">20 Vault files</div>
+        <div class="price-feature">Voice input</div>
+      </div>
+      <div class="price-card featured">
+        <div class="price-badge">Most popular</div>
+        <div class="price-name">Pro</div>
+        <div class="price-amount">₹799</div>
+        <div class="price-period">/ month · 7-day trial · no CC</div>
+        <div class="price-feature">Arena: up to 8 models</div>
+        <div class="price-feature">Unlimited Vault + OCR</div>
+        <div class="price-feature">All 8 professional personas</div>
+        <div class="price-feature">PDF / DOCX export</div>
+        <div class="price-feature">Gateway selector</div>
+        <div class="price-feature">Custom avatar builder</div>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Elite</div>
+        <div class="price-amount">₹1,799</div>
+        <div class="price-period">/ month · 10-day trial · no CC</div>
+        <div class="price-feature">HIPAA · GDPR · DPDP</div>
+        <div class="price-feature">BAA template included</div>
+        <div class="price-feature">Team workspace (10 seats)</div>
+        <div class="price-feature">Priority support</div>
+        <div class="price-feature">40% cheaper than Claude Team</div>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Lifetime</div>
+        <div class="price-amount">₹9,999</div>
+        <div class="price-period">one-time · no renewals ever</div>
+        <div class="price-feature">Zero AIMAZZE charges forever</div>
+        <div class="price-feature">Full Pro features forever</div>
+        <div class="price-feature">All future updates included</div>
+        <div class="price-feature">Pays for itself in 13 months</div>
+        <div class="price-feature">Connect your own accounts</div>
+      </div>
+    </div>
+
+    <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:1.25rem;font-family:var(--mono)">
+      All prices shown in INR · USD pricing available at checkout · UPI accepted
+    </p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="padding: 4rem 2rem;">
+  <div class="container">
+    <div class="section-label">FAQ</div>
+    <div class="section-title">Questions, answered.</div>
+
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How is AIMAZZE different from ChatGPT or Claude?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a">AIMAZZE is not an AI — it is a professional workstation that connects to all AIs simultaneously. You compare Claude vs GPT vs Gemini vs 400+ models side by side in one click. Your data stays on your device. ChatGPT and Claude are single-model tools. AIMAZZE is the cockpit that flies them all.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Can doctors, lawyers, and engineers use AIMAZZE without compliance risk?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a">Yes — AIMAZZE is specifically built for this. Since no data leaves your device, AIMAZZE satisfies HIPAA data minimisation principles, GDPR Article 25 (privacy by design), and India's DPDP Act 2023. Elite tier includes a BAA template. The architecture is independently auditable.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Is my data safe? Can AIMAZZE see my conversations?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a">No. AIMAZZE is local-first — your conversations, documents, and API keys are stored on your device only. AIMAZZE has no servers that receive your chat data. We store only your email address, subscription tier, and license key — nothing else.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What is BYOK and do I need it?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a">BYOK stands for Bring Your Own Key. You paste your API key from any provider into AIMAZZE Settings. Calls go directly from your device to the provider. AIMAZZE never sees your key or conversations. Free tier works with local models at zero cost — BYOK is optional for power users.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What happens to my data if I cancel?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a">Nothing — because your data was never on our servers. All chat history, documents, and settings are on your device. Cancelling downgrades to Free tier. Nothing is deleted. Nothing is held hostage.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Can I pay in INR with UPI?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a">Yes — UPI is fully supported via Razorpay at no extra cost. Indian users see ₹ pricing with UPI (GPay, PhonePe, Paytm, BHIM), debit/credit cards, net banking, and EMI. International users see $ pricing via Stripe.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<div class="final-cta" id="waitlist">
+  <div class="section-label" style="justify-content:center;display:flex">Early Access</div>
+  <h2 style="font-size:clamp(2rem,4vw,3.2rem);font-weight:800;letter-spacing:-0.03em;margin-bottom:1rem">
+    Be first in.<br><span style="color:var(--cyan)">Shape what AIMAZZE becomes.</span>
+  </h2>
+  <p style="color:var(--muted);font-size:15px;max-width:480px;margin:0 auto 2rem;line-height:1.7">
+    Early access users get a direct line to the founder, lifetime pricing locked in, and features shaped by their feedback.
+  </p>
+
+  <div id="final-waitlist-wrap">
+    <form
+      class="waitlist-form"
+      style="justify-content:center"
+      action="https://formspree.io/f/xgoblpoa"
+      method="POST"
+      id="final-waitlist-form"
+    >
+      <input
+        type="email"
+        name="email"
+        placeholder="Your work email"
+        required
+        autocomplete="email"
+      >
+      <input type="hidden" name="_subject" value="AIMAZZE Early Access Request">
+      <input type="hidden" name="source" value="Landing Page Footer CTA">
+      <button type="submit">Get Early Access →</button>
+    </form>
+    <p class="waitlist-note" style="margin-top:0.75rem">Windows · Mac coming soon · Free trial · No credit card</p>
+  </div>
+
+  <div class="waitlist-success" id="final-waitlist-success" style="margin:0 auto">
+    <span style="font-size:1.2rem">🎉</span>
+    <div>
+      <strong style="color:#fff">You're on the list.</strong><br>
+      We'll notify you the moment early access opens.
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div style="margin-bottom:0.75rem">
+    <strong style="color:var(--white)"><span style="color:var(--cyan)">AI</span>MAZZE</strong>
+    &nbsp;·&nbsp;
+    <a href="#features">Features</a>
+    &nbsp;·&nbsp;
+    <a href="#pricing">Pricing</a>
+    &nbsp;·&nbsp;
+    <a href="#faq">FAQ</a>
+    &nbsp;·&nbsp;
+    <a href="mailto:amrut@amrynnova.com">Contact</a>
+  </div>
+  <div>© 2026 AIMAZZE · Amrynnova · Mumbai · Built lean. Built fast. Built to win.</div>
+</footer>
+
+<script>
+  // FAQ toggle
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    item.classList.toggle('open');
+  }
+
+  // Waitlist form — hero
+  document.getElementById('waitlist-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        document.getElementById('waitlist-form-wrap').style.display = 'none';
+        const success = document.getElementById('waitlist-success');
+        success.style.display = 'flex';
+      }
+    } catch(err) {
+      alert('Something went wrong. Please try again.');
+    }
+  });
+
+  // Waitlist form — footer CTA
+  document.getElementById('final-waitlist-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        document.getElementById('final-waitlist-wrap').style.display = 'none';
+        const success = document.getElementById('final-waitlist-success');
+        success.style.display = 'flex';
+      }
+    } catch(err) {
+      alert('Something went wrong. Please try again.');
+    }
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
