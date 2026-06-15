@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AIMAZZE — The AI Workstation for Professionals</title>
+<title>AIMAZZE – The AI Workstation for Professionals</title>
 <meta name="description" content="Compare every major AI model side by side, pick the winner, keep going. Local-first. Your data never leaves your device. Built for doctors, lawyers, engineers and scientists.">
-<meta property="og:title" content="AIMAZZE — The AI Workstation for Professionals">
+<meta property="og:title" content="AIMAZZE – The AI Workstation for Professionals">
 <meta property="og:description" content="Compare every major AI model side by side. Local-first. Data never leaves your device.">
 <meta property="og:url" content="https://www.aimazze.com">
 <meta name="twitter:card" content="summary_large_image">
@@ -113,7 +113,6 @@
     z-index: 1;
   }
 
-  /* Ambient glow */
   .hero::after {
     content: '';
     position: absolute;
@@ -411,23 +410,9 @@
     transform: translateY(-3px);
   }
 
-  .feat-icon {
-    font-size: 1.75rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .feat-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--white);
-    margin-bottom: 0.4rem;
-  }
-
-  .feat-body {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.65;
-  }
+  .feat-icon { font-size: 1.75rem; margin-bottom: 0.75rem; }
+  .feat-title { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 0.4rem; }
+  .feat-body { font-size: 13px; color: var(--muted); line-height: 1.65; }
 
   /* ── PERSONAS ── */
   .personas-grid {
@@ -517,7 +502,6 @@
     text-align: center;
   }
 
-  .moat-stat { }
   .moat-num {
     font-size: 2.2rem;
     font-weight: 800;
@@ -659,7 +643,7 @@
 <section class="hero">
   <div class="hero-badge">
     <div class="dot"></div>
-    Early Access — Windows · Mac coming soon
+    Early Access — Waitlist Open Now
   </div>
 
   <h1>
@@ -702,32 +686,6 @@
     </div>
   </div>
 
-
-  <!-- Download button — desktop only -->
-  <div id="download-wrap">
-    <a
-      href="https://github.com/amrutcm1-mumbai/aimazze-app/releases/download/v0.1.0/AIMAZZE_0.1.0_x64-setup.exe"
-      style="display:inline-flex;align-items:center;gap:10px;padding:12px 24px;background:#0f1016;border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-size:13px;color:#f0f2f8;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;margin-bottom:6px;transition:all 0.2s;text-decoration:none"
-      onmouseover="this.style.borderColor='rgba(0,212,232,0.4)';this.style.background='#161820'"
-      onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.background='#0f1016'"
-    >
-      ⬇ Download for Windows — v0.1.0
-      <span style="font-size:11px;color:#6b6e80;font-family:'JetBrains Mono',monospace">Free · ~8MB · x64</span>
-    </a>
-    <p style="font-size:11px;color:#6b6e80;font-family:'JetBrains Mono',monospace;margin-bottom:1rem">
-      ⓘ Windows may show a security prompt — click "More info" → "Run anyway"
-    </p>
-  </div>
-  <div id="mobile-wrap" style="display:none;margin-bottom:1rem;padding:12px 20px;background:#0f1016;border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-size:13px;color:#6b6e80;font-family:'JetBrains Mono',monospace;text-align:center">
-    📱 Mobile app coming soon — join the waitlist to be notified
-  </div>
-  <script>
-    if (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
-      document.getElementById('download-wrap').style.display = 'none';
-      document.getElementById('mobile-wrap').style.display = 'block';
-    }
-  </script>
-
   <div class="pill-row">
     <span class="pill hot">🔒 Local-first</span>
     <span class="pill hot">⚡ Native desktop</span>
@@ -736,7 +694,7 @@
     <span class="pill">No credit card for trial</span>
     <span class="pill">₹ UPI accepted</span>
     <span class="pill">HIPAA · GDPR · DPDP</span>
-    <span class="pill">Mac coming soon</span>
+    <span class="pill">Windows · Mac coming soon</span>
   </div>
 </section>
 
@@ -797,7 +755,7 @@
             <div class="model-time">0.8s</div>
           </div>
           <div class="arena-text">
-            Quick review: ✓ Reasonable scope · ✗ Duration too long (negotiate to 3yr) · ✗ Missing mutual obligations · ⚠ Jurisdiction clause incomplete. Add governing law clause before proceeding.
+            Quick review: ✔ Reasonable scope · ✗ Duration too long (negotiate to 3yr) · ✗ Missing mutual obligations · ⚠ Jurisdiction clause incomplete. Add governing law clause before proceeding.
           </div>
         </div>
         <div class="arena-col">
@@ -812,7 +770,7 @@
         </div>
       </div>
       <div class="arena-prompt">
-        <span>↑ Prompt sent to all 3 simultaneously:</span>
+        <span>→ Prompt sent to all 3 simultaneously:</span>
         <span class="arena-prompt-text">"Review this NDA for a software services agreement and flag any concerning clauses"</span>
       </div>
     </div>
@@ -1094,13 +1052,11 @@
 </footer>
 
 <script>
-  // FAQ toggle
   function toggleFaq(btn) {
     const item = btn.closest('.faq-item');
     item.classList.toggle('open');
   }
 
-  // Waitlist form — hero
   document.getElementById('waitlist-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const form = e.target;
@@ -1113,15 +1069,13 @@
       });
       if (res.ok) {
         document.getElementById('waitlist-form-wrap').style.display = 'none';
-        const success = document.getElementById('waitlist-success');
-        success.style.display = 'flex';
+        document.getElementById('waitlist-success').style.display = 'flex';
       }
     } catch(err) {
       alert('Something went wrong. Please try again.');
     }
   });
 
-  // Waitlist form — footer CTA
   document.getElementById('final-waitlist-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const form = e.target;
@@ -1134,20 +1088,16 @@
       });
       if (res.ok) {
         document.getElementById('final-waitlist-wrap').style.display = 'none';
-        const success = document.getElementById('final-waitlist-success');
-        success.style.display = 'flex';
+        document.getElementById('final-waitlist-success').style.display = 'flex';
       }
     } catch(err) {
       alert('Something went wrong. Please try again.');
     }
   });
 
-  // Scroll reveal
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
+      if (entry.isIntersecting) entry.target.classList.add('visible');
     });
   }, { threshold: 0.1 });
 
