@@ -489,6 +489,117 @@
   }
 
   .price-feature::before { content: '·'; color: var(--cyan); flex-shrink: 0; margin-top: 1px; }
+  .price-amount-inr {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    font-family: var(--mono);
+    margin-top: 2px;
+  }
+  .price-cta {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.65rem 0;
+    background: var(--cyan);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: var(--mono);
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .price-cta:hover { opacity: 0.85; }
+  .price-cta:disabled { opacity: 0.5; cursor: not-allowed; }
+  .price-card:not(.featured) .price-cta {
+    background: var(--surface2);
+    color: var(--white);
+    border: 1px solid var(--border2);
+  }
+  .checkout-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .checkout-modal-overlay.open { display: flex; }
+  .checkout-modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 14px;
+    padding: 1.75rem;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 1rem;
+  }
+  .checkout-modal-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.25rem;
+  }
+  .checkout-modal-sub {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+    margin-bottom: 1.25rem;
+  }
+  .checkout-modal input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.65rem 0.8rem;
+    color: var(--white);
+    font-size: 13px;
+    margin-bottom: 0.7rem;
+    font-family: inherit;
+  }
+  .checkout-modal input:focus {
+    outline: none;
+    border-color: var(--cyan);
+  }
+  .checkout-modal-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 1rem;
+  }
+  .checkout-modal-cancel {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 0.6rem 0;
+    font-size: 12px;
+    font-family: var(--mono);
+    cursor: pointer;
+  }
+  .checkout-modal-continue {
+    flex: 2;
+    background: var(--cyan);
+    border: none;
+    color: #000;
+    border-radius: 8px;
+    padding: 0.6rem 0;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: var(--mono);
+    cursor: pointer;
+  }
+  .checkout-modal-continue:disabled { opacity: 0.6; cursor: not-allowed; }
+  .checkout-modal-error {
+    font-size: 10px;
+    color: #ef4444;
+    font-family: var(--mono);
+    margin-top: -0.3rem;
+    margin-bottom: 0.5rem;
+    display: none;
+  }
 
   /* ── MOAT BAR ── */
   .moat-bar {
@@ -876,12 +987,13 @@
   <div class="container">
     <div class="section-label">Pricing</div>
     <div class="section-title">Less than one subscription.<br>All the models.</div>
-    <p class="section-sub">Claude Pro alone costs ₹1,670/month. AIMAZZE Pro at ₹799/month gives you Claude plus 7 more models, local AI, and full professional features.</p>
+    <p class="section-sub">Claude Pro alone costs $20/month. AIMAZZE Pro at $19/month gives you Claude plus 7 more models, local AI, and full professional features.</p>
 
     <div class="pricing-grid reveal">
       <div class="price-card">
         <div class="price-name">Free</div>
-        <div class="price-amount">₹0</div>
+        <div class="price-amount">$0</div>
+        <div class="price-amount-inr">₹0</div>
         <div class="price-period">forever</div>
         <div class="price-feature">Local AI models — zero cost</div>
         <div class="price-feature">3 BYOK connections</div>
@@ -890,9 +1002,10 @@
         <div class="price-feature">5 Vault files</div>
         <div class="price-feature">Offline capable</div>
       </div>
-      <div class="price-card">
+      <div class="price-card" data-tier="starter" data-inr-paise="49900">
         <div class="price-name">Starter</div>
-        <div class="price-amount">₹499</div>
+        <div class="price-amount">$7</div>
+        <div class="price-amount-inr">₹499 / month (India)</div>
         <div class="price-period">/ month · 7-day trial · no CC</div>
         <div class="price-feature">All BYOK providers</div>
         <div class="price-feature">Managed multi-model access</div>
@@ -900,11 +1013,13 @@
         <div class="price-feature">Unlimited history</div>
         <div class="price-feature">20 Vault files</div>
         <div class="price-feature">Voice input</div>
+        <button class="price-cta" data-tier="starter">Get Starter</button>
       </div>
-      <div class="price-card featured">
+      <div class="price-card featured" data-tier="pro" data-inr-paise="99900">
         <div class="price-badge">Most popular</div>
         <div class="price-name">Pro</div>
-        <div class="price-amount">₹799</div>
+        <div class="price-amount">$19</div>
+        <div class="price-amount-inr">₹999 / month (India)</div>
         <div class="price-period">/ month · 7-day trial · no CC</div>
         <div class="price-feature">Arena: up to 8 models</div>
         <div class="price-feature">Unlimited Vault + OCR</div>
@@ -912,34 +1027,54 @@
         <div class="price-feature">PDF / DOCX export</div>
         <div class="price-feature">Gateway selector</div>
         <div class="price-feature">Custom avatar builder</div>
+        <button class="price-cta" data-tier="pro">Get Pro</button>
       </div>
-      <div class="price-card">
+      <div class="price-card" data-tier="elite" data-inr-paise="249900">
         <div class="price-name">Elite</div>
-        <div class="price-amount">₹1,799</div>
+        <div class="price-amount">$49</div>
+        <div class="price-amount-inr">₹2,499 / month (India)</div>
         <div class="price-period">/ month · 10-day trial · no CC</div>
         <div class="price-feature">HIPAA · GDPR · DPDP</div>
         <div class="price-feature">BAA template included</div>
         <div class="price-feature">Team workspace (10 seats)</div>
         <div class="price-feature">Priority support</div>
         <div class="price-feature">40% cheaper than Claude Team</div>
+        <button class="price-cta" data-tier="elite">Get Elite</button>
       </div>
-      <div class="price-card">
+      <div class="price-card" data-tier="lifetime" data-inr-paise="1499900">
         <div class="price-name">Lifetime</div>
-        <div class="price-amount">₹9,999</div>
+        <div class="price-amount">$249</div>
+        <div class="price-amount-inr">₹14,999 (India)</div>
         <div class="price-period">one-time · no renewals ever</div>
         <div class="price-feature">Zero AIMAZZE charges forever</div>
         <div class="price-feature">Full Pro features forever</div>
         <div class="price-feature">All future updates included</div>
         <div class="price-feature">Pays for itself in 13 months</div>
         <div class="price-feature">Connect your own accounts</div>
+        <button class="price-cta" data-tier="lifetime">Get Lifetime</button>
       </div>
     </div>
 
     <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:1.25rem;font-family:var(--mono)">
-      All prices shown in INR · USD pricing available at checkout · UPI accepted
+      USD prices shown · Indian customers billed in ₹ via Razorpay (UPI accepted) · International cards: more options coming soon
     </p>
   </div>
 </section>
+
+<!-- CHECKOUT MODAL (shared across all paid tiers) -->
+<div class="checkout-modal-overlay" id="checkoutModalOverlay">
+  <div class="checkout-modal">
+    <div class="checkout-modal-title" id="checkoutModalTitle">Get Pro</div>
+    <div class="checkout-modal-sub" id="checkoutModalSub">₹999 / month · billed via Razorpay</div>
+    <input type="text" id="checkoutName" placeholder="Full name" autocomplete="name">
+    <input type="email" id="checkoutEmail" placeholder="Email address" autocomplete="email">
+    <div class="checkout-modal-error" id="checkoutError">Please enter a valid name and email.</div>
+    <div class="checkout-modal-actions">
+      <button class="checkout-modal-cancel" id="checkoutCancelBtn" type="button">Cancel</button>
+      <button class="checkout-modal-continue" id="checkoutContinueBtn" type="button">Continue to payment</button>
+    </div>
+  </div>
+</div>
 
 <!-- FAQ -->
 <section id="faq" style="padding: 4rem 2rem;">
@@ -988,7 +1123,7 @@
           Can I pay in INR with UPI?
           <span class="faq-chevron">▼</span>
         </button>
-        <div class="faq-a">Yes — UPI is fully supported via Razorpay at no extra cost. Indian users see ₹ pricing with UPI (GPay, PhonePe, Paytm, BHIM), debit/credit cards, net banking, and EMI. International users see $ pricing via Stripe.</div>
+        <div class="faq-a">Yes — UPI is fully supported via Razorpay at no extra cost. Indian users get UPI (GPay, PhonePe, Paytm, BHIM), debit/credit cards, net banking, and EMI. USD prices are shown for reference — international card processing is rolling out shortly; in the meantime reach out and we'll get you set up.</div>
       </div>
     </div>
   </div>
@@ -1102,6 +1237,144 @@
   }, { threshold: 0.1 });
 
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+<!-- ── RAZORPAY CHECKOUT ── -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+(function () {
+  // ── CONFIG ──
+  var WORKER_URL = "https://aimazze-worker.YOUR-SUBDOMAIN.workers.dev"; // TODO: replace with real deployed Worker URL
+  var RAZORPAY_KEY_ID = "rzp_test_T0eEA7nmapJ06k";
+
+  var TIER_LABELS = {
+    starter: "Starter",
+    pro: "Pro",
+    elite: "Elite",
+    lifetime: "Lifetime"
+  };
+
+  var overlay = document.getElementById("checkoutModalOverlay");
+  var modalTitle = document.getElementById("checkoutModalTitle");
+  var modalSub = document.getElementById("checkoutModalSub");
+  var nameInput = document.getElementById("checkoutName");
+  var emailInput = document.getElementById("checkoutEmail");
+  var errorEl = document.getElementById("checkoutError");
+  var cancelBtn = document.getElementById("checkoutCancelBtn");
+  var continueBtn = document.getElementById("checkoutContinueBtn");
+
+  var activeTier = null;
+  var activeAmountPaise = null;
+
+  function openCheckoutModal(tier, amountPaise) {
+    activeTier = tier;
+    activeAmountPaise = amountPaise;
+    var label = TIER_LABELS[tier] || tier;
+    modalTitle.textContent = "Get " + label;
+    modalSub.textContent = "₹" + (amountPaise / 100).toLocaleString("en-IN") +
+      (tier === "lifetime" ? " one-time" : " / month") +
+      " · billed via Razorpay";
+    errorEl.style.display = "none";
+    nameInput.value = "";
+    emailInput.value = "";
+    overlay.classList.add("open");
+    nameInput.focus();
+  }
+
+  function closeCheckoutModal() {
+    overlay.classList.remove("open");
+    activeTier = null;
+    activeAmountPaise = null;
+  }
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  document.querySelectorAll(".price-cta").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var card = btn.closest(".price-card");
+      var tier = card.getAttribute("data-tier");
+      var amountPaise = parseInt(card.getAttribute("data-inr-paise"), 10);
+      openCheckoutModal(tier, amountPaise);
+    });
+  });
+
+  cancelBtn.addEventListener("click", closeCheckoutModal);
+  overlay.addEventListener("click", function (e) {
+    if (e.target === overlay) closeCheckoutModal();
+  });
+
+  continueBtn.addEventListener("click", function () {
+    var name = nameInput.value.trim();
+    var email = emailInput.value.trim();
+
+    if (!name || !isValidEmail(email)) {
+      errorEl.style.display = "block";
+      return;
+    }
+    errorEl.style.display = "none";
+    continueBtn.disabled = true;
+    continueBtn.textContent = "Loading...";
+
+    fetch(WORKER_URL + "/create-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tier: activeTier,
+        amount: activeAmountPaise,
+        currency: "INR",
+        name: name,
+        email: email
+      })
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error("Order creation failed");
+        return res.json();
+      })
+      .then(function (data) {
+        continueBtn.disabled = false;
+        continueBtn.textContent = "Continue to payment";
+        closeCheckoutModal();
+
+        var options = {
+          key: RAZORPAY_KEY_ID,
+          amount: data.amount,
+          currency: data.currency,
+          name: "AIMAZZE",
+          description: (TIER_LABELS[activeTier] || activeTier) + " plan",
+          order_id: data.orderId,
+          prefill: { name: name, email: email },
+          theme: { color: "#00d4e8" },
+          handler: function () {
+            // Payment succeeded client-side. The Worker webhook handles
+            // license generation + activation email independently of
+            // this callback, so this is just a UI confirmation.
+            alert(
+              "Payment received! Check " + email +
+              " for your activation email — it includes a link that " +
+              "opens AIMAZZE and activates your license automatically."
+            );
+          },
+          modal: {
+            ondismiss: function () {
+              // user closed the Razorpay popup without paying — no action needed
+            }
+          }
+        };
+
+        var rzp = new Razorpay(options);
+        rzp.open();
+      })
+      .catch(function (err) {
+        continueBtn.disabled = false;
+        continueBtn.textContent = "Continue to payment";
+        errorEl.textContent = "Something went wrong. Please try again or contact support.";
+        errorEl.style.display = "block";
+        console.error("Checkout error:", err);
+      });
+  });
+})();
 </script>
 </body>
 </html>
