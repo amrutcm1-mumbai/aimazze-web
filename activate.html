@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activate AIMAZZE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07080d;--surface:#0f1117;--surface2:#161820;
+  --border:rgba(255,255,255,0.08);
+  --cyan:#00d4e8;--cyan2:rgba(0,212,232,0.12);--cyan3:rgba(0,212,232,0.06);
+  --white:#e8eaf0;--muted:#8b8e9e;--muted2:#5a5d6e;
+  --amber:#f5b81d;--amber2:rgba(245,184,29,0.12);
+  --font-display:'Bricolage Grotesque',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --font-mono:'DM Mono',monospace;
+  --radius:12px;--radius-lg:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--white);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  line-height:1.6;
+}
+.card{
+  width:100%;
+  max-width:440px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:2.5rem 2rem;
+  text-align:center;
+}
+.icon{
+  width:56px;height:56px;
+  margin:0 auto 1.25rem;
+  border-radius:14px;
+  background:var(--cyan2);
+  display:flex;align-items:center;justify-content:center;
+}
+.icon svg{width:28px;height:28px}
+h1{
+  font-family:var(--font-display);
+  font-size:1.5rem;
+  font-weight:700;
+  letter-spacing:-0.02em;
+  margin-bottom:0.5rem;
+}
+.sub{
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:1.75rem;
+}
+.btn{
+  display:inline-block;
+  width:100%;
+  background:var(--cyan);
+  color:#07080d;
+  font-weight:700;
+  font-size:14px;
+  padding:13px 0;
+  border-radius:10px;
+  text-decoration:none;
+  border:none;
+  cursor:pointer;
+  font-family:var(--font-body);
+  margin-bottom:0.75rem;
+  transition:opacity .15s;
+}
+.btn:hover{opacity:0.9}
+.status{
+  font-size:12px;
+  color:var(--muted2);
+  margin-top:0.25rem;
+  margin-bottom:1.5rem;
+  min-height:16px;
+}
+.divider{
+  display:flex;align-items:center;gap:10px;
+  margin:1.5rem 0;
+  font-size:11px;color:var(--muted2);
+  font-family:var(--font-mono);
+  text-transform:uppercase;letter-spacing:.06em;
+}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.key-label{font-size:11px;color:var(--muted);margin-bottom:0.5rem}
+.key-box{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px 14px;
+  font-family:var(--font-mono);
+  font-size:12px;
+  color:var(--cyan);
+  word-break:break-all;
+  margin-bottom:0.5rem;
+  position:relative;
+}
+.copy-btn{
+  font-size:11px;
+  color:var(--muted);
+  background:none;
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:4px 10px;
+  cursor:pointer;
+  font-family:var(--font-body);
+  margin-bottom:1.5rem;
+}
+.copy-btn:hover{color:var(--white);border-color:var(--muted)}
+.copy-btn.copied{color:var(--cyan);border-color:var(--cyan)}
+.help-text{font-size:11px;color:var(--muted2);line-height:1.6}
+.download-note{
+  margin-top:1.5rem;
+  padding-top:1.5rem;
+  border-top:1px solid var(--border);
+  font-size:11px;
+  color:var(--muted2);
+}
+.download-note .tag{
+  display:inline-block;
+  background:var(--amber2);
+  color:var(--amber);
+  font-size:10px;
+  font-weight:600;
+  padding:2px 8px;
+  border-radius:4px;
+  margin-bottom:6px;
+  font-family:var(--font-mono);
+}
+.error-state{display:none}
+.error-state.show{display:block}
+.error-state h1{color:var(--white)}
+</style>
+</head>
+<body>
+
+<div class="card" id="card">
+  <div class="icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#00d4e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+  </div>
+
+  <div id="default-state">
+    <h1>Activate AIMAZZE</h1>
+    <p class="sub">Opening the app to complete activation&hellip;</p>
+
+    <a href="#" class="btn" id="open-app-btn">Open AIMAZZE</a>
+    <div class="status" id="status-text"></div>
+
+    <div class="divider">or activate manually</div>
+
+    <div class="key-label">Paste this key in Settings &rarr; Plan &amp; Billing</div>
+    <div class="key-box" id="key-box">&mdash;</div>
+    <button class="copy-btn" id="copy-btn">Copy key</button>
+
+    <p class="help-text">If nothing happened when this page loaded, click "Open AIMAZZE" above. Your browser may ask to confirm opening the app &mdash; choose Allow.</p>
+
+    <div class="download-note">
+      <div class="tag">Coming soon</div>
+      <div>Don't have AIMAZZE installed yet? Download links will be available here shortly. In the meantime, contact support if you need the installer.</div>
+    </div>
+  </div>
+
+  <div class="error-state" id="error-state">
+    <h1>Missing activation key</h1>
+    <p class="sub">This link doesn't contain a valid license key. Please check your activation email and click the button there again, or contact support.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var key = params.get('key') || '';
+  var plan = params.get('plan') || '';
+  var email = params.get('email') || '';
+
+  if (!key) {
+    document.getElementById('default-state').style.display = 'none';
+    document.getElementById('error-state').classList.add('show');
+    return;
+  }
+
+  var deepLink = 'aimazze://activate?key=' + encodeURIComponent(key)
+    + (plan ? '&plan=' + encodeURIComponent(plan) : '')
+    + (email ? '&email=' + encodeURIComponent(email) : '');
+
+  document.getElementById('key-box').textContent = key;
+  document.getElementById('open-app-btn').setAttribute('href', deepLink);
+
+  var statusEl = document.getElementById('status-text');
+
+  // Auto-attempt the deep link once, on page load — this is a normal
+  // user-initiated https page navigation, which is treated very differently
+  // by mail clients / browsers than an <a href="aimazze://..."> rendered
+  // inside Gmail's webmail UI (which silently swallows the click).
+  function attemptOpen(){
+    try {
+      window.location.href = deepLink;
+      statusEl.textContent = "If AIMAZZE didn't open automatically, use the button above.";
+    } catch(e) {
+      statusEl.textContent = 'Use the button above to open AIMAZZE.';
+    }
+  }
+  setTimeout(attemptOpen, 600);
+
+  document.getElementById('open-app-btn').addEventListener('click', function(e){
+    e.preventDefault();
+    window.location.href = deepLink;
+  });
+
+  document.getElementById('copy-btn').addEventListener('click', function(){
+    navigator.clipboard.writeText(key).then(function(){
+      var btn = document.getElementById('copy-btn');
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(function(){
+        btn.textContent = 'Copy key';
+        btn.classList.remove('copied');
+      }, 1500);
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
