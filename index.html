@@ -1068,6 +1068,7 @@
     <div class="checkout-modal-sub" id="checkoutModalSub">₹999 / month · billed via Razorpay</div>
     <input type="text" id="checkoutName" placeholder="Full name" autocomplete="name">
     <input type="email" id="checkoutEmail" placeholder="Email address" autocomplete="email">
+    <div class="checkout-modal-warning" id="checkoutWarning"></div>
     <div class="checkout-modal-error" id="checkoutError">Please enter a valid name and email.</div>
     <div class="checkout-modal-actions">
       <button class="checkout-modal-cancel" id="checkoutCancelBtn" type="button">Cancel</button>
@@ -1075,6 +1076,23 @@
     </div>
   </div>
 </div>
+
+<style>
+  /* Day 11, Option C: soft duplicate-purchase warning, shown inline in the
+     existing checkout modal rather than a second popup. */
+  .checkout-modal-warning {
+    display: none;
+    font-size: 11px;
+    color: var(--orange);
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 8px;
+    padding: 0.6rem 0.7rem;
+    margin-bottom: 0.7rem;
+    line-height: 1.5;
+    font-family: var(--ff);
+  }
+</style>
 
 <!-- FAQ -->
 <section id="faq" style="padding: 4rem 2rem;">
@@ -1262,23 +1280,37 @@
   var errorEl = document.getElementById("checkoutError");
   var cancelBtn = document.getElementById("checkoutCancelBtn");
   var continueBtn = document.getElementById("checkoutContinueBtn");
+  var warnEl = document.getElementById("checkoutWarning");
 
   var activeTier = null;
   var activeAmountPaise = null;
+
+  // Day 11, Option C: if this page was opened from the app's "Upgrade"
+  // button, these will be populated — used to skip the duplicate-purchase
+  // warning entirely (this IS the same person, deliberately upgrading) and
+  // to pre-fill + lock the email field so they can't accidentally fork
+  // their identity into two licenses by typing a different email here.
+  var params = new URLSearchParams(window.location.search);
+  var upgradeEmail = params.get("upgrade_email");
+  var upgradeFrom = params.get("upgrade_from");
 
   function openCheckoutModal(tier, amountPaise) {
     activeTier = tier;
     activeAmountPaise = amountPaise;
     var label = TIER_LABELS[tier] || tier;
-    modalTitle.textContent = "Get " + label;
+    modalTitle.textContent = upgradeEmail ? "Upgrade to " + label : "Get " + label;
     modalSub.textContent = "₹" + (amountPaise / 100).toLocaleString("en-IN") +
       (tier === "lifetime" ? " one-time" : " / month") +
-      " · billed via Razorpay";
+      " · billed via Razorpay" +
+      (upgradeFrom ? " · upgrading from " + (TIER_LABELS[upgradeFrom] || upgradeFrom) : "");
     errorEl.style.display = "none";
+    warnEl.style.display = "none";
+    continueBtn.textContent = "Continue to payment";
     nameInput.value = "";
-    emailInput.value = "";
+    emailInput.value = upgradeEmail || "";
+    emailInput.readOnly = !!upgradeEmail;
     overlay.classList.add("open");
-    nameInput.focus();
+    (upgradeEmail ? nameInput : nameInput).focus();
   }
 
   function closeCheckoutModal() {
@@ -1305,6 +1337,55 @@
     if (e.target === overlay) closeCheckoutModal();
   });
 
+  function submitOrder(name, email, confirmed) {
+    return fetch(WORKER_URL + "/create-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tier: activeTier,
+        amount: activeAmountPaise,
+        currency: "INR",
+        name: name,
+        email: email,
+        confirmed: !!confirmed
+      })
+    }).then(function (res) {
+      if (!res.ok) throw new Error("Order creation failed");
+      return res.json();
+    });
+  }
+
+  function launchRazorpay(data, name, email) {
+    var options = {
+      key: RAZORPAY_KEY_ID,
+      amount: data.amount,
+      currency: data.currency,
+      name: "AIMAZZE",
+      description: (TIER_LABELS[activeTier] || activeTier) + " plan",
+      order_id: data.orderId,
+      prefill: { name: name, email: email },
+      theme: { color: "#00d4e8" },
+      handler: function () {
+        // Payment succeeded client-side. The Worker webhook handles
+        // license generation + activation email independently of
+        // this callback, so this is just a UI confirmation.
+        alert(
+          "Payment received! Check " + email +
+          " for your activation email — it includes a link that " +
+          "opens AIMAZZE and activates your license automatically."
+        );
+      },
+      modal: {
+        ondismiss: function () {
+          // user closed the Razorpay popup without paying — no action needed
+        }
+      }
+    };
+
+    var rzp = new Razorpay(options);
+    rzp.open();
+  }
+
   continueBtn.addEventListener("click", function () {
     var name = nameInput.value.trim();
     var email = emailInput.value.trim();
@@ -1314,57 +1395,38 @@
       return;
     }
     errorEl.style.display = "none";
+
+    // Day 11, Option C: a genuine in-app upgrade always sends confirmed:true
+    // on the first try — the app already knows this is the same person.
+    // Otherwise it's a cold checkout-page visit, which goes through the
+    // duplicate-purchase check first.
+    var alreadyConfirmed = !!upgradeEmail || continueBtn.dataset.confirmed === "1";
+
     continueBtn.disabled = true;
     continueBtn.textContent = "Loading...";
 
-    fetch(WORKER_URL + "/create-order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        tier: activeTier,
-        amount: activeAmountPaise,
-        currency: "INR",
-        name: name,
-        email: email
-      })
-    })
-      .then(function (res) {
-        if (!res.ok) throw new Error("Order creation failed");
-        return res.json();
-      })
+    submitOrder(name, email, alreadyConfirmed)
       .then(function (data) {
+        if (data.needsConfirmation) {
+          // Show the warning inline, swap the continue button into a
+          // "proceed anyway" state instead of opening a second modal.
+          continueBtn.disabled = false;
+          continueBtn.textContent = "Continue anyway";
+          continueBtn.dataset.confirmed = "1";
+          var existingLabel = TIER_LABELS[data.existingPlan] || data.existingPlan;
+          warnEl.textContent =
+            "This email already has an active " + existingLabel +
+            " license. If you continue, you'll need to choose Replace " +
+            "or Cancel when activating the new one in the app.";
+          warnEl.style.display = "block";
+          return;
+        }
+
         continueBtn.disabled = false;
         continueBtn.textContent = "Continue to payment";
+        continueBtn.dataset.confirmed = "";
         closeCheckoutModal();
-
-        var options = {
-          key: RAZORPAY_KEY_ID,
-          amount: data.amount,
-          currency: data.currency,
-          name: "AIMAZZE",
-          description: (TIER_LABELS[activeTier] || activeTier) + " plan",
-          order_id: data.orderId,
-          prefill: { name: name, email: email },
-          theme: { color: "#00d4e8" },
-          handler: function () {
-            // Payment succeeded client-side. The Worker webhook handles
-            // license generation + activation email independently of
-            // this callback, so this is just a UI confirmation.
-            alert(
-              "Payment received! Check " + email +
-              " for your activation email — it includes a link that " +
-              "opens AIMAZZE and activates your license automatically."
-            );
-          },
-          modal: {
-            ondismiss: function () {
-              // user closed the Razorpay popup without paying — no action needed
-            }
-          }
-        };
-
-        var rzp = new Razorpay(options);
-        rzp.open();
+        launchRazorpay(data, name, email);
       })
       .catch(function (err) {
         continueBtn.disabled = false;
