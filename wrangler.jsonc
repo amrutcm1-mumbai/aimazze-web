@@ -1,0 +1,8 @@
+{
+    "$schema": "https://schema.wrangler.cloud/config-v1.json",
+    "name": "aimazze-web",
+    "compatibility_date": "2026-06-28",
+    "assets": {
+      "directory": "."
+    }
+  }
