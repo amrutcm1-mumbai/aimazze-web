@@ -47,7 +47,6 @@
 
   a { color: inherit; text-decoration: none; }
 
-  /* ── NOISE OVERLAY ── */
   body::before {
     content: '';
     position: fixed;
@@ -58,7 +57,6 @@
     opacity: 0.4;
   }
 
-  /* ── NAV ── */
   nav {
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -100,7 +98,6 @@
   }
   .nav-cta:hover { background: #00eeff; transform: translateY(-1px); }
 
-  /* ── HERO ── */
   .hero {
     min-height: 100vh;
     display: flex;
@@ -179,7 +176,6 @@
 
   .hero-sub strong { color: var(--white); font-weight: 600; }
 
-  /* ── WAITLIST FORM ── */
   .waitlist-form {
     display: flex;
     gap: 10px;
@@ -241,7 +237,6 @@
     margin-bottom: 1.25rem;
   }
 
-  /* ── PILL ROW ── */
   .pill-row {
     display: flex;
     flex-wrap: wrap;
@@ -267,7 +262,6 @@
     background: var(--cyan-dim);
   }
 
-  /* ── SECTIONS ── */
   section {
     position: relative;
     z-index: 1;
@@ -304,7 +298,6 @@
     margin-bottom: 3rem;
   }
 
-  /* ── ARENA DEMO ── */
   .arena-demo {
     background: var(--surface);
     border: 1px solid var(--border2);
@@ -390,7 +383,6 @@
 
   .arena-prompt-text { color: var(--white); }
 
-  /* ── FEATURES GRID ── */
   .features-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -414,7 +406,6 @@
   .feat-title { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 0.4rem; }
   .feat-body { font-size: 13px; color: var(--muted); line-height: 1.65; }
 
-  /* ── PERSONAS ── */
   .personas-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -435,7 +426,6 @@
   .persona-name { font-size: 13px; font-weight: 700; color: var(--white); margin-bottom: 2px; }
   .persona-role { font-size: 11px; color: var(--muted); font-family: var(--mono); }
 
-  /* ── PRICING ── */
   .pricing-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -601,7 +591,6 @@
     display: none;
   }
 
-  /* ── MOAT BAR ── */
   .moat-bar {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -625,7 +614,6 @@
 
   .moat-label { font-size: 12px; color: var(--muted); }
 
-  /* ── FAQ ── */
   .faq-list { display: flex; flex-direction: column; gap: 8px; }
 
   .faq-item {
@@ -669,7 +657,6 @@
 
   .faq-item.open .faq-a { display: block; }
 
-  /* ── FINAL CTA ── */
   .final-cta {
     text-align: center;
     padding: 6rem 2rem;
@@ -687,7 +674,6 @@
     background: linear-gradient(to bottom, transparent, var(--border2));
   }
 
-  /* ── FOOTER ── */
   footer {
     border-top: 1px solid var(--border);
     padding: 2rem;
@@ -702,7 +688,6 @@
   footer a { color: var(--muted); }
   footer a:hover { color: var(--cyan); }
 
-  /* ── SCROLL REVEAL ── */
   .reveal {
     opacity: 0;
     transform: translateY(24px);
@@ -714,7 +699,6 @@
     transform: translateY(0);
   }
 
-  /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
     .features-grid { grid-template-columns: 1fr 1fr; }
     .pricing-grid { grid-template-columns: 1fr 1fr; }
@@ -738,7 +722,6 @@
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <div class="nav-brand"><span class="cyan">AI</span>MAZZE</div>
   <div class="nav-links">
@@ -750,7 +733,6 @@
   <a href="#waitlist" class="nav-cta">Get Early Access</a>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-badge">
     <div class="dot"></div>
@@ -767,7 +749,6 @@
     The only AI workstation built for <strong>doctors, lawyers, engineers, and scientists</strong> — compare every major model side by side, pick the winner, keep going. <strong>Your data never leaves your device.</strong>
   </p>
 
-  <!-- Waitlist form -->
   <div id="waitlist-form-wrap">
     <form
       class="waitlist-form"
@@ -809,7 +790,6 @@
   </div>
 </section>
 
-<!-- STATS -->
 <section style="padding: 2rem 2rem 4rem;">
   <div class="container">
     <div class="moat-bar reveal">
@@ -833,7 +813,6 @@
   </div>
 </section>
 
-<!-- ARENA -->
 <section id="arena" style="padding: 4rem 2rem;">
   <div class="container">
     <div class="section-label">The killer feature</div>
@@ -888,7 +867,6 @@
   </div>
 </section>
 
-<!-- FEATURES -->
 <section id="features" style="padding: 4rem 2rem;">
   <div class="container">
     <div class="section-label">Built different</div>
@@ -930,7 +908,6 @@
   </div>
 </section>
 
-<!-- PERSONAS -->
 <section style="padding: 3rem 2rem;">
   <div class="container">
     <div class="section-label">Professional personas</div>
@@ -982,7 +959,6 @@
   </div>
 </section>
 
-<!-- PRICING -->
 <section id="pricing" style="padding: 4rem 2rem;">
   <div class="container">
     <div class="section-label">Pricing</div>
@@ -1061,7 +1037,6 @@
   </div>
 </section>
 
-<!-- CHECKOUT MODAL (shared across all paid tiers) -->
 <div class="checkout-modal-overlay" id="checkoutModalOverlay">
   <div class="checkout-modal">
     <div class="checkout-modal-title" id="checkoutModalTitle">Get Pro</div>
@@ -1078,8 +1053,6 @@
 </div>
 
 <style>
-  /* Day 11, Option C: soft duplicate-purchase warning, shown inline in the
-     existing checkout modal rather than a second popup. */
   .checkout-modal-warning {
     display: none;
     font-size: 11px;
@@ -1094,7 +1067,6 @@
   }
 </style>
 
-<!-- FAQ -->
 <section id="faq" style="padding: 4rem 2rem;">
   <div class="container">
     <div class="section-label">FAQ</div>
@@ -1147,7 +1119,6 @@
   </div>
 </section>
 
-<!-- FINAL CTA -->
 <div class="final-cta" id="waitlist">
   <div class="section-label" style="justify-content:center;display:flex">Early Access</div>
   <h2 style="font-size:clamp(2rem,4vw,3.2rem);font-weight:800;letter-spacing:-0.03em;margin-bottom:1rem">
@@ -1188,7 +1159,6 @@
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <div style="margin-bottom:0.75rem">
     <strong style="color:var(--white)"><span style="color:var(--cyan)">AI</span>MAZZE</strong>
@@ -1257,11 +1227,9 @@
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </script>
 
-<!-- ── RAZORPAY CHECKOUT ── -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 (function () {
-  // ── CONFIG ──
   var WORKER_URL = "https://aimazze-worker.amrutcm1.workers.dev";
   var RAZORPAY_KEY_ID = "rzp_test_T0eEA7nmapJ06k";
 
@@ -1285,11 +1253,6 @@
   var activeTier = null;
   var activeAmountPaise = null;
 
-  // Day 11, Option C: if this page was opened from the app's "Upgrade"
-  // button, these will be populated — used to skip the duplicate-purchase
-  // warning entirely (this IS the same person, deliberately upgrading) and
-  // to pre-fill + lock the email field so they can't accidentally fork
-  // their identity into two licenses by typing a different email here.
   var params = new URLSearchParams(window.location.search);
   var upgradeEmail = params.get("upgrade_email");
   var upgradeFrom = params.get("upgrade_from");
@@ -1310,7 +1273,7 @@
     emailInput.value = upgradeEmail || "";
     emailInput.readOnly = !!upgradeEmail;
     overlay.classList.add("open");
-    (upgradeEmail ? nameInput : nameInput).focus();
+    nameInput.focus();
   }
 
   function closeCheckoutModal() {
@@ -1366,9 +1329,6 @@
       prefill: { name: name, email: email },
       theme: { color: "#00d4e8" },
       handler: function () {
-        // Payment succeeded client-side. The Worker webhook handles
-        // license generation + activation email independently of
-        // this callback, so this is just a UI confirmation.
         alert(
           "Payment received! Check " + email +
           " for your activation email — it includes a link that " +
@@ -1377,7 +1337,6 @@
       },
       modal: {
         ondismiss: function () {
-          // user closed the Razorpay popup without paying — no action needed
         }
       }
     };
@@ -1396,10 +1355,6 @@
     }
     errorEl.style.display = "none";
 
-    // Day 11, Option C: a genuine in-app upgrade always sends confirmed:true
-    // on the first try — the app already knows this is the same person.
-    // Otherwise it's a cold checkout-page visit, which goes through the
-    // duplicate-purchase check first.
     var alreadyConfirmed = !!upgradeEmail || continueBtn.dataset.confirmed === "1";
 
     continueBtn.disabled = true;
@@ -1408,8 +1363,6 @@
     submitOrder(name, email, alreadyConfirmed)
       .then(function (data) {
         if (data.needsConfirmation) {
-          // Show the warning inline, swap the continue button into a
-          // "proceed anyway" state instead of opening a second modal.
           continueBtn.disabled = false;
           continueBtn.textContent = "Continue anyway";
           continueBtn.dataset.confirmed = "1";
@@ -1437,6 +1390,36 @@
       });
   });
 })();
+</script>
+
+<script>
+  (function () {
+    function getCookie(name) {
+      const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+      return match ? match[2] : null;
+    }
+
+    function applyGeoPricing() {
+      const region = getCookie("aimazze_region") || "INTL";
+      const isIndia = region === "IN";
+
+      document.querySelectorAll(".price-amount").forEach((el) => {
+        el.style.display = isIndia ? "none" : "";
+      });
+      document.querySelectorAll(".price-amount-inr").forEach((el) => {
+        el.style.display = isIndia ? "" : "none";
+      });
+
+      const footnote = document.querySelector("#pricing .container > p");
+      if (footnote) footnote.style.display = "none";
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", applyGeoPricing);
+    } else {
+      applyGeoPricing();
+    }
+  })();
 </script>
 </body>
 </html>
