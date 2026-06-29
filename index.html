@@ -508,6 +508,43 @@
     color: var(--white);
     border: 1px solid var(--border2);
   }
+
+  /* June 29 (Monthly/Annual toggle): per-card switch, sits above the price */
+  .billing-toggle {
+    display: inline-flex;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 2px;
+    margin-bottom: 0.6rem;
+    font-family: var(--mono);
+  }
+  .billing-toggle button {
+    border: none;
+    background: none;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--mono);
+    transition: all 0.15s;
+  }
+  .billing-toggle button.active {
+    background: var(--cyan);
+    color: #000;
+  }
+  .price-amount-equiv {
+    font-size: 10px;
+    color: var(--muted);
+    font-family: var(--mono);
+    margin-top: -2px;
+    margin-bottom: 0.5rem;
+  }
+  .price-amount-equiv .save-badge {
+    color: var(--green);
+  }
   .checkout-modal-overlay {
     display: none;
     position: fixed;
@@ -981,11 +1018,19 @@
         <div class="price-feature">5 Vault files</div>
         <div class="price-feature">Offline capable</div>
       </div>
-      <div class="price-card" data-tier="starter" data-inr-paise="49900">
+      <div class="price-card"
+           data-tier="starter"
+           data-monthly-usd="7" data-annual-usd="70"
+           data-monthly-inr-paise="49900" data-annual-inr-paise="499000">
         <div class="price-name">Starter</div>
-        <div class="price-amount">$7</div>
-        <div class="price-amount-inr">₹499 / month (India)</div>
-        <div class="price-period">/ month · 7-day trial · no CC</div>
+        <div class="billing-toggle" data-toggle-for="starter">
+          <button type="button" class="active" data-cycle="monthly">Monthly</button>
+          <button type="button" data-cycle="annual">Annual</button>
+        </div>
+        <div class="price-amount" data-display="amount">$7</div>
+        <div class="price-amount-inr" data-display="amount-inr">₹499 / month (India)</div>
+        <div class="price-amount-equiv" data-display="equiv"></div>
+        <div class="price-period" data-display="period">/ month · 7-day trial · no CC</div>
         <div class="price-feature">All BYOK providers</div>
         <div class="price-feature">Managed multi-model access</div>
         <div class="price-feature">Arena: 2 models</div>
@@ -994,12 +1039,20 @@
         <div class="price-feature">Voice input</div>
         <button class="price-cta" data-tier="starter">Get Starter</button>
       </div>
-      <div class="price-card featured" data-tier="pro" data-inr-paise="99900">
+      <div class="price-card featured"
+           data-tier="pro"
+           data-monthly-usd="19" data-annual-usd="190"
+           data-monthly-inr-paise="99900" data-annual-inr-paise="999000">
         <div class="price-badge">Most popular</div>
         <div class="price-name">Pro</div>
-        <div class="price-amount">$19</div>
-        <div class="price-amount-inr">₹999 / month (India)</div>
-        <div class="price-period">/ month · 7-day trial · no CC</div>
+        <div class="billing-toggle" data-toggle-for="pro">
+          <button type="button" class="active" data-cycle="monthly">Monthly</button>
+          <button type="button" data-cycle="annual">Annual</button>
+        </div>
+        <div class="price-amount" data-display="amount">$19</div>
+        <div class="price-amount-inr" data-display="amount-inr">₹999 / month (India)</div>
+        <div class="price-amount-equiv" data-display="equiv"></div>
+        <div class="price-period" data-display="period">/ month · 7-day trial · no CC</div>
         <div class="price-feature">Arena: up to 8 models</div>
         <div class="price-feature">Unlimited Vault + OCR</div>
         <div class="price-feature">All 8 professional personas</div>
@@ -1008,11 +1061,19 @@
         <div class="price-feature">Custom avatar builder</div>
         <button class="price-cta" data-tier="pro">Get Pro</button>
       </div>
-      <div class="price-card" data-tier="elite" data-inr-paise="249900">
+      <div class="price-card"
+           data-tier="elite"
+           data-monthly-usd="49" data-annual-usd="490"
+           data-monthly-inr-paise="249900" data-annual-inr-paise="2499000">
         <div class="price-name">Elite</div>
-        <div class="price-amount">$49</div>
-        <div class="price-amount-inr">₹2,499 / month (India)</div>
-        <div class="price-period">/ month · 10-day trial · no CC</div>
+        <div class="billing-toggle" data-toggle-for="elite">
+          <button type="button" class="active" data-cycle="monthly">Monthly</button>
+          <button type="button" data-cycle="annual">Annual</button>
+        </div>
+        <div class="price-amount" data-display="amount">$49</div>
+        <div class="price-amount-inr" data-display="amount-inr">₹2,499 / month (India)</div>
+        <div class="price-amount-equiv" data-display="equiv"></div>
+        <div class="price-period" data-display="period">/ month · 10-day trial · no CC</div>
         <div class="price-feature">HIPAA · GDPR · DPDP</div>
         <div class="price-feature">BAA template included</div>
         <div class="price-feature">Team workspace (10 seats)</div>
@@ -1270,6 +1331,73 @@
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </script>
 
+<script>
+  // June 29 (Monthly/Annual toggle): per-card billing cycle switch. Each
+  // card tracks its own selected cycle on the DOM (data-active-cycle),
+  // read by the checkout script below at purchase time — no shared global
+  // state needed since each card's toggle only ever affects itself.
+  (function () {
+    function formatUsd(n) {
+      return "$" + n;
+    }
+    function formatUsdMonthlyEquiv(annualUsd) {
+      return "$" + (annualUsd / 12).toFixed(2) + "/mo";
+    }
+    function formatInr(paise) {
+      return "₹" + (paise / 100).toLocaleString("en-IN");
+    }
+    function formatInrMonthlyEquiv(annualPaise) {
+      return "₹" + Math.round(annualPaise / 100 / 12).toLocaleString("en-IN") + "/mo";
+    }
+
+    document.querySelectorAll(".billing-toggle").forEach(function (toggle) {
+      var card = toggle.closest(".price-card");
+      var monthlyBtn = toggle.querySelector('[data-cycle="monthly"]');
+      var annualBtn = toggle.querySelector('[data-cycle="annual"]');
+      var amountEl = card.querySelector('[data-display="amount"]');
+      var amountInrEl = card.querySelector('[data-display="amount-inr"]');
+      var equivEl = card.querySelector('[data-display="equiv"]');
+      var periodEl = card.querySelector('[data-display="period"]');
+
+      var monthlyUsd = parseFloat(card.getAttribute("data-monthly-usd"));
+      var annualUsd = parseFloat(card.getAttribute("data-annual-usd"));
+      var monthlyInrPaise = parseInt(card.getAttribute("data-monthly-inr-paise"), 10);
+      var annualInrPaise = parseInt(card.getAttribute("data-annual-inr-paise"), 10);
+
+      // Cache the original period text's trailing clause (e.g. "7-day
+      // trial · no CC") on first run, so both cycles can reuse it without
+      // re-deriving it from the live DOM text each toggle.
+      var originalPeriodText = periodEl.textContent;
+      var trialClauseMatch = originalPeriodText.match(/·.*$/);
+      var trialClause = trialClauseMatch ? trialClauseMatch[0] : "";
+
+      function render(cycle) {
+        card.setAttribute("data-active-cycle", cycle);
+        monthlyBtn.classList.toggle("active", cycle === "monthly");
+        annualBtn.classList.toggle("active", cycle === "annual");
+
+        if (cycle === "monthly") {
+          amountEl.textContent = formatUsd(monthlyUsd);
+          amountInrEl.textContent = formatInr(monthlyInrPaise) + " / month (India)";
+          equivEl.textContent = "";
+          periodEl.textContent = originalPeriodText;
+        } else {
+          amountEl.textContent = formatUsd(annualUsd) + "/yr";
+          amountInrEl.textContent = formatInr(annualInrPaise) + " / year (India)";
+          equivEl.innerHTML = "(" + formatUsdMonthlyEquiv(annualUsd) + " " +
+            "<span class=\"save-badge\">&middot; 2 months free</span>)";
+          periodEl.textContent = "/ year" + (trialClause ? " " + trialClause : "");
+        }
+      }
+
+      monthlyBtn.addEventListener("click", function () { render("monthly"); });
+      annualBtn.addEventListener("click", function () { render("annual"); });
+
+      render("monthly"); // initial state — matches the static HTML defaults
+    });
+  })();
+</script>
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 (function () {
@@ -1295,18 +1423,25 @@
 
   var activeTier = null;
   var activeAmountPaise = null;
+  // June 29 (Monthly/Annual toggle): which cycle was selected on the card
+  // at the moment "Get X" was clicked — read from the card's
+  // data-active-cycle attribute (set by the billing-toggle script above).
+  // Defaults to "monthly" for Lifetime, which has no toggle at all.
+  var activeBillingCycle = "monthly";
 
   var params = new URLSearchParams(window.location.search);
   var upgradeEmail = params.get("upgrade_email");
   var upgradeFrom = params.get("upgrade_from");
 
-  function openCheckoutModal(tier, amountPaise) {
+  function openCheckoutModal(tier, amountPaise, billingCycle) {
     activeTier = tier;
     activeAmountPaise = amountPaise;
+    activeBillingCycle = billingCycle;
     var label = TIER_LABELS[tier] || tier;
+    var cycleLabel = tier === "lifetime" ? " one-time" : (billingCycle === "annual" ? " / year" : " / month");
     modalTitle.textContent = upgradeEmail ? "Upgrade to " + label : "Get " + label;
     modalSub.textContent = "₹" + (amountPaise / 100).toLocaleString("en-IN") +
-      (tier === "lifetime" ? " one-time" : " / month") +
+      cycleLabel +
       " · billed via Razorpay" +
       (upgradeFrom ? " · upgrading from " + (TIER_LABELS[upgradeFrom] || upgradeFrom) : "");
     errorEl.style.display = "none";
@@ -1323,6 +1458,7 @@
     overlay.classList.remove("open");
     activeTier = null;
     activeAmountPaise = null;
+    activeBillingCycle = "monthly";
   }
 
   function isValidEmail(email) {
@@ -1333,8 +1469,21 @@
     btn.addEventListener("click", function () {
       var card = btn.closest(".price-card");
       var tier = card.getAttribute("data-tier");
-      var amountPaise = parseInt(card.getAttribute("data-inr-paise"), 10);
-      openCheckoutModal(tier, amountPaise);
+      // June 29 (Monthly/Annual toggle): Lifetime has no toggle and no
+      // data-active-cycle attribute at all — falls back to "monthly" via
+      // the function default, which is harmless since the Worker/Keygen
+      // path for Lifetime never reads billingCycle anyway.
+      var cycle = card.getAttribute("data-active-cycle") || "monthly";
+      var amountPaise;
+      if (tier === "lifetime") {
+        amountPaise = parseInt(card.getAttribute("data-inr-paise"), 10);
+      } else {
+        amountPaise = parseInt(
+          card.getAttribute(cycle === "annual" ? "data-annual-inr-paise" : "data-monthly-inr-paise"),
+          10
+        );
+      }
+      openCheckoutModal(tier, amountPaise, cycle);
     });
   });
 
@@ -1353,7 +1502,11 @@
         currency: "INR",
         name: name,
         email: email,
-        confirmed: !!confirmed
+        confirmed: !!confirmed,
+        // June 29 (Monthly/Annual toggle): Worker persists this into
+        // Keygen metadata at license creation — see index.ts's
+        // processSuccessfulPayment / createKeygenLicense.
+        billingCycle: activeTier === "lifetime" ? undefined : activeBillingCycle
       })
     }).then(function (res) {
       if (!res.ok) throw new Error("Order creation failed");
@@ -1451,6 +1604,14 @@
       });
       document.querySelectorAll(".price-amount-inr").forEach((el) => {
         el.style.display = isIndia ? "" : "none";
+      });
+
+      // June 29 (Monthly/Annual toggle): the equiv line (e.g. "$15.83/mo ·
+      // 2 months free") is USD-only text — hide it for India the same way
+      // the USD amount itself is hidden, so India never sees a stray $
+      // figure regardless of which billing cycle is selected.
+      document.querySelectorAll(".price-amount-equiv").forEach((el) => {
+        el.style.display = isIndia ? "none" : "";
       });
 
       const footnote = document.querySelector("#pricing .container > p");
