@@ -405,6 +405,7 @@
   .feat-icon { font-size: 1.75rem; margin-bottom: 0.75rem; }
   .feat-title { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 0.4rem; }
   .feat-body { font-size: 13px; color: var(--muted); line-height: 1.65; }
+  .feat-body .feat-note { display: block; margin-top: 0.5rem; color: var(--muted2); font-size: 12px; }
 
   .personas-grid {
     display: grid;
@@ -897,7 +898,9 @@
       <div class="feat-card">
         <div class="feat-icon">🔑</div>
         <div class="feat-title">Bring your own keys</div>
-        <div class="feat-body">Connect Anthropic, OpenAI, Google, Groq, Mistral and more. API calls go directly from your device to the provider. AIMAZZE is never in the data path. Your keys are stored in OS Keychain, never in plaintext.</div>
+        <div class="feat-body">Connect Anthropic, OpenAI, Google, Groq, Mistral and more — calls go directly from your device to the provider's API, never through AIMAZZE servers. Your keys live in OS Keychain, never in plaintext.
+          <span class="feat-note">Worth knowing: provider APIs are built differently from consumer chat apps, with their own data-handling terms — take a quick look at your provider's policy if you're working with sensitive material.</span>
+        </div>
       </div>
       <div class="feat-card">
         <div class="feat-icon">⚡</div>
@@ -1085,7 +1088,9 @@
           Can doctors, lawyers, and engineers use AIMAZZE without compliance risk?
           <span class="faq-chevron">▼</span>
         </button>
-        <div class="faq-a">Yes — AIMAZZE is specifically built for this. Since no data leaves your device, AIMAZZE satisfies HIPAA data minimisation principles, GDPR Article 25 (privacy by design), and India's DPDP Act 2023. Elite tier includes a BAA template. The architecture is independently auditable.</div>
+        <div class="faq-a">
+          Yes, with one nuance worth understanding. <strong>Local models</strong> are the simplest answer: nothing leaves your device, so there's no compliance question to ask. <strong>BYOK (your own provider keys)</strong> is also designed with privacy in mind — AIMAZZE never touches your data — but here the safety comes from your <em>provider's</em> terms rather than AIMAZZE's architecture. A 2026 UK tribunal ruling (<em>Munir v SSHD</em>) is a useful reference point: it drew a clear line between public consumer AI apps (which can risk legal privilege) and properly configured enterprise tools (which don't carry that risk). AIMAZZE's BYOK connects you to provider APIs rather than consumer apps, which puts you on the safer side of that line — though it's always good practice to glance at your provider's data policy for anything privileged. Elite tier also includes a BAA template for HIPAA contexts.
+        </div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">
@@ -1099,7 +1104,9 @@
           What is BYOK and do I need it?
           <span class="faq-chevron">▼</span>
         </button>
-        <div class="faq-a">BYOK stands for Bring Your Own Key. You paste your API key from any provider into AIMAZZE Settings. Calls go directly from your device to the provider. AIMAZZE never sees your key or conversations. Free tier works with local models at zero cost — BYOK is optional for power users.</div>
+        <div class="faq-a">
+          BYOK means Bring Your Own Key — paste an API key from your provider of choice (Anthropic, OpenAI, Google, etc.) into Settings, and AIMAZZE routes your conversations directly there. AIMAZZE never sees the key or the content. One helpful thing to keep in mind: once data reaches the provider, it's their terms that apply — most reputable providers have clear no-training, no-disclosure commitments on their API tiers, so it's worth a quick check if you're handling anything sensitive. If you'd rather skip the question entirely, Free tier's local models keep everything on-device.
+        </div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">
