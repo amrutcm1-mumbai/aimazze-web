@@ -1105,7 +1105,7 @@
           <span class="faq-chevron">▼</span>
         </button>
         <div class="faq-a">
-          BYOK means Bring Your Own Key — paste an API key from your provider of choice (Anthropic, OpenAI, Google, etc.) into Settings, and AIMAZZE routes your conversations directly there. AIMAZZE never sees the key or the content. One helpful thing to keep in mind: once data reaches the provider, it's their terms that apply — most reputable providers have clear no-training, no-disclosure commitments on their API tiers, so it's worth a quick check if you're handling anything sensitive. If you'd rather skip the question entirely, Free tier's local models keep everything on-device.
+          Quick definition first: an API key is just a personal password that a provider (like Anthropic or OpenAI) gives you so their service knows it's really you making the request — you get one for free from their website when you sign up. BYOK means Bring Your Own Key — paste that key into AIMAZZE Settings, and AIMAZZE routes your conversations directly there. AIMAZZE never sees the key or the content. One helpful thing to keep in mind: once data reaches the provider, it's their terms that apply — most reputable providers have clear no-training, no-disclosure commitments on their API tiers, so it's worth a quick check if you're handling anything sensitive. If you'd rather skip the question entirely, Free tier's local models keep everything on-device.
         </div>
       </div>
       <div class="faq-item">
@@ -1116,6 +1116,42 @@
         <div class="faq-a">Nothing — because your data was never on our servers. All chat history, documents, and settings are on your device. Cancelling downgrades to Free tier. Nothing is deleted. Nothing is held hostage.</div>
       </div>
       <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What's a "local model" — does that mean my computer can run AI without the internet?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a">
+          Yes, exactly that. A "local model" is an AI that runs directly on your laptop instead of talking to a server somewhere else. AIMAZZE comes with local models built in, so you can use AI completely offline — on a flight, in a secure facility, anywhere. Nothing about your work ever has to leave your machine if you choose this option. It's also the simplest way to sidestep any data-privacy question entirely, since there's no transmission to worry about.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Do I need to be technical to use AIMAZZE? I'm worried about breaking something.
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a">
+          No technical background needed. AIMAZZE installs like any normal desktop app and walks you through setup with plain-language prompts — pick your profession, and you're ready to go. The advanced options (like BYOK, explained below) are entirely optional; if you skip them, AIMAZZE just works with the built-in local AI out of the box. There's nothing to configure that could "break" — worst case, you can always reset to defaults in Settings.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Does AIMAZZE replace my existing ChatGPT or Claude subscription?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a">
+          It can, or it can work alongside what you already have — your choice. Many professionals keep their existing ChatGPT Plus or Claude Pro subscription and simply connect it to AIMAZZE as a BYOK key, so they get one workspace that compares Claude, GPT, and others side by side instead of switching between separate apps. Nothing from your existing subscriptions is lost — your AIMAZZE workspace, history, and documents are separate and additive, not a replacement that erases anything.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What happens during the free trial? Do I need to enter a credit card?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a">
+          No credit card required to start. You get full access to your chosen tier's features for the trial period (7 days on Starter/Pro, 10 days on Elite), and AIMAZZE simply reverts to the Free tier afterward if you don't choose to subscribe — there's no automatic charge, no surprise bill, and nothing to cancel if you decide it's not for you.
+        </div>
+      </div>
+      <div class="faq-item" id="faqUpi">
         <button class="faq-q" onclick="toggleFaq(this)">
           Can I pay in INR with UPI?
           <span class="faq-chevron">▼</span>
@@ -1419,6 +1455,9 @@
 
       const footnote = document.querySelector("#pricing .container > p");
       if (footnote) footnote.style.display = "none";
+
+      const upiFaq = document.getElementById("faqUpi");
+      if (upiFaq) upiFaq.style.display = isIndia ? "" : "none";
     }
 
     if (document.readyState === "loading") {
