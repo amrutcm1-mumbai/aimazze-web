@@ -1185,15 +1185,21 @@
                 <td style="padding:6px 8px"><a href="https://console.anthropic.com" target="_blank" rel="noopener" style="color:var(--cyan)">console.anthropic.com</a></td>
               </tr>
               <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
-                <td style="padding:6px 8px;color:var(--white);font-weight:600">OpenAI (GPT)</td>
+                <td style="padding:6px 8px;color:var(--white);font-weight:600">OpenAI API</td>
                 <td style="padding:6px 8px;color:#9ca3b8">GPT-4o, GPT-5 — widest ecosystem, strongest general use</td>
-                <td style="padding:6px 8px;color:#22c55e">✓ API data not used for training</td>
+                <td style="padding:6px 8px;color:#22c55e">✓ API data not used for training · <span style="color:#f59e0b">⚠ ChatGPT.com (consumer) is what Munir flagged — that is a separate product from this API</span></td>
                 <td style="padding:6px 8px"><a href="https://platform.openai.com" target="_blank" rel="noopener" style="color:var(--cyan)">platform.openai.com</a></td>
               </tr>
               <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
-                <td style="padding:6px 8px;color:var(--white);font-weight:600">Google (Gemini)</td>
+                <td style="padding:6px 8px;color:var(--white);font-weight:600">Microsoft Azure OpenAI</td>
+                <td style="padding:6px 8px;color:#9ca3b8">OpenAI models on Microsoft infrastructure — enterprise grade. Note: Copilot is a separate Microsoft 365 product, not a BYOK API</td>
+                <td style="padding:6px 8px;color:#22c55e">✓ No training on your data by contract; strong enterprise SLA</td>
+                <td style="padding:6px 8px"><a href="https://portal.azure.com" target="_blank" rel="noopener" style="color:var(--cyan)">portal.azure.com</a></td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+                <td style="padding:6px 8px;color:var(--white);font-weight:600">Google (Gemini API)</td>
                 <td style="padding:6px 8px;color:#9ca3b8">Gemini 2.5 Pro — best multimodal, largest context window</td>
-                <td style="padding:6px 8px;color:#f59e0b">⚠ API tier safe; Gemini Advanced (consumer) is not</td>
+                <td style="padding:6px 8px;color:#f59e0b">⚠ API tier safe; Gemini Advanced (consumer) is not — same Munir distinction applies</td>
                 <td style="padding:6px 8px"><a href="https://aistudio.google.com" target="_blank" rel="noopener" style="color:var(--cyan)">aistudio.google.com</a></td>
               </tr>
               <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
@@ -1229,7 +1235,7 @@
             </tbody>
           </table>
           <p style="font-size:12px;color:var(--muted)">⚠ Provider links and data policies change over time — always verify directly on the provider's website before relying on this table for compliance decisions. Table reflects policies as of mid-2026.</p>
-          <p style="margin-top:0.75rem">Important distinction: the consumer versions of these products (Claude.ai Pro, ChatGPT Plus, Gemini Advanced) carry different — and generally weaker — data protections than their API tiers. When you use BYOK in AIMAZZE, you're always on the API tier. If you'd rather skip provider policy questions entirely, Free tier's local models keep everything on-device with no transmission at all.</p>
+          <p style="margin-top:0.75rem">Key distinction worth knowing: the consumer versions of these products (ChatGPT.com, Claude.ai Pro, Gemini Advanced) carry different — and generally weaker — data protections than their API tiers, and are what rulings like <em>Munir v SSHD</em> specifically warn against for privileged work. When you use BYOK in AIMAZZE, you're always on the API tier — not the consumer product. If you'd rather skip provider policy questions entirely, Free tier's local models keep everything on-device with no transmission at all.</p>
         </div>
       </div>
       <div class="faq-item">
