@@ -1096,7 +1096,7 @@
     </div>
 
     <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:1.25rem;font-family:var(--mono)">
-      USD prices shown · Indian customers billed in ₹ via Razorpay (UPI accepted) · International cards: more options coming soon
+      USD prices shown · Indian customers billed in ₹ via Razorpay (UPI accepted) · International cards: Visa and Mastercard accepted · Amex and Diners Club coming soon
     </p>
   </div>
 </section>
@@ -1166,7 +1166,70 @@
           <span class="faq-chevron">▼</span>
         </button>
         <div class="faq-a">
-          Quick definition first: an API key is just a personal password that a provider (like Anthropic or OpenAI) gives you so their service knows it's really you making the request — you get one for free from their website when you sign up. BYOK means Bring Your Own Key — paste that key into AIMAZZE Settings, and AIMAZZE routes your conversations directly there. AIMAZZE never sees the key or the content. One helpful thing to keep in mind: once data reaches the provider, it's their terms that apply — most reputable providers have clear no-training, no-disclosure commitments on their API tiers, so it's worth a quick check if you're handling anything sensitive. If you'd rather skip the question entirely, Free tier's local models keep everything on-device.
+          <p style="margin-bottom:0.75rem">Quick definition first: an API key is a personal access credential that a provider (like Anthropic or OpenAI) gives you so their service knows it's your account making the request. BYOK means Bring Your Own Key — paste that key into AIMAZZE Settings, and your conversations route directly from your device to that provider's API. AIMAZZE never sees the key or the content.</p>
+          <p style="margin-bottom:0.5rem;font-size:13px;color:var(--muted)">Where to get API keys — links verified at time of publishing, but provider sites change over time:</p>
+          <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:1rem">
+            <thead>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.08)">
+                <th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:500">Provider</th>
+                <th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:500">Key features</th>
+                <th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:500">API data policy</th>
+                <th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:500">Get API key</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+                <td style="padding:6px 8px;color:var(--white);font-weight:600">Anthropic (Claude)</td>
+                <td style="padding:6px 8px;color:#9ca3b8">Claude Sonnet, Opus — best for legal/clinical reasoning</td>
+                <td style="padding:6px 8px;color:#22c55e">✓ API data not used for training</td>
+                <td style="padding:6px 8px"><a href="https://console.anthropic.com" target="_blank" rel="noopener" style="color:var(--cyan)">console.anthropic.com</a></td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+                <td style="padding:6px 8px;color:var(--white);font-weight:600">OpenAI (GPT)</td>
+                <td style="padding:6px 8px;color:#9ca3b8">GPT-4o, GPT-5 — widest ecosystem, strongest general use</td>
+                <td style="padding:6px 8px;color:#22c55e">✓ API data not used for training</td>
+                <td style="padding:6px 8px"><a href="https://platform.openai.com" target="_blank" rel="noopener" style="color:var(--cyan)">platform.openai.com</a></td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+                <td style="padding:6px 8px;color:var(--white);font-weight:600">Google (Gemini)</td>
+                <td style="padding:6px 8px;color:#9ca3b8">Gemini 2.5 Pro — best multimodal, largest context window</td>
+                <td style="padding:6px 8px;color:#f59e0b">⚠ API tier safe; Gemini Advanced (consumer) is not</td>
+                <td style="padding:6px 8px"><a href="https://aistudio.google.com" target="_blank" rel="noopener" style="color:var(--cyan)">aistudio.google.com</a></td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+                <td style="padding:6px 8px;color:var(--white);font-weight:600">Groq</td>
+                <td style="padding:6px 8px;color:#9ca3b8">Llama, Mixtral — fastest inference, lowest cost</td>
+                <td style="padding:6px 8px;color:#f59e0b">⚠ 7-day log retention by default</td>
+                <td style="padding:6px 8px"><a href="https://console.groq.com" target="_blank" rel="noopener" style="color:var(--cyan)">console.groq.com</a></td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+                <td style="padding:6px 8px;color:var(--white);font-weight:600">Mistral AI</td>
+                <td style="padding:6px 8px;color:#9ca3b8">Mistral Large — EU data residency built in</td>
+                <td style="padding:6px 8px;color:#22c55e">✓ EU data residency, strong enterprise terms</td>
+                <td style="padding:6px 8px"><a href="https://console.mistral.ai" target="_blank" rel="noopener" style="color:var(--cyan)">console.mistral.ai</a></td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+                <td style="padding:6px 8px;color:var(--white);font-weight:600">xAI (Grok)</td>
+                <td style="padding:6px 8px;color:#9ca3b8">Grok 4 — real-time web data, very low cost</td>
+                <td style="padding:6px 8px;color:#9ca3b8">Review current policy before sensitive use</td>
+                <td style="padding:6px 8px"><a href="https://console.x.ai" target="_blank" rel="noopener" style="color:var(--cyan)">console.x.ai</a></td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+                <td style="padding:6px 8px;color:var(--white);font-weight:600">DeepSeek</td>
+                <td style="padding:6px 8px;color:#9ca3b8">DeepSeek V3 — very low cost, strong reasoning</td>
+                <td style="padding:6px 8px;color:#f59e0b">⚠ China-based; review carefully for regulated work</td>
+                <td style="padding:6px 8px"><a href="https://platform.deepseek.com" target="_blank" rel="noopener" style="color:var(--cyan)">platform.deepseek.com</a></td>
+              </tr>
+              <tr>
+                <td style="padding:6px 8px;color:var(--white);font-weight:600">OpenRouter</td>
+                <td style="padding:6px 8px;color:#9ca3b8">400+ models via one key — broadest access available</td>
+                <td style="padding:6px 8px;color:#9ca3b8">Depends on underlying provider routed to</td>
+                <td style="padding:6px 8px"><a href="https://openrouter.ai/keys" target="_blank" rel="noopener" style="color:var(--cyan)">openrouter.ai/keys</a></td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size:12px;color:var(--muted)">⚠ Provider links and data policies change over time — always verify directly on the provider's website before relying on this table for compliance decisions. Table reflects policies as of mid-2026.</p>
+          <p style="margin-top:0.75rem">Important distinction: the consumer versions of these products (Claude.ai Pro, ChatGPT Plus, Gemini Advanced) carry different — and generally weaker — data protections than their API tiers. When you use BYOK in AIMAZZE, you're always on the API tier. If you'd rather skip provider policy questions entirely, Free tier's local models keep everything on-device with no transmission at all.</p>
         </div>
       </div>
       <div class="faq-item">
@@ -1217,7 +1280,7 @@
           Can I pay in INR with UPI?
           <span class="faq-chevron">▼</span>
         </button>
-        <div class="faq-a">Yes — UPI is fully supported via Razorpay at no extra cost. Indian users get UPI (GPay, PhonePe, Paytm, BHIM), debit/credit cards, net banking, and EMI. USD prices are shown for reference — international card processing is rolling out shortly; in the meantime reach out and we'll get you set up.</div>
+        <div class="faq-a">Yes — UPI is fully supported via Razorpay at no extra cost. Indian users get UPI (GPay, PhonePe, Paytm, BHIM), debit/credit cards, net banking, and EMI. International cards are also accepted — Visa and Mastercard are live now, with Amex and Diners Club coming soon. International customers are charged in USD at checkout.</div>
       </div>
     </div>
   </div>
@@ -1280,11 +1343,11 @@
     &nbsp;·&nbsp;
     <a href="/privacy-policy.html">Privacy Policy</a>
     &nbsp;·&nbsp;
-    <a href="/refund-policy.html">Refund & Cancellation</a>
+    <a href="/refund-policy.html">Refund &amp; Cancellation</a>
     &nbsp;·&nbsp;
-    <a href="/shipping-policy.html">Shipping & Delivery</a>
+    <a href="/shipping-policy.html">Shipping &amp; Delivery</a>
   </div>
-  <div>© 2026 AIMAZZE · Amrynnova · Built lean. Built fast. Built to win.</div>
+  <div>© 2026 AIMAZZE · AmrynNova · Built lean. Built fast. Built to win.</div>
 </footer>
 
 <script>
