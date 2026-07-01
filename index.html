@@ -1408,6 +1408,7 @@
 </script>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 (function () {
   var WORKER_URL = "https://aimazze-worker.amrutcm1.workers.dev";
@@ -1431,7 +1432,8 @@
   var warnEl = document.getElementById("checkoutWarning");
 
   var activeTier = null;
-  var activeAmountPaise = null;
+  var activeAmountSubunit = null; // paise (INR) or cents (USD) — same subunit convention
+  var activeCurrency = "INR";    // "INR" or "USD"
   // June 29 (Monthly/Annual toggle): which cycle was selected on the card
   // at the moment "Get X" was clicked — read from the card's
   // data-active-cycle attribute (set by the billing-toggle script above).
@@ -1442,17 +1444,39 @@
   var upgradeEmail = params.get("upgrade_email");
   var upgradeFrom = params.get("upgrade_from");
 
-  function openCheckoutModal(tier, amountPaise, billingCycle) {
+  // June 30 (international payments): reads the aimazze_region cookie set
+  // by the Worker's geo-detection logic. "IN" = India → charge INR.
+  // Everything else = international → charge USD. Consistent with the
+  // geo-pricing display logic already in place below.
+  function getRegion() {
+    var match = document.cookie.match(/(^| )aimazze_region=([^;]+)/);
+    return match ? match[2] : "INTL";
+  }
+
+  function isIndia() {
+    return getRegion() === "IN";
+  }
+
+  function openCheckoutModal(tier, amountSubunit, currency, billingCycle) {
     activeTier = tier;
-    activeAmountPaise = amountPaise;
+    activeAmountSubunit = amountSubunit;
+    activeCurrency = currency;
     activeBillingCycle = billingCycle;
+
     var label = TIER_LABELS[tier] || tier;
     var cycleLabel = tier === "lifetime" ? " one-time" : (billingCycle === "annual" ? " / year" : " / month");
+
+    // June 30: display amount in the correct currency symbol
+    var amountDisplay = currency === "USD"
+      ? "$" + (amountSubunit / 100).toLocaleString("en-US")
+      : "₹" + (amountSubunit / 100).toLocaleString("en-IN");
+
     modalTitle.textContent = upgradeEmail ? "Upgrade to " + label : "Get " + label;
-    modalSub.textContent = "₹" + (amountPaise / 100).toLocaleString("en-IN") +
+    modalSub.textContent = amountDisplay +
       cycleLabel +
       " · billed via Razorpay" +
       (upgradeFrom ? " · upgrading from " + (TIER_LABELS[upgradeFrom] || upgradeFrom) : "");
+
     errorEl.style.display = "none";
     warnEl.style.display = "none";
     continueBtn.textContent = "Continue to payment";
@@ -1466,7 +1490,8 @@
   function closeCheckoutModal() {
     overlay.classList.remove("open");
     activeTier = null;
-    activeAmountPaise = null;
+    activeAmountSubunit = null;
+    activeCurrency = "INR";
     activeBillingCycle = "monthly";
   }
 
@@ -1478,21 +1503,40 @@
     btn.addEventListener("click", function () {
       var card = btn.closest(".price-card");
       var tier = card.getAttribute("data-tier");
-      // June 29 (Monthly/Annual toggle): Lifetime has no toggle and no
-      // data-active-cycle attribute at all — falls back to "monthly" via
-      // the function default, which is harmless since the Worker/Keygen
-      // path for Lifetime never reads billingCycle anyway.
+      // June 29 (Monthly/Annual toggle): Lifetime has no toggle — falls
+      // back to "monthly" via the default, which is harmless since the
+      // Worker/Keygen path for Lifetime never reads billingCycle anyway.
       var cycle = card.getAttribute("data-active-cycle") || "monthly";
-      var amountPaise;
+
+      var amountSubunit;
+      var currency;
+
       if (tier === "lifetime") {
-        amountPaise = parseInt(card.getAttribute("data-inr-paise"), 10);
-      } else {
-        amountPaise = parseInt(
+        // June 30: Lifetime has no USD price defined in the current pricing
+        // cards (data-inr-paise only). For now, Lifetime is always INR
+        // regardless of region. If a USD Lifetime price is added later,
+        // wire it to data-lifetime-usd-cents on the card.
+        amountSubunit = parseInt(card.getAttribute("data-inr-paise"), 10);
+        currency = "INR";
+      } else if (isIndia()) {
+        // India: charge in INR paise
+        amountSubunit = parseInt(
           card.getAttribute(cycle === "annual" ? "data-annual-inr-paise" : "data-monthly-inr-paise"),
           10
         );
+        currency = "INR";
+      } else {
+        // June 30 (international): charge in USD cents.
+        // data-monthly-usd and data-annual-usd store the dollar amount as
+        // a plain integer (e.g. "19") — multiply by 100 for cents.
+        var usdDollars = parseFloat(
+          card.getAttribute(cycle === "annual" ? "data-annual-usd" : "data-monthly-usd")
+        );
+        amountSubunit = Math.round(usdDollars * 100);
+        currency = "USD";
       }
-      openCheckoutModal(tier, amountPaise, cycle);
+
+      openCheckoutModal(tier, amountSubunit, currency, cycle);
     });
   });
 
@@ -1507,14 +1551,17 @@
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         tier: activeTier,
-        amount: activeAmountPaise,
-        currency: "INR",
+        amount: activeAmountSubunit,
+        // June 30: was hardcoded "INR" — now sends the currency determined
+        // by the geo-detection above ("INR" for India, "USD" for INTL).
+        // The Worker now accepts both and passes the correct currency to
+        // Razorpay's order creation API.
+        currency: activeCurrency,
         name: name,
         email: email,
         confirmed: !!confirmed,
         // June 29 (Monthly/Annual toggle): Worker persists this into
-        // Keygen metadata at license creation — see index.ts's
-        // processSuccessfulPayment / createKeygenLicense.
+        // Keygen metadata at license creation.
         billingCycle: activeTier === "lifetime" ? undefined : activeBillingCycle
       })
     }).then(function (res) {
@@ -1527,7 +1574,7 @@
     var options = {
       key: RAZORPAY_KEY_ID,
       amount: data.amount,
-      currency: data.currency,
+      currency: data.currency, // echoed back from the Worker/Razorpay order
       name: "AIMAZZE",
       description: (TIER_LABELS[activeTier] || activeTier) + " plan",
       order_id: data.orderId,
@@ -1541,8 +1588,7 @@
         );
       },
       modal: {
-        ondismiss: function () {
-        }
+        ondismiss: function () {}
       }
     };
 
