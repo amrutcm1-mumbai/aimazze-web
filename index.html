@@ -1477,7 +1477,6 @@
 </script>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 (function () {
   var WORKER_URL = "https://aimazze-worker.amrutcm1.workers.dev";
@@ -1503,20 +1502,12 @@
   var activeTier = null;
   var activeAmountSubunit = null; // paise (INR) or cents (USD) — same subunit convention
   var activeCurrency = "INR";    // "INR" or "USD"
-  // June 29 (Monthly/Annual toggle): which cycle was selected on the card
-  // at the moment "Get X" was clicked — read from the card's
-  // data-active-cycle attribute (set by the billing-toggle script above).
-  // Defaults to "monthly" for Lifetime, which has no toggle at all.
   var activeBillingCycle = "monthly";
 
   var params = new URLSearchParams(window.location.search);
   var upgradeEmail = params.get("upgrade_email");
   var upgradeFrom = params.get("upgrade_from");
 
-  // June 30 (international payments): reads the aimazze_region cookie set
-  // by the Worker's geo-detection logic. "IN" = India → charge INR.
-  // Everything else = international → charge USD. Consistent with the
-  // geo-pricing display logic already in place below.
   function getRegion() {
     var match = document.cookie.match(/(^| )aimazze_region=([^;]+)/);
     return match ? match[2] : "INTL";
@@ -1535,7 +1526,6 @@
     var label = TIER_LABELS[tier] || tier;
     var cycleLabel = tier === "lifetime" ? " one-time" : (billingCycle === "annual" ? " / year" : " / month");
 
-    // June 30: display amount in the correct currency symbol
     var amountDisplay = currency === "USD"
       ? "$" + (amountSubunit / 100).toLocaleString("en-US")
       : "₹" + (amountSubunit / 100).toLocaleString("en-IN");
@@ -1572,32 +1562,21 @@
     btn.addEventListener("click", function () {
       var card = btn.closest(".price-card");
       var tier = card.getAttribute("data-tier");
-      // June 29 (Monthly/Annual toggle): Lifetime has no toggle — falls
-      // back to "monthly" via the default, which is harmless since the
-      // Worker/Keygen path for Lifetime never reads billingCycle anyway.
       var cycle = card.getAttribute("data-active-cycle") || "monthly";
 
       var amountSubunit;
       var currency;
 
       if (tier === "lifetime") {
-        // June 30: Lifetime has no USD price defined in the current pricing
-        // cards (data-inr-paise only). For now, Lifetime is always INR
-        // regardless of region. If a USD Lifetime price is added later,
-        // wire it to data-lifetime-usd-cents on the card.
         amountSubunit = parseInt(card.getAttribute("data-inr-paise"), 10);
         currency = "INR";
       } else if (isIndia()) {
-        // India: charge in INR paise
         amountSubunit = parseInt(
           card.getAttribute(cycle === "annual" ? "data-annual-inr-paise" : "data-monthly-inr-paise"),
           10
         );
         currency = "INR";
       } else {
-        // June 30 (international): charge in USD cents.
-        // data-monthly-usd and data-annual-usd store the dollar amount as
-        // a plain integer (e.g. "19") — multiply by 100 for cents.
         var usdDollars = parseFloat(
           card.getAttribute(cycle === "annual" ? "data-annual-usd" : "data-monthly-usd")
         );
@@ -1614,6 +1593,7 @@
     if (e.target === overlay) closeCheckoutModal();
   });
 
+  // Lifetime ONLY — one-time Razorpay order.
   function submitOrder(name, email, confirmed) {
     return fetch(WORKER_URL + "/create-order", {
       method: "POST",
@@ -1621,17 +1601,10 @@
       body: JSON.stringify({
         tier: activeTier,
         amount: activeAmountSubunit,
-        // June 30: was hardcoded "INR" — now sends the currency determined
-        // by the geo-detection above ("INR" for India, "USD" for INTL).
-        // The Worker now accepts both and passes the correct currency to
-        // Razorpay's order creation API.
         currency: activeCurrency,
         name: name,
         email: email,
-        confirmed: !!confirmed,
-        // June 29 (Monthly/Annual toggle): Worker persists this into
-        // Keygen metadata at license creation.
-        billingCycle: activeTier === "lifetime" ? undefined : activeBillingCycle
+        confirmed: !!confirmed
       })
     }).then(function (res) {
       if (!res.ok) throw new Error("Order creation failed");
@@ -1639,11 +1612,34 @@
     });
   }
 
-  function launchRazorpay(data, name, email) {
+  // Phase 2 (1 July 2026): Starter/Pro/Elite go through Razorpay
+  // Subscriptions instead of one-time orders. Card authenticates now via
+  // the modal below; the actual first charge (and Keygen license
+  // creation) happens server-side at trial end, via the
+  // subscription.charged webhook.
+  function submitSubscription(name, email, confirmed) {
+    return fetch(WORKER_URL + "/create-subscription", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tier: activeTier,
+        currency: activeCurrency,
+        name: name,
+        email: email,
+        confirmed: !!confirmed,
+        billingCycle: activeBillingCycle
+      })
+    }).then(function (res) {
+      if (!res.ok) throw new Error("Subscription creation failed");
+      return res.json();
+    });
+  }
+
+  function launchRazorpayOrder(data, name, email) {
     var options = {
       key: RAZORPAY_KEY_ID,
       amount: data.amount,
-      currency: data.currency, // echoed back from the Worker/Razorpay order
+      currency: data.currency,
       name: "AIMAZZE",
       description: (TIER_LABELS[activeTier] || activeTier) + " plan",
       order_id: data.orderId,
@@ -1654,6 +1650,34 @@
           "Payment received! Check " + email +
           " for your activation email — it includes a link that " +
           "opens AIMAZZE and activates your license automatically."
+        );
+      },
+      modal: {
+        ondismiss: function () {}
+      }
+    };
+
+    var rzp = new Razorpay(options);
+    rzp.open();
+  }
+
+  // Phase 2: subscription_id checkout — Razorpay's widget handles card
+  // authentication + mandate setup, no amount/currency passed here (that
+  // lives on the Plan itself, already fixed server-side).
+  function launchRazorpaySubscription(data, name, email) {
+    var options = {
+      key: RAZORPAY_KEY_ID,
+      subscription_id: data.subscriptionId,
+      name: "AIMAZZE",
+      description: (TIER_LABELS[activeTier] || activeTier) + " plan · " + activeBillingCycle,
+      prefill: { name: name, email: email },
+      theme: { color: "#00d4e8" },
+      handler: function () {
+        alert(
+          "Card authenticated! Your trial has started — check " + email +
+          " for your activation email, which opens AIMAZZE and activates " +
+          "your license automatically once the trial ends. You won't be " +
+          "charged until then."
         );
       },
       modal: {
@@ -1680,7 +1704,11 @@
     continueBtn.disabled = true;
     continueBtn.textContent = "Loading...";
 
-    submitOrder(name, email, alreadyConfirmed)
+    var submitPromise = activeTier === "lifetime"
+      ? submitOrder(name, email, alreadyConfirmed)
+      : submitSubscription(name, email, alreadyConfirmed);
+
+    submitPromise
       .then(function (data) {
         if (data.needsConfirmation) {
           continueBtn.disabled = false;
@@ -1699,7 +1727,12 @@
         continueBtn.textContent = "Continue to payment";
         continueBtn.dataset.confirmed = "";
         closeCheckoutModal();
-        launchRazorpay(data, name, email);
+
+        if (activeTier === "lifetime") {
+          launchRazorpayOrder(data, name, email);
+        } else {
+          launchRazorpaySubscription(data, name, email);
+        }
       })
       .catch(function (err) {
         continueBtn.disabled = false;
@@ -1730,10 +1763,6 @@
         el.style.display = isIndia ? "" : "none";
       });
 
-      // June 29 (Monthly/Annual toggle): the equiv line (e.g. "$15.83/mo ·
-      // 2 months free") is USD-only text — hide it for India the same way
-      // the USD amount itself is hidden, so India never sees a stray $
-      // figure regardless of which billing cycle is selected.
       document.querySelectorAll(".price-amount-equiv").forEach((el) => {
         el.style.display = isIndia ? "none" : "";
       });
