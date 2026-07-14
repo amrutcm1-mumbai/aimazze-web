@@ -821,7 +821,7 @@
     <span class="pill hot">⚡ Native desktop</span>
     <span class="pill hot">400+ models</span>
     <span class="pill hot">🏠 Offline capable</span>
-    <span class="pill">No credit card for trial</span>
+    <span class="pill">Cancel anytime</span>
     <span class="pill">₹ UPI accepted</span>
     <span class="pill">HIPAA · GDPR · DPDP</span>
     <span class="pill">Windows · Mac coming soon</span>
@@ -1030,7 +1030,7 @@
         <div class="price-amount" data-display="amount">$7</div>
         <div class="price-amount-inr" data-display="amount-inr">₹499 / month (India)</div>
         <div class="price-amount-equiv" data-display="equiv"></div>
-        <div class="price-period" data-display="period">/ month · 7-day trial · no CC</div>
+        <div class="price-period" data-display="period">/ month · cancel anytime</div>
         <div class="price-feature">All BYOK providers</div>
         <div class="price-feature">Managed multi-model access</div>
         <div class="price-feature">Arena: 2 models</div>
@@ -1052,7 +1052,7 @@
         <div class="price-amount" data-display="amount">$19</div>
         <div class="price-amount-inr" data-display="amount-inr">₹999 / month (India)</div>
         <div class="price-amount-equiv" data-display="equiv"></div>
-        <div class="price-period" data-display="period">/ month · 7-day trial · no CC</div>
+        <div class="price-period" data-display="period">/ month · cancel anytime</div>
         <div class="price-feature">Arena: up to 8 models</div>
         <div class="price-feature">Unlimited Vault + OCR</div>
         <div class="price-feature">All 8 professional personas</div>
@@ -1073,7 +1073,7 @@
         <div class="price-amount" data-display="amount">$49</div>
         <div class="price-amount-inr" data-display="amount-inr">₹2,499 / month (India)</div>
         <div class="price-amount-equiv" data-display="equiv"></div>
-        <div class="price-period" data-display="period">/ month · 10-day trial · no CC</div>
+        <div class="price-period" data-display="period">/ month · cancel anytime</div>
         <div class="price-feature">HIPAA · GDPR · DPDP</div>
         <div class="price-feature">BAA template included</div>
         <div class="price-feature">Team workspace (10 seats)</div>
@@ -1274,11 +1274,11 @@
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">
-          What happens during the free trial? Do I need to enter a credit card?
+          Do I need to enter a credit card to subscribe?
           <span class="faq-chevron">▼</span>
         </button>
         <div class="faq-a">
-          No credit card required to start. You get full access to your chosen tier's features for the trial period (7 days on Starter/Pro, 10 days on Elite), and AIMAZZE simply reverts to the Free tier afterward if you don't choose to subscribe — there's no automatic charge, no surprise bill, and nothing to cancel if you decide it's not for you.
+          Only if you choose a paid tier. Free tier needs no card at all — it's a permanent plan, not a trial, so you can use it for as long as you like before ever entering payment details. If you choose Starter, Pro, or Elite, your card is charged immediately and you get full access to that tier right away — there's no waiting period. You can cancel anytime from your Razorpay payment confirmation email or from Settings in the app; cancelling simply reverts you to Free tier, nothing is deleted.
         </div>
       </div>
       <div class="faq-item" id="faqUpi">
@@ -1320,7 +1320,7 @@
       <input type="hidden" name="source" value="Landing Page Footer CTA">
       <button type="submit">Get Early Access →</button>
     </form>
-    <p class="waitlist-note" style="margin-top:0.75rem">Windows · Mac coming soon · Free trial · No credit card</p>
+    <p class="waitlist-note" style="margin-top:0.75rem">Windows · Mac coming soon · Free tier available · No credit card to start</p>
   </div>
 
   <div class="waitlist-success" id="final-waitlist-success" style="margin:0 auto">
@@ -1442,12 +1442,12 @@
       var monthlyInrPaise = parseInt(card.getAttribute("data-monthly-inr-paise"), 10);
       var annualInrPaise = parseInt(card.getAttribute("data-annual-inr-paise"), 10);
 
-      // Cache the original period text's trailing clause (e.g. "7-day
-      // trial · no CC") on first run, so both cycles can reuse it without
+      // Cache the original period text's trailing clause (e.g. "cancel
+      // anytime") on first run, so both cycles can reuse it without
       // re-deriving it from the live DOM text each toggle.
       var originalPeriodText = periodEl.textContent;
-      var trialClauseMatch = originalPeriodText.match(/·.*$/);
-      var trialClause = trialClauseMatch ? trialClauseMatch[0] : "";
+      var trailingClauseMatch = originalPeriodText.match(/·.*$/);
+      var trailingClause = trailingClauseMatch ? trailingClauseMatch[0] : "";
 
       function render(cycle) {
         card.setAttribute("data-active-cycle", cycle);
@@ -1464,7 +1464,7 @@
           amountInrEl.textContent = formatInr(annualInrPaise) + " / year (India)";
           equivEl.innerHTML = "(" + formatUsdMonthlyEquiv(annualUsd) + " " +
             "<span class=\"save-badge\">&middot; 2 months free</span>)";
-          periodEl.textContent = "/ year" + (trialClause ? " " + trialClause : "");
+          periodEl.textContent = "/ year" + (trailingClause ? " " + trailingClause : "");
         }
       }
 
@@ -1612,11 +1612,11 @@
     });
   }
 
-  // Phase 2 (1 July 2026): Starter/Pro/Elite go through Razorpay
-  // Subscriptions instead of one-time orders. Card authenticates now via
-  // the modal below; the actual first charge (and Keygen license
-  // creation) happens server-side at trial end, via the
-  // subscription.charged webhook.
+  // 8 July 2026 (trial-period reversal): Starter/Pro/Elite go through
+  // Razorpay Subscriptions instead of one-time orders. Card authenticates
+  // AND charges immediately (no start_at delay) — Keygen license creation
+  // happens server-side within seconds/minutes via the subscription.charged
+  // webhook, same as it always has for the one-time flow.
   function submitSubscription(name, email, confirmed) {
     return fetch(WORKER_URL + "/create-subscription", {
       method: "POST",
@@ -1674,10 +1674,9 @@
       theme: { color: "#00d4e8" },
       handler: function () {
         alert(
-          "Card authenticated! Your trial has started — check " + email +
-          " for your activation email, which opens AIMAZZE and activates " +
-          "your license automatically once the trial ends. You won't be " +
-          "charged until then."
+          "Payment successful! Check " + email +
+          " for your activation email — it includes a link that " +
+          "opens AIMAZZE and activates your license automatically."
         );
       },
       modal: {
