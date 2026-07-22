@@ -93,7 +93,10 @@
     color: #000;
     font-weight: 700;
     font-size: 13px;
+    border: none;
     border-radius: 8px;
+    font-family: var(--ff);
+    cursor: pointer;
     transition: all 0.2s;
   }
   .nav-cta:hover { background: #00eeff; transform: translateY(-1px); }
@@ -803,7 +806,7 @@
     <a href="#pricing">Pricing</a>
     <a href="#faq">FAQ</a>
   </div>
-  <a href="#waitlist" class="nav-cta">Get Early Access</a>
+  <button type="button" class="nav-cta" onclick="openMobileWaitlistModal()">Notify Me — iOS &amp; Mac</button>
 </nav>
 
 <section class="hero">
@@ -1185,6 +1188,30 @@
     <div class="checkout-modal-actions">
       <button class="checkout-modal-cancel" id="checkoutCancelBtn" type="button">Cancel</button>
       <button class="checkout-modal-continue" id="checkoutContinueBtn" type="button">Continue to payment</button>
+    </div>
+  </div>
+</div>
+
+<div class="checkout-modal-overlay" id="mobileWaitlistOverlay">
+  <div class="checkout-modal">
+    <div class="checkout-modal-title">Notify me — iOS &amp; Mac</div>
+    <div class="checkout-modal-sub" style="font-family:var(--ff);font-size:13px;color:var(--muted);text-transform:none;letter-spacing:normal">Get notified the moment AIMAZZE ships on iOS and Mac.</div>
+
+    <div id="mobileWaitlistForm">
+      <input type="email" id="mobileWaitlistEmail" placeholder="Email address" autocomplete="email">
+      <div class="checkout-modal-error" id="mobileWaitlistError">Please enter a valid email address.</div>
+      <div class="checkout-modal-actions">
+        <button class="checkout-modal-cancel" id="mobileWaitlistCancelBtn" type="button">Cancel</button>
+        <button class="checkout-modal-continue" id="mobileWaitlistSubmitBtn" type="button">Notify me</button>
+      </div>
+    </div>
+
+    <div class="waitlist-success" id="mobileWaitlistSuccess" style="display:none;margin-top:0.25rem">
+      <span style="font-size:1.2rem">🎉</span>
+      <div>
+        <strong style="color:#fff">You're on the list.</strong><br>
+        We'll email you when it's ready.
+      </div>
     </div>
   </div>
 </div>
@@ -1815,6 +1842,76 @@
       });
   });
 })();
+</script>
+
+<script>
+  (function () {
+    var MOBILE_WORKER_URL = "https://aimazze-worker.amrutcm1.workers.dev";
+
+    var overlay = document.getElementById("mobileWaitlistOverlay");
+    var formWrap = document.getElementById("mobileWaitlistForm");
+    var emailInput = document.getElementById("mobileWaitlistEmail");
+    var errorEl = document.getElementById("mobileWaitlistError");
+    var successEl = document.getElementById("mobileWaitlistSuccess");
+    var cancelBtn = document.getElementById("mobileWaitlistCancelBtn");
+    var submitBtn = document.getElementById("mobileWaitlistSubmitBtn");
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    window.openMobileWaitlistModal = function () {
+      formWrap.style.display = "block";
+      successEl.style.display = "none";
+      errorEl.style.display = "none";
+      emailInput.value = "";
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Notify me";
+      overlay.classList.add("open");
+      emailInput.focus();
+    };
+
+    function closeMobileWaitlistModal() {
+      overlay.classList.remove("open");
+    }
+
+    cancelBtn.addEventListener("click", closeMobileWaitlistModal);
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) closeMobileWaitlistModal();
+    });
+
+    submitBtn.addEventListener("click", function () {
+      var email = emailInput.value.trim();
+      if (!isValidEmail(email)) {
+        errorEl.style.display = "block";
+        return;
+      }
+      errorEl.style.display = "none";
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting...";
+
+      fetch(MOBILE_WORKER_URL + "/waitlist-mobile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email }),
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error("Request failed");
+          return res.json();
+        })
+        .then(function () {
+          formWrap.style.display = "none";
+          successEl.style.display = "flex";
+        })
+        .catch(function (err) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Notify me";
+          errorEl.textContent = "Something went wrong. Please try again.";
+          errorEl.style.display = "block";
+          console.error("Waitlist error:", err);
+        });
+    });
+  })();
 </script>
 
 <script>
