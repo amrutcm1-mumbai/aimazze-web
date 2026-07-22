@@ -819,7 +819,7 @@
   </h1>
 
   <p class="hero-sub">
-    The only AI workstation built for <strong>doctors, lawyers, engineers, and scientists</strong> — compare every major model side by side, pick the winner, keep going. <strong>Your data never leaves your device.</strong>
+    The only AI workstation built for <strong>doctors, lawyers, engineers, and scientists</strong> — compare every major model side by side, pick the winner, keep going. <strong>Local models, your own API keys, or both — you choose what leaves your device.</strong>
   </p>
 
   <div class="download-cta-wrap">
@@ -958,7 +958,7 @@
       <div class="feat-card">
         <div class="feat-icon">🔒</div>
         <div class="feat-title">Local-first by architecture</div>
-        <div class="feat-body">Your conversations, documents, and API keys live on your device only. AIMAZZE has no server that receives your data. Independently auditable. HIPAA, GDPR, and DPDP compliant by design — not just by policy.</div>
+        <div class="feat-body">Your conversations, documents, and API keys live on your device only. With local models, nothing is transmitted at all; with your own provider keys, AIMAZZE is never in the data path. Independently auditable — not just a policy promise.</div>
       </div>
       <div class="feat-card">
         <div class="feat-icon">⚔</div>
@@ -988,6 +988,36 @@
         <div class="feat-body">Built with Tauri — not Electron. The entire app bundle is ~8MB vs 150MB for Electron apps. Blazing fast startup, lower memory, and full offline capability via local open-source models.</div>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="privacy-tiers" style="padding: 4rem 2rem;">
+  <div class="container">
+    <div class="section-label">Data & privacy</div>
+    <div class="section-title">Three ways to work with AI.<br>Only one of them is truly private.</div>
+    <p class="section-sub">Most AI tools ask you to trust their servers. AIMAZZE is built so you don't have to guess.</p>
+
+    <div class="features-grid reveal">
+      <div class="feat-card">
+        <div class="feat-icon">🔒</div>
+        <div class="feat-title">Local Models — Never leaves your device</div>
+        <div class="feat-body">Runs entirely on your machine. No prompt, document, or output is transmitted anywhere. This is the only tier that's private by architecture, not by policy.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔑</div>
+        <div class="feat-title">Bring Your Own Key (Cloud) — AIMAZZE never in the middle</div>
+        <div class="feat-body">Your prompts go straight from your device to the AI provider you choose, using your own API key. AIMAZZE never receives, stores, or transmits your data.
+          <span class="feat-note">But you're still bound by that provider's own terms — read them before sending anything privileged or regulated.</span>
+        </div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⚠️</div>
+        <div class="feat-title">Public Consumer AI Tools — What most professionals are already exposed to</div>
+        <div class="feat-body">Free consumer chatbots and browser extensions often use your inputs for training, retain them indefinitely, or share them with third parties. This is the category regulators and courts have already started scrutinizing when privileged or client data ends up there.</div>
+      </div>
+    </div>
+
+    <p class="section-sub" style="margin-top:2rem;margin-bottom:0">See exactly what happens to your data at each tier → <a href="/security.html">Read the full privacy architecture</a></p>
   </div>
 </section>
 
@@ -1193,7 +1223,7 @@
           <span class="faq-chevron">▼</span>
         </button>
         <div class="faq-a">
-          Yes, with one nuance worth understanding. <strong>Local models</strong> are the simplest answer: nothing leaves your device, so there's no compliance question to ask. <strong>BYOK (your own provider keys)</strong> is also designed with privacy in mind — AIMAZZE never touches your data — but here the safety comes from your <em>provider's</em> terms rather than AIMAZZE's architecture. A 2026 UK tribunal ruling (<em>Munir v SSHD</em>) is a useful reference point: it drew a clear line between public consumer AI apps (which can risk legal privilege) and properly configured enterprise tools (which don't carry that risk). AIMAZZE's BYOK connects you to provider APIs rather than consumer apps, which puts you on the safer side of that line — though it's always good practice to glance at your provider's data policy for anything privileged. Elite tier also includes a BAA template for HIPAA contexts.
+          Yes, with one nuance worth understanding. <strong>Local models</strong> are the simplest answer: nothing leaves your device, so there's no compliance question to ask. <strong>BYOK (your own provider keys)</strong> routes device-to-provider with AIMAZZE never in the data path — but here the responsibility to verify comes from your <em>provider's</em> terms, not AIMAZZE's architecture. Public consumer AI apps are the category regulators and courts have been scrutinizing for privileged data ending up somewhere it shouldn't; AIMAZZE's BYOK connects you to provider APIs rather than consumer apps, which is a meaningfully different category — though it's always good practice to glance at your provider's data policy for anything privileged. See <a href="/security.html">how AIMAZZE protects your data</a> for the full breakdown. Elite tier also includes a BAA template for HIPAA contexts.
         </div>
       </div>
       <div class="faq-item">
@@ -1209,7 +1239,7 @@
           <span class="faq-chevron">▼</span>
         </button>
         <div class="faq-a">
-          <p style="margin-bottom:0.75rem">Quick definition first: an API key is a personal access credential that a provider (like Anthropic or OpenAI) gives you so their service knows it's your account making the request. BYOK means Bring Your Own Key — paste that key into AIMAZZE Settings, and your conversations route directly from your device to that provider's API. AIMAZZE never sees the key or the content.</p>
+          <p style="margin-bottom:0.75rem">Quick definition first: an API key is a personal access credential that a provider (like Anthropic or OpenAI) gives you so their service knows it's your account making the request. BYOK means Bring Your Own Key — paste that key into AIMAZZE Settings, and your conversations route directly from your device to that provider's API. AIMAZZE is never in that data path — but once your data reaches the provider, their terms govern it, not ours, so it's worth a quick read of their API data policy for anything sensitive.</p>
           <p style="margin-bottom:0.5rem;font-size:13px;color:var(--muted)">Where to get API keys — links verified at time of publishing, but provider sites change over time:</p>
           <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:1rem">
             <thead>
@@ -1230,7 +1260,7 @@
               <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
                 <td style="padding:6px 8px;color:var(--white);font-weight:600">OpenAI API</td>
                 <td style="padding:6px 8px;color:#9ca3b8">GPT-4o, GPT-5 — widest ecosystem, strongest general use</td>
-                <td style="padding:6px 8px;color:#22c55e">✓ API data not used for training · <span style="color:#f59e0b">⚠ ChatGPT.com (consumer) is what Munir flagged — that is a separate product from this API</span></td>
+                <td style="padding:6px 8px;color:#22c55e">✓ API data not used for training · <span style="color:#f59e0b">⚠ ChatGPT.com (consumer) is a separate, weaker-protection product from this API</span></td>
                 <td style="padding:6px 8px"><a href="https://platform.openai.com" target="_blank" rel="noopener" style="color:var(--cyan)">platform.openai.com</a></td>
               </tr>
               <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
@@ -1242,7 +1272,7 @@
               <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
                 <td style="padding:6px 8px;color:var(--white);font-weight:600">Google (Gemini API)</td>
                 <td style="padding:6px 8px;color:#9ca3b8">Gemini 2.5 Pro — best multimodal, largest context window</td>
-                <td style="padding:6px 8px;color:#f59e0b">⚠ API tier safe; Gemini Advanced (consumer) is not — same Munir distinction applies</td>
+                <td style="padding:6px 8px;color:#f59e0b">⚠ API tier carries stronger protections; Gemini Advanced (consumer) does not — same tier distinction applies</td>
                 <td style="padding:6px 8px"><a href="https://aistudio.google.com" target="_blank" rel="noopener" style="color:var(--cyan)">aistudio.google.com</a></td>
               </tr>
               <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
@@ -1278,7 +1308,7 @@
             </tbody>
           </table>
           <p style="font-size:12px;color:var(--muted)">⚠ Provider links and data policies change over time — always verify directly on the provider's website before relying on this table for compliance decisions. Table reflects policies as of mid-2026.</p>
-          <p style="margin-top:0.75rem">Key distinction worth knowing: the consumer versions of these products (ChatGPT.com, Claude.ai Pro, Gemini Advanced) carry different — and generally weaker — data protections than their API tiers, and are what rulings like <em>Munir v SSHD</em> specifically warn against for privileged work. When you use BYOK in AIMAZZE, you're always on the API tier — not the consumer product. If you'd rather skip provider policy questions entirely, Free tier's local models keep everything on-device with no transmission at all.</p>
+          <p style="margin-top:0.75rem">Key distinction worth knowing: the consumer versions of these products (ChatGPT.com, Claude.ai Pro, Gemini Advanced) carry different — and generally weaker — data protections than their API tiers, and are exactly the category regulators and courts have been scrutinizing for privileged work ending up somewhere it shouldn't. When you use BYOK in AIMAZZE, you're always on the API tier — not the consumer product. If you'd rather skip provider policy questions entirely, Free tier's local models keep everything on-device with no transmission at all.</p>
         </div>
       </div>
       <div class="faq-item">

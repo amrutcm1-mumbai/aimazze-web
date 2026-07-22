@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How AIMAZZE Protects Your Data — AIMAZZE</title>
+<meta name="description" content="The honest breakdown of what happens to your data at each tier of AIMAZZE — local models, bring-your-own-key, and public consumer AI tools.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080910;
+    --surface: #0f1016;
+    --surface2: #161820;
+    --border: rgba(255,255,255,0.06);
+    --border2: rgba(255,255,255,0.1);
+    --cyan: #00d4e8;
+    --white: #f0f2f8;
+    --muted: #6b6e80;
+    --muted2: #3a3d52;
+    --green: #22c55e;
+    --orange: #f59e0b;
+    --ff: 'Bricolage Grotesque', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--ff);
+    background: var(--bg);
+    color: var(--white);
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--cyan); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+    background: rgba(8,9,16,0.9);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
+  .nav-brand .cyan { color: var(--cyan); }
+  .nav-back { margin-left: auto; font-size: 13px; color: var(--muted); }
+
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 3.5rem 2rem 5rem;
+  }
+
+  .doc-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 0.75rem;
+  }
+  h1 {
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+  .doc-updated {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+  }
+
+  h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--white);
+  }
+  p, li { color: #c4c7d4; font-size: 14.5px; }
+  p { margin-bottom: 1rem; }
+  ul, ol { margin: 0 0 1rem 1.25rem; }
+  li { margin-bottom: 0.5rem; }
+  strong { color: var(--white); font-weight: 600; }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-left: 3px solid var(--cyan);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    font-size: 14px;
+  }
+  .callout.warn { border-left-color: var(--orange); }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+  footer a { color: var(--muted); }
+  footer a:hover { color: var(--cyan); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-brand"><span class="cyan">AI</span>MAZZE</a>
+  <a href="/" class="nav-back">← Back to home</a>
+</nav>
+
+<main>
+  <div class="doc-eyebrow">Security</div>
+  <h1>How AIMAZZE Protects Your Data</h1>
+  <p class="doc-updated">Last updated: July 22, 2026</p>
+
+  <p>AI is already showing up in regulated, privileged work — often through tools nobody vetted. The risk isn't AI itself. It's not knowing which tier of AI you're using, and what that tier actually does with your data. Here's the honest breakdown.</p>
+
+  <h2>Tier 1 — Local Models: Private by Architecture</h2>
+  <p>Local models run entirely on your own hardware. There is no network call, no server round-trip, no third party in the loop. Nothing about your prompts, documents, or outputs is transmitted — not to AIMAZZE, not to any AI provider, not to anyone.</p>
+  <p>This is the only tier where privilege and confidentiality are protected structurally, not contractually. If your work involves attorney-client privilege, patient data, or anything you legally cannot risk exposing, this is the tier built for that constraint.</p>
+  <div class="callout">
+    <strong>Trade-off, stated honestly:</strong> local models are typically smaller and less capable than the largest cloud models, and require enough local hardware to run well.
+  </div>
+
+  <h2>Tier 2 — Bring Your Own Key (BYOK): Device-to-Provider</h2>
+  <p>When you connect your own API key from a provider (OpenAI, Anthropic, Google, etc.), your requests travel directly from your device to that provider using your credentials. <strong>AIMAZZE is never in that data path</strong> — we don't receive, log, or store what you send.</p>
+  <p>But that is not the same as blanket privacy. Once your data reaches the provider, <strong>their</strong> data-handling terms apply — not ours. Some providers exclude API traffic from model training by default; others don't, or only do so under specific account settings. This is genuinely worth 10 minutes of reading before you send anything sensitive through this tier.</p>
+  <div class="callout">
+    <strong>What we recommend:</strong> check your provider's API terms (not their consumer app's terms — these often differ) for data retention and training-use language before using this tier for privileged or regulated work.
+  </div>
+
+  <h2>Tier 3 — Public Consumer AI Tools: Proceed with Caution</h2>
+  <p>Free, general-purpose consumer AI apps and browser extensions are built for broad usefulness, not confidentiality. Many retain conversation data, use it to improve their models, or share it with affiliated services — often disclosed only in terms most people never read.</p>
+  <p>This is the tier that's created real exposure for professionals handling privileged or regulated information, and the pattern regulators and courts are increasingly paying attention to. If a task involves anything privileged, regulated, or client-identifiable, this tier is the one to avoid.</p>
+
+  <h2>The bottom line</h2>
+  <p>AIMAZZE doesn't ask you to trust a single privacy claim. It gives you the choice — local when the work demands it, your own keys when you want cloud capability without a middleman, and clear-eyed information either way. <strong>You decide which tier fits which task.</strong></p>
+
+  <div class="callout">
+    Questions about how a specific workflow fits into this? Email us at <a href="mailto:hello@aimazze.com">hello@aimazze.com</a>. For what data AIMAZZE itself collects (account, billing, license), see the <a href="/privacy-policy.html">Privacy Policy</a>.
+  </div>
+</main>
+
+<footer>
+  <div style="margin-bottom:0.5rem">
+    <a href="/">Home</a> · <a href="/privacy-policy.html">Privacy Policy</a> · <a href="/terms.html">Terms</a> · <a href="/refund-policy.html">Refunds</a> · <a href="/shipping-policy.html">Shipping</a>
+  </div>
+  © 2026 AIMAZZE · Amrynnova · Mumbai
+</footer>
+
+</body>
+</html>
