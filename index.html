@@ -1221,6 +1221,14 @@
         We'll email you when it's ready.
       </div>
     </div>
+
+    <div class="waitlist-success" id="mobileWaitlistAlreadySubscribed" style="display:none;margin-top:0.25rem">
+      <span style="font-size:1.2rem">👍</span>
+      <div>
+        <strong style="color:#fff">You're already on the list.</strong><br>
+        We'll notify you as soon as it's ready!
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1861,6 +1869,7 @@
     var emailInput = document.getElementById("mobileWaitlistEmail");
     var errorEl = document.getElementById("mobileWaitlistError");
     var successEl = document.getElementById("mobileWaitlistSuccess");
+    var alreadySubscribedEl = document.getElementById("mobileWaitlistAlreadySubscribed");
     var cancelBtn = document.getElementById("mobileWaitlistCancelBtn");
     var submitBtn = document.getElementById("mobileWaitlistSubmitBtn");
 
@@ -1871,6 +1880,7 @@
     window.openMobileWaitlistModal = function () {
       formWrap.style.display = "block";
       successEl.style.display = "none";
+      alreadySubscribedEl.style.display = "none";
       errorEl.style.display = "none";
       emailInput.value = "";
       submitBtn.disabled = false;
@@ -1907,9 +1917,13 @@
           if (!res.ok) throw new Error("Request failed");
           return res.json();
         })
-        .then(function () {
+        .then(function (data) {
           formWrap.style.display = "none";
-          successEl.style.display = "flex";
+          if (data && data.status === "already_subscribed") {
+            alreadySubscribedEl.style.display = "flex";
+          } else {
+            successEl.style.display = "flex";
+          }
         })
         .catch(function (err) {
           submitBtn.disabled = false;
