@@ -1,0 +1,5 @@
+.git/**
+.wrangler/**
+.claude/**
+node_modules/**
+*.md
