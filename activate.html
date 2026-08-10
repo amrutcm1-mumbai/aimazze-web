@@ -155,13 +155,15 @@ h1{
     <a href="#" class="btn" id="open-app-btn">Open AIMAZZE</a>
     <div class="status" id="status-text"></div>
 
-    <div class="divider">or activate manually</div>
+    <div id="manual-key-section">
+      <div class="divider">or activate manually</div>
 
-    <div class="key-label">Paste this key in Settings &rarr; Plan &amp; Billing</div>
-    <div class="key-box" id="key-box">&mdash;</div>
-    <button class="copy-btn" id="copy-btn">Copy key</button>
+      <div class="key-label">Paste this key in Settings &rarr; Plan &amp; Billing</div>
+      <div class="key-box" id="key-box">&mdash;</div>
+      <button class="copy-btn" id="copy-btn">Copy key</button>
+    </div>
 
-    <p class="help-text">If nothing happened when this page loaded, click "Open AIMAZZE" above. Your browser may ask to confirm opening the app &mdash; choose Allow.</p>
+    <p class="help-text" id="help-text">If nothing happened when this page loaded, click "Open AIMAZZE" above. Your browser may ask to confirm opening the app &mdash; choose Allow.</p>
 
     <div class="download-note">
       <div class="tag">Coming soon</div>
@@ -181,18 +183,32 @@ h1{
   var key = params.get('key') || '';
   var plan = params.get('plan') || '';
   var email = params.get('email') || '';
+  // T-53 item 8: owner-initiated sub-user invites carry inviteToken instead
+  // of a license key — this page is the https-to-aimazze:// bridge for
+  // BOTH link shapes Resend can send (see sendActivationEmail() and
+  // sendOrgInviteEmail() in aimazze-worker), so it must accept either.
+  var inviteToken = params.get('inviteToken') || '';
 
-  if (!key) {
+  if (!key && !inviteToken) {
     document.getElementById('default-state').style.display = 'none';
     document.getElementById('error-state').classList.add('show');
     return;
   }
 
-  var deepLink = 'aimazze://activate?key=' + encodeURIComponent(key)
-    + (plan ? '&plan=' + encodeURIComponent(plan) : '')
-    + (email ? '&email=' + encodeURIComponent(email) : '');
+  var deepLink = inviteToken
+    ? 'aimazze://activate?inviteToken=' + encodeURIComponent(inviteToken)
+    : 'aimazze://activate?key=' + encodeURIComponent(key)
+      + (plan ? '&plan=' + encodeURIComponent(plan) : '')
+      + (email ? '&email=' + encodeURIComponent(email) : '');
 
-  document.getElementById('key-box').textContent = key;
+  // An invite has no license key to display/copy — the manual-activation
+  // fallback section only makes sense for the key flow.
+  if (inviteToken) {
+    document.getElementById('manual-key-section').style.display = 'none';
+    document.querySelector('#default-state h1').textContent = 'Join your team on AIMAZZE';
+  } else {
+    document.getElementById('key-box').textContent = key;
+  }
   document.getElementById('open-app-btn').setAttribute('href', deepLink);
 
   var statusEl = document.getElementById('status-text');
