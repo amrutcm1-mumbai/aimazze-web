@@ -637,6 +637,22 @@
     outline: none;
     border-color: var(--cyan);
   }
+  .checkout-legal-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 0.7rem;
+    cursor: pointer;
+  }
+  .checkout-legal-row input[type="checkbox"] {
+    width: auto;
+    margin: 2px 0 0;
+    flex-shrink: 0;
+  }
+  .checkout-legal-row a { color: var(--cyan); }
   .checkout-modal-actions {
     display: flex;
     gap: 8px;
@@ -877,7 +893,7 @@
     <span class="pill hot">🏠 Offline capable</span>
     <span class="pill">Cancel anytime</span>
     <span class="pill">₹ UPI accepted</span>
-    <span class="pill">HIPAA · GDPR · DPDP</span>
+    <span class="pill" id="complianceBadge" style="display:none"></span>
     <span class="pill">Mac coming soon</span>
   </div>
 </section>
@@ -1158,7 +1174,7 @@
         <div class="price-amount-inr" data-display="amount-inr">₹2,499 / month (India)</div>
         <div class="price-amount-equiv" data-display="equiv"></div>
         <div class="price-period" data-display="period">/ month · cancel anytime</div>
-        <div class="price-feature">HIPAA · GDPR · DPDP</div>
+        <div class="price-feature">HIPAA-aligned · GDPR-aligned · DPDP-aligned</div>
         <div class="price-feature">BAA template included</div>
         <div class="price-feature">Team workspace (10 seats)</div>
         <div class="price-feature">Priority support</div>
@@ -1191,8 +1207,19 @@
     <div class="checkout-modal-sub" id="checkoutModalSub">₹999 / month · billed via Razorpay</div>
     <input type="text" id="checkoutName" placeholder="Full name" autocomplete="name">
     <input type="email" id="checkoutEmail" placeholder="Email address" autocomplete="email">
+    <!-- Interim batch, 11 Aug 2026: legal-doc acceptance harness. Hidden by
+         default — index.html's LEGAL_ACCEPTANCE_ENFORCED flag (see script
+         below) controls both visibility and whether Continue is blocked
+         without it. Do not remove display:none here; that's the "not
+         reachable by real users" gate the placeholder-draft text requires
+         until ACM confirms final reviewed content. -->
+    <label class="checkout-legal-row" id="legalAcceptRow" style="display:none">
+      <input type="checkbox" id="legalAcceptCheckbox">
+      <span>I agree to the <a href="/terms.html" target="_blank" rel="noopener">Terms</a>, <a href="/privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a>, and <a href="/refund-policy.html" target="_blank" rel="noopener">Refund Policy</a>.</span>
+    </label>
     <div class="checkout-modal-warning" id="checkoutWarning"></div>
     <div class="checkout-modal-error" id="checkoutError">Please enter a valid name and email.</div>
+    <div class="checkout-modal-error" id="legalAcceptError" style="display:none">Please accept the Terms, Privacy Policy, and Refund Policy to continue.</div>
     <div class="checkout-modal-actions">
       <button class="checkout-modal-cancel" id="checkoutCancelBtn" type="button">Cancel</button>
       <button class="checkout-modal-continue" id="checkoutContinueBtn" type="button">Continue to payment</button>
@@ -1598,6 +1625,47 @@
   var WORKER_URL = "https://aimazze-worker.amrutcm1.workers.dev";
   var RAZORPAY_KEY_ID = "rzp_test_T0eEA7nmapJ06k";
 
+  // Interim batch, 11 Aug 2026: legal-doc acceptance harness. FALSE means
+  // the checkbox stays hidden and checkout proceeds exactly as before —
+  // the mechanism is built and tested, but not reachable by real
+  // customers, per explicit instruction not to present the placeholder
+  // (AI-drafted, not-yet-legally-reviewed) Terms/Privacy/Refund text as
+  // binding. Flip to true ONLY once ACM confirms final reviewed text is
+  // live in terms.html/privacy-policy.html/refund-policy.html.
+  var LEGAL_ACCEPTANCE_ENFORCED = false;
+
+  // Each doc's own "Last updated" date (terms.html/privacy-policy.html/
+  // refund-policy.html) — kept in sync manually since these are static
+  // pages with no shared build-time source of truth. Update these
+  // whenever a doc's "Last updated" line changes, so logged acceptances
+  // stay meaningfully tied to what was actually shown.
+  var LEGAL_DOC_VERSIONS = {
+    terms: "2026-06-30",
+    privacy: "2026-06-30",
+    refund: "2026-06-30",
+  };
+
+  var legalRow = document.getElementById("legalAcceptRow");
+  var legalCheckbox = document.getElementById("legalAcceptCheckbox");
+  var legalError = document.getElementById("legalAcceptError");
+  if (LEGAL_ACCEPTANCE_ENFORCED) legalRow.style.display = "flex";
+
+  function logLegalAcceptance(email, context) {
+    // Fire-and-forget — a logging failure must never block checkout, the
+    // payment itself is the thing that actually matters.
+    fetch(WORKER_URL + "/legal/log-acceptance", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email,
+        termsVersion: LEGAL_DOC_VERSIONS.terms,
+        privacyVersion: LEGAL_DOC_VERSIONS.privacy,
+        refundVersion: LEGAL_DOC_VERSIONS.refund,
+        context: context,
+      }),
+    }).catch(function () {});
+  }
+
   var TIER_LABELS = {
     starter: "Starter",
     pro: "Pro",
@@ -1814,6 +1882,16 @@
     }
     errorEl.style.display = "none";
 
+    if (LEGAL_ACCEPTANCE_ENFORCED && !legalCheckbox.checked) {
+      legalError.style.display = "block";
+      return;
+    }
+    legalError.style.display = "none";
+
+    if (LEGAL_ACCEPTANCE_ENFORCED) {
+      logLegalAcceptance(email, "checkout:" + activeTier);
+    }
+
     var alreadyConfirmed = !!upgradeEmail || continueBtn.dataset.confirmed === "1";
 
     continueBtn.disabled = true;
@@ -1969,6 +2047,49 @@
       document.addEventListener("DOMContentLoaded", applyGeoPricing);
     } else {
       applyGeoPricing();
+    }
+  })();
+</script>
+
+<script>
+  // Geo-localized compliance badge — reuses the same CF-IPCountry-derived
+  // detection the currency/UPI display already uses (src/index.js sets
+  // both aimazze_region and aimazze_compliance cookies from the same
+  // request, see that file's comment). Copy is deliberately NOT phrased as
+  // a certification claim ("HIPAA" / "GDPR" / "DPDP" bare) since none has
+  // had a legal review yet — "aligned"/"architected"/"by design" communicates
+  // the real value honestly without asserting formal compliance. Revisit
+  // this wording once ACM's legal reviewer has looked at the Terms/Privacy
+  // draft alongside it.
+  (function () {
+    function getCookie(name) {
+      const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+      return match ? match[2] : null;
+    }
+
+    const COMPLIANCE_COPY = {
+      US: "Built for HIPAA-aligned workflows",
+      EU: "Architected for GDPR",
+      IN: "DPDP-aligned by design",
+      // OTHER: no badge — the "🔒 Local-first" pill already in this row
+      // covers the honest, universally-true claim for every region.
+    };
+
+    function applyComplianceBadge() {
+      const region = getCookie("aimazze_compliance");
+      const copy = region && COMPLIANCE_COPY[region];
+      const badge = document.getElementById("complianceBadge");
+      if (!badge) return;
+      if (copy) {
+        badge.textContent = copy;
+        badge.style.display = "";
+      }
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", applyComplianceBadge);
+    } else {
+      applyComplianceBadge();
     }
   })();
 </script>

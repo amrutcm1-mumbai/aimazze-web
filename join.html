@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join AIMAZZE — Founding Cohort</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07080d;--surface:#0f1117;--surface2:#161820;
+  --border:rgba(255,255,255,0.08);
+  --cyan:#00d4e8;--cyan2:rgba(0,212,232,0.12);--cyan3:rgba(0,212,232,0.06);
+  --white:#e8eaf0;--muted:#8b8e9e;--muted2:#5a5d6e;
+  --amber:#f5b81d;--amber2:rgba(245,184,29,0.12);
+  --red:#f5605d;--red2:rgba(245,96,93,0.12);
+  --font-display:'Bricolage Grotesque',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --font-mono:'DM Mono',monospace;
+  --radius:12px;--radius-lg:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--white);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  line-height:1.6;
+}
+.card{
+  width:100%;
+  max-width:440px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:2.5rem 2rem;
+  text-align:center;
+}
+.icon{
+  width:56px;height:56px;
+  margin:0 auto 1.25rem;
+  border-radius:14px;
+  background:var(--cyan2);
+  display:flex;align-items:center;justify-content:center;
+}
+.icon svg{width:28px;height:28px}
+h1{
+  font-family:var(--font-display);
+  font-size:1.5rem;
+  font-weight:700;
+  letter-spacing:-0.02em;
+  margin-bottom:0.5rem;
+}
+.sub{
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:1.75rem;
+}
+input{
+  width:100%;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px 14px;
+  font-family:var(--font-mono);
+  font-size:14px;
+  color:var(--white);
+  margin-bottom:0.75rem;
+  outline:none;
+}
+input::placeholder{color:var(--muted2);font-family:var(--font-body)}
+input:focus{border-color:var(--cyan)}
+input#codeInput{text-transform:uppercase;letter-spacing:0.08em;text-align:center}
+.btn{
+  display:block;
+  width:100%;
+  background:var(--cyan);
+  color:#07080d;
+  font-weight:700;
+  font-size:14px;
+  padding:13px 0;
+  border-radius:10px;
+  text-decoration:none;
+  border:none;
+  cursor:pointer;
+  font-family:var(--font-body);
+  margin-top:0.5rem;
+  margin-bottom:0.75rem;
+  transition:opacity .15s;
+}
+.btn:hover{opacity:0.9}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.status{
+  font-size:12px;
+  margin-top:0.5rem;
+  min-height:16px;
+}
+.status.error{color:var(--red)}
+.status.info{color:var(--muted)}
+.success-state{display:none}
+.success-state.show{display:block}
+.success-icon{background:var(--cyan2)}
+.help-text{font-size:11px;color:var(--muted2);line-height:1.6;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<div class="card" id="card">
+  <div class="icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#00d4e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17l-5.5 4L8 13.5 3 9l6.5-0.5z"/></svg>
+  </div>
+
+  <div id="form-state">
+    <h1>Join the founding cohort</h1>
+    <p class="sub">Enter the invite code you were given, along with your email.</p>
+
+    <input type="text" id="codeInput" placeholder="INVITE CODE" maxlength="10" autocomplete="off" autocapitalize="characters">
+    <input type="email" id="emailInput" placeholder="Your email" autocomplete="email">
+
+    <button class="btn" id="redeemBtn">Redeem code</button>
+    <div class="status" id="statusText"></div>
+
+    <p class="help-text">Don't have a code? AIMAZZE's founding cohort is small and hand-picked right now — <a href="/#waitlist" style="color:var(--cyan)">join the general waitlist</a> instead and we'll notify you when open access ships.</p>
+  </div>
+
+  <div class="success-state" id="success-state">
+    <div class="icon success-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#00d4e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+    </div>
+    <h1>Code accepted</h1>
+    <p class="sub">You're confirmed for the founding cohort. We'll be in touch shortly with next steps.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Interim batch, 11 Aug 2026: BUILD/TEST ONLY. This page validates a
+  // code against aimazze-worker's /cohort/redeem-code and shows
+  // success/failure — it does NOT currently unlock any real product
+  // access on its own (no license, no Workspace activation tied to this
+  // yet). See aimazze-app/HANDOVER.md for the wiring-into-real-access
+  // decision, which is explicitly deferred until ACM says go.
+  var WORKER_URL = "https://aimazze-worker.amrutcm1.workers.dev";
+
+  var codeInput = document.getElementById('codeInput');
+  var emailInput = document.getElementById('emailInput');
+  var redeemBtn = document.getElementById('redeemBtn');
+  var statusText = document.getElementById('statusText');
+
+  function setStatus(text, kind){
+    statusText.textContent = text;
+    statusText.className = 'status' + (kind ? ' ' + kind : '');
+  }
+
+  redeemBtn.addEventListener('click', function(){
+    var code = codeInput.value.trim();
+    var email = emailInput.value.trim();
+
+    if (!code) { setStatus('Enter your invite code.', 'error'); return; }
+    if (!email || email.indexOf('@') === -1) { setStatus('Enter a valid email.', 'error'); return; }
+
+    redeemBtn.disabled = true;
+    setStatus('Checking…', 'info');
+
+    fetch(WORKER_URL + '/cohort/redeem-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: code, email: email })
+    })
+      .then(function(res){ return res.json().then(function(data){ return { ok: res.ok, data: data }; }); })
+      .then(function(result){
+        if (result.data && result.data.success) {
+          document.getElementById('form-state').style.display = 'none';
+          document.getElementById('success-state').classList.add('show');
+        } else {
+          setStatus((result.data && result.data.error) || 'Something went wrong. Please try again.', 'error');
+          redeemBtn.disabled = false;
+        }
+      })
+      .catch(function(){
+        setStatus('Couldn\'t reach the server. Please try again.', 'error');
+        redeemBtn.disabled = false;
+      });
+  });
+
+  codeInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') emailInput.focus(); });
+  emailInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') redeemBtn.click(); });
+})();
+</script>
+
+</body>
+</html>
