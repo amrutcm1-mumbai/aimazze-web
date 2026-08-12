@@ -1693,8 +1693,7 @@
           amountInrEl.innerHTML = "<span class=\"price-amount-was\">" + formatInr(monthlyInrPaise) + "</span>" +
             "<span class=\"price-amount-now\">" + formatInrMonthlyEquiv(annualInrPaise) + "</span>" +
             "<span class=\"price-amount-inr-suffix\"> / month (India)</span>";
-          equivEl.innerHTML = "(billed as " + formatUsd(annualUsd) + "/yr " +
-            "<span class=\"save-badge\">&middot; 2 months free</span>)";
+          equivEl.innerHTML = "(billed as " + formatUsd(annualUsd) + "/yr)";
           periodEl.textContent = "/ month, billed annually" + (trailingClause ? " " + trailingClause : "");
         }
       }
