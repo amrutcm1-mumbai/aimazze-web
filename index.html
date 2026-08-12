@@ -537,9 +537,9 @@
 
   .price-feature::before { content: '·'; color: var(--cyan); flex-shrink: 0; margin-top: 1px; }
   .price-amount-inr {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--muted);
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--cyan);
     font-family: var(--mono);
     margin-top: 2px;
   }
@@ -1178,7 +1178,7 @@
           <button type="button" data-cycle="annual">Annual</button>
         </div>
         <div class="price-amount" data-display="amount">$7</div>
-        <div class="price-amount-inr" data-display="amount-inr">₹499 / month (India)</div>
+        <div class="price-amount-inr" data-display="amount-inr">₹499<span class="price-amount-inr-suffix"> / month (India)</span></div>
         <div class="price-amount-equiv" data-display="equiv"></div>
         <div class="price-period" data-display="period">/ month · cancel anytime</div>
         <div class="price-feature">All BYOK providers</div>
@@ -1200,7 +1200,7 @@
           <button type="button" data-cycle="annual">Annual</button>
         </div>
         <div class="price-amount" data-display="amount">$19</div>
-        <div class="price-amount-inr" data-display="amount-inr">₹999 / month (India)</div>
+        <div class="price-amount-inr" data-display="amount-inr">₹999<span class="price-amount-inr-suffix"> / month (India)</span></div>
         <div class="price-amount-equiv" data-display="equiv"></div>
         <div class="price-period" data-display="period">/ month · cancel anytime</div>
         <div class="price-feature">Arena: up to 8 models</div>
@@ -1221,7 +1221,7 @@
           <button type="button" data-cycle="annual">Annual</button>
         </div>
         <div class="price-amount" data-display="amount">$49</div>
-        <div class="price-amount-inr" data-display="amount-inr">₹2,499 / month (India)</div>
+        <div class="price-amount-inr" data-display="amount-inr">₹2,499<span class="price-amount-inr-suffix"> / month (India)</span></div>
         <div class="price-amount-equiv" data-display="equiv"></div>
         <div class="price-period" data-display="period">/ month · cancel anytime</div>
         <div class="price-feature">HIPAA-aligned · GDPR-aligned · DPDP-aligned</div>
@@ -1234,7 +1234,7 @@
       <div class="price-card" data-tier="lifetime" data-inr-paise="1499900">
         <div class="price-name">Lifetime</div>
         <div class="price-amount">$249</div>
-        <div class="price-amount-inr">₹14,999 (India)</div>
+        <div class="price-amount-inr">₹14,999<span class="price-amount-inr-suffix"> (India)</span></div>
         <div class="price-period">one-time · no renewals ever</div>
         <div class="price-feature">Zero AIMAZZE charges forever</div>
         <div class="price-feature">Full Pro features forever</div>
@@ -1612,13 +1612,14 @@
       return "$" + n;
     }
     function formatUsdMonthlyEquiv(annualUsd) {
-      return "$" + (annualUsd / 12).toFixed(2) + "/mo";
+      var v = annualUsd / 12;
+      return "$" + (Number.isInteger(v) ? v : v.toFixed(2));
     }
     function formatInr(paise) {
       return "₹" + (paise / 100).toLocaleString("en-IN");
     }
     function formatInrMonthlyEquiv(annualPaise) {
-      return "₹" + Math.round(annualPaise / 100 / 12).toLocaleString("en-IN") + "/mo";
+      return "₹" + Math.round(annualPaise / 100 / 12).toLocaleString("en-IN");
     }
 
     document.querySelectorAll(".billing-toggle").forEach(function (toggle) {
@@ -1649,15 +1650,15 @@
 
         if (cycle === "monthly") {
           amountEl.textContent = formatUsd(monthlyUsd);
-          amountInrEl.textContent = formatInr(monthlyInrPaise) + " / month (India)";
+          amountInrEl.innerHTML = formatInr(monthlyInrPaise) + "<span class=\"price-amount-inr-suffix\"> / month (India)</span>";
           equivEl.textContent = "";
           periodEl.textContent = originalPeriodText;
         } else {
-          amountEl.textContent = formatUsd(annualUsd) + "/yr";
-          amountInrEl.textContent = formatInr(annualInrPaise) + " / year (India)";
-          equivEl.innerHTML = "(" + formatUsdMonthlyEquiv(annualUsd) + " " +
+          amountEl.textContent = formatUsdMonthlyEquiv(annualUsd);
+          amountInrEl.innerHTML = formatInrMonthlyEquiv(annualInrPaise) + "<span class=\"price-amount-inr-suffix\"> / month (India)</span>";
+          equivEl.innerHTML = "(billed as " + formatUsd(annualUsd) + "/yr " +
             "<span class=\"save-badge\">&middot; 2 months free</span>)";
-          periodEl.textContent = "/ year" + (trailingClause ? " " + trailingClause : "");
+          periodEl.textContent = "/ month, billed annually" + (trailingClause ? " " + trailingClause : "");
         }
       }
 

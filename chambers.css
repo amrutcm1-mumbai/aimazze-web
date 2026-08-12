@@ -43,6 +43,14 @@
   --chambers-fm: 'DM Mono', monospace;
 }
 
+/* Small muted qualifier suffix inside an otherwise large price display,
+   e.g. "₹999<span class="price-amount-inr-suffix"> / month (India)</span>" */
+.price-amount-inr-suffix {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--chambers-slate);
+}
+
 /* Small circular accent portrait — used sparingly (hero strip, persona-card
    avatars). Neutral fill shows through until real images land, so layout
    stays correct even with a missing/broken src. */
