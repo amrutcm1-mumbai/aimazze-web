@@ -1,0 +1,100 @@
+/*
+  Chambers design system — shared tokens/fonts/utility classes for the
+  aimazze-web marketing site, ported from aimazze-app/src/App.css (light
+  theme only — this site has no dark-mode toggle). Linked from every page's
+  <head>; each page's own <style> block still owns its own :root values
+  (kept for backward compatibility with existing selectors) but should map
+  them to these same colors.
+
+  Reference values (aimazze-app/src/App.css):
+  --paper:#F4F6F8 --paper2:#EDF0F3 --card:#FFFFFF
+  --ink:#14171C --ink2:#2B313A --slate:#5B6472 --slate2:#8A93A1
+  --line:#E2E6EB --line2:#D3D9E0
+  --teal:#0C6E62 --teal-soft:#E4F0EE --teal-ink:#08514A
+  --ochre:#B0721A --ochre-soft:#F6EEDF --ochre-edge:#C8861E
+  --brick:#B4382F --brick-soft:#F7E7E5
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --chambers-paper: #F4F6F8;
+  --chambers-paper2: #EDF0F3;
+  --chambers-card: #FFFFFF;
+  --chambers-ink: #14171C;
+  --chambers-ink2: #2B313A;
+  --chambers-slate: #5B6472;
+  --chambers-slate2: #8A93A1;
+  --chambers-line: #E2E6EB;
+  --chambers-line2: #D3D9E0;
+  --chambers-teal: #0C6E62;
+  --chambers-teal-soft: #E4F0EE;
+  --chambers-teal-ink: #08514A;
+  --chambers-ochre: #B0721A;
+  --chambers-ochre-soft: #F6EEDF;
+  --chambers-ochre-edge: #C8861E;
+  --chambers-brick: #B4382F;
+  --chambers-brick-soft: #F7E7E5;
+  --chambers-r: 10px;
+  --chambers-r-lg: 16px;
+  --chambers-r-xl: 22px;
+  --chambers-fd: 'Fraunces', Georgia, serif;
+  --chambers-fb: 'Inter', sans-serif;
+  --chambers-fm: 'DM Mono', monospace;
+}
+
+/* Small circular accent portrait — used sparingly (hero strip, persona-card
+   avatars). Neutral fill shows through until real images land, so layout
+   stays correct even with a missing/broken src. */
+.avatar-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--chambers-paper2);
+  border: 1px solid var(--chambers-line);
+  box-shadow: 0 1px 2px rgba(20,23,28,.06);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.avatar-badge.lg {
+  width: 56px;
+  height: 56px;
+}
+
+/* Overlapping accent strip of avatar-badges, e.g. under the hero */
+.avatar-strip {
+  display: inline-flex;
+  align-items: center;
+}
+.avatar-strip .avatar-badge {
+  margin-left: -12px;
+  border: 2px solid var(--chambers-paper);
+}
+.avatar-strip .avatar-badge:first-child {
+  margin-left: 0;
+}
+
+/* Teal (Local/on-device) vs ochre (Cloud/BYOK) accent utilities, matching
+   the app's own convention for distinguishing the two data-handling modes. */
+.accent-local { border-top: 3px solid var(--chambers-teal); }
+.accent-local .feat-icon { color: var(--chambers-teal); }
+.accent-cloud { border-top: 3px solid var(--chambers-ochre); }
+.accent-cloud .feat-icon { color: var(--chambers-ochre); }
+.accent-risk { border-top: 3px solid var(--chambers-brick); }
+.accent-risk .feat-icon { color: var(--chambers-brick); }
+
+/* Container for the hero's inline network/connection SVG background.
+   Purely decorative, sits behind hero content. */
+.network-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.network-bg svg {
+  width: 100%;
+  height: 100%;
+}

@@ -10,26 +10,33 @@
 <meta property="og:url" content="https://www.aimazze.com">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/chambers.css">
 <style>
+  /* Chambers design system — light porcelain / teal (Local) / ochre (Cloud),
+     values from aimazze-app/src/App.css. Variable NAMES kept as-is so
+     existing selectors below don't need renaming — only values changed. */
   :root {
-    --bg: #080910;
-    --surface: #0f1016;
-    --surface2: #161820;
-    --surface3: #1e2030;
-    --border: rgba(255,255,255,0.06);
-    --border2: rgba(255,255,255,0.1);
-    --cyan: #00d4e8;
-    --cyan-dim: rgba(0,212,232,0.1);
-    --cyan-glow: rgba(0,212,232,0.15);
-    --white: #f0f2f8;
-    --muted: #6b6e80;
-    --muted2: #3a3d52;
-    --green: #22c55e;
-    --orange: #f59e0b;
-    --navy: #0a0f1e;
-    --ff: 'Bricolage Grotesque', sans-serif;
-    --mono: 'JetBrains Mono', monospace;
+    --bg: #F4F6F8;
+    --surface: #FFFFFF;
+    --surface2: #EDF0F3;
+    --surface3: #E2E6EB;
+    --border: rgba(20,23,28,0.08);
+    --border2: rgba(20,23,28,0.14);
+    --cyan: #0C6E62;
+    --cyan-dim: rgba(12,110,98,0.08);
+    --cyan-glow: rgba(12,110,98,0.14);
+    --ochre: #B0721A;
+    --ochre-soft: #F6EEDF;
+    --white: #14171C;
+    --muted: #5B6472;
+    --muted2: #8A93A1;
+    --green: #146C43;
+    --orange: #B0721A;
+    --navy: #F4F6F8;
+    --ff: 'Inter', sans-serif;
+    --fd: 'Fraunces', Georgia, serif;
+    --mono: 'DM Mono', monospace;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -66,7 +73,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 2rem;
-    background: rgba(8,9,16,0.85);
+    background: rgba(244,246,248,0.85);
     backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border);
   }
@@ -121,7 +128,7 @@
     transform: translateX(-50%);
     width: 600px;
     height: 400px;
-    background: radial-gradient(ellipse, rgba(0,212,232,0.08) 0%, transparent 70%);
+    background: radial-gradient(ellipse, rgba(12,110,98,0.10) 0%, transparent 70%);
     pointer-events: none;
     z-index: -1;
   }
@@ -154,9 +161,10 @@
   }
 
   .hero h1 {
+    font-family: var(--fd);
     font-size: clamp(2.8rem, 7vw, 5.5rem);
-    font-weight: 800;
-    letter-spacing: -0.04em;
+    font-weight: 700;
+    letter-spacing: -0.02em;
     line-height: 1.0;
     margin-bottom: 1.5rem;
     max-width: 820px;
@@ -165,7 +173,7 @@
   .hero h1 .cyan { color: var(--cyan); }
 
   .hero h1 .outline {
-    -webkit-text-stroke: 1px rgba(255,255,255,0.25);
+    -webkit-text-stroke: 1px rgba(20,23,28,0.3);
     color: transparent;
   }
 
@@ -321,9 +329,10 @@
   }
 
   .section-title {
+    font-family: var(--fd);
     font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
+    font-weight: 700;
+    letter-spacing: -0.01em;
     line-height: 1.1;
     margin-bottom: 0.75rem;
   }
@@ -341,7 +350,7 @@
     border: 1px solid var(--border2);
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+    box-shadow: 0 40px 80px rgba(20,23,28,0.16);
   }
 
   .arena-topbar {
@@ -401,7 +410,7 @@
 
   .arena-text {
     font-size: 12px;
-    color: #9ca3b8;
+    color: var(--muted);
     line-height: 1.7;
   }
 
@@ -470,6 +479,7 @@
   .persona-card:hover { border-color: var(--border2); }
 
   .persona-emoji { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .persona-card .avatar-badge { margin-bottom: 0.6rem; }
   .persona-name { font-size: 13px; font-weight: 700; color: var(--white); margin-bottom: 2px; }
   .persona-role { font-size: 11px; color: var(--muted); font-family: var(--mono); }
 
@@ -611,8 +621,9 @@
     margin: 0 1rem;
   }
   .checkout-modal-title {
-    font-size: 15px;
-    font-weight: 700;
+    font-family: var(--fd);
+    font-size: 17px;
+    font-weight: 600;
     color: var(--white);
     margin-bottom: 0.25rem;
   }
@@ -834,6 +845,41 @@
 </nav>
 
 <section class="hero">
+  <div class="network-bg" aria-hidden="true">
+    <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+      <g fill="none" stroke="#0C6E62" stroke-width="1" opacity="0.16">
+        <line x1="180" y1="140" x2="420" y2="260"/>
+        <line x1="420" y1="260" x2="380" y2="480"/>
+        <line x1="420" y1="260" x2="660" y2="200"/>
+        <line x1="660" y1="200" x2="920" y2="300"/>
+        <line x1="660" y1="200" x2="760" y2="440"/>
+        <line x1="760" y1="440" x2="980" y2="520"/>
+        <line x1="380" y1="480" x2="600" y2="620"/>
+        <line x1="600" y1="620" x2="860" y2="640"/>
+        <line x1="920" y1="300" x2="1080" y2="180"/>
+        <line x1="180" y1="140" x2="120" y2="360"/>
+        <line x1="120" y1="360" x2="380" y2="480"/>
+      </g>
+      <g fill="#0C6E62" opacity="0.35">
+        <circle cx="180" cy="140" r="4"/>
+        <circle cx="420" cy="260" r="5"/>
+        <circle cx="380" cy="480" r="4"/>
+        <circle cx="660" cy="200" r="4"/>
+        <circle cx="920" cy="300" r="4"/>
+        <circle cx="760" cy="440" r="4"/>
+        <circle cx="980" cy="520" r="4"/>
+        <circle cx="600" cy="620" r="4"/>
+        <circle cx="860" cy="640" r="4"/>
+        <circle cx="1080" cy="180" r="4"/>
+        <circle cx="120" cy="360" r="4"/>
+      </g>
+      <g fill="#B0721A" opacity="0.3">
+        <circle cx="660" cy="200" r="7"/>
+        <circle cx="380" cy="480" r="6"/>
+      </g>
+    </svg>
+  </div>
+
   <div class="hero-badge">
     <div class="dot"></div>
     Early Access — Waitlist Open Now
@@ -881,7 +927,7 @@
   <div class="waitlist-success" id="waitlist-success">
     <span style="font-size:1.2rem">🎉</span>
     <div>
-      <strong style="color:#fff">You're on the list.</strong><br>
+      <strong style="color:#14171C">You're on the list.</strong><br>
       We'll notify you the moment early access opens.
     </div>
   </div>
@@ -895,6 +941,10 @@
     <span class="pill">₹ UPI accepted</span>
     <span class="pill" id="complianceBadge" style="display:none"></span>
     <span class="pill">Mac coming soon</span>
+  </div>
+
+  <div style="margin-top:3rem;max-width:900px;width:100%;border-radius:var(--r-lg,16px);overflow:hidden;border:1px solid var(--border2);box-shadow:0 20px 48px rgba(20,23,28,0.12)">
+    <img src="/assets/images/banner-hero.png" alt="" style="display:block;width:100%;height:auto" loading="lazy">
   </div>
 </section>
 
@@ -1025,19 +1075,19 @@
     <p class="section-sub">Most AI tools ask you to trust their servers. AIMAZZE is built so you don't have to guess.</p>
 
     <div class="features-grid reveal">
-      <div class="feat-card">
+      <div class="feat-card accent-local">
         <div class="feat-icon">🔒</div>
         <div class="feat-title">Local Models — Never leaves your device</div>
         <div class="feat-body">Runs entirely on your machine. No prompt, document, or output is transmitted anywhere. This is the only tier that's private by architecture, not by policy.</div>
       </div>
-      <div class="feat-card">
+      <div class="feat-card accent-cloud">
         <div class="feat-icon">🔑</div>
         <div class="feat-title">Bring Your Own Key (Cloud) — AIMAZZE never in the middle</div>
         <div class="feat-body">Your prompts go straight from your device to the AI provider you choose, using your own API key. AIMAZZE never receives, stores, or transmits your data.
           <span class="feat-note">But you're still bound by that provider's own terms — read them before sending anything privileged or regulated.</span>
         </div>
       </div>
-      <div class="feat-card">
+      <div class="feat-card accent-risk">
         <div class="feat-icon">⚠️</div>
         <div class="feat-title">Public Consumer AI Tools — What most professionals are already exposed to</div>
         <div class="feat-body">Free consumer chatbots and browser extensions often use your inputs for training, retain them indefinitely, or share them with third parties. This is the category regulators and courts have already started scrutinizing when privileged or client data ends up there.</div>
@@ -1056,12 +1106,12 @@
 
     <div class="personas-grid reveal">
       <div class="persona-card">
-        <div class="persona-emoji">⚕️</div>
+        <img class="avatar-badge" src="/assets/images/professional-03.png" alt="" loading="lazy">
         <div class="persona-name">Docs</div>
         <div class="persona-role">Doctor · Clinician</div>
       </div>
       <div class="persona-card">
-        <div class="persona-emoji">⚖️</div>
+        <img class="avatar-badge" src="/assets/images/professional-01.png" alt="" loading="lazy">
         <div class="persona-name">Law Upkeeper</div>
         <div class="persona-role">Lawyer · Legal</div>
       </div>
@@ -1071,7 +1121,7 @@
         <div class="persona-role">Engineer · Developer</div>
       </div>
       <div class="persona-card">
-        <div class="persona-emoji">🔬</div>
+        <img class="avatar-badge" src="/assets/images/professional-04.png" alt="" loading="lazy">
         <div class="persona-name">Scientific Discoverer</div>
         <div class="persona-role">Scientist · R&D</div>
       </div>
@@ -1086,12 +1136,12 @@
         <div class="persona-role">Researcher</div>
       </div>
       <div class="persona-card">
-        <div class="persona-emoji">🎓</div>
+        <img class="avatar-badge" src="/assets/images/professional-05.png" alt="" loading="lazy">
         <div class="persona-name">Academician</div>
         <div class="persona-role">Professor · Academic</div>
       </div>
       <div class="persona-card">
-        <div class="persona-emoji">💰</div>
+        <img class="avatar-badge" src="/assets/images/professional-02.png" alt="" loading="lazy">
         <div class="persona-name">Financial Wizard</div>
         <div class="persona-role">CA · Banker · CFO</div>
       </div>
@@ -1244,7 +1294,7 @@
     <div class="waitlist-success" id="mobileWaitlistSuccess" style="display:none;margin-top:0.25rem">
       <span style="font-size:1.2rem">🎉</span>
       <div>
-        <strong style="color:#fff">You're on the list.</strong><br>
+        <strong style="color:#14171C">You're on the list.</strong><br>
         We'll email you when it's ready.
       </div>
     </div>
@@ -1252,7 +1302,7 @@
     <div class="waitlist-success" id="mobileWaitlistAlreadySubscribed" style="display:none;margin-top:0.25rem">
       <span style="font-size:1.2rem">👍</span>
       <div>
-        <strong style="color:#fff">You're already on the list.</strong><br>
+        <strong style="color:#14171C">You're already on the list.</strong><br>
         We'll notify you as soon as it's ready!
       </div>
     </div>
@@ -1313,7 +1363,7 @@
           <p style="margin-bottom:0.5rem;font-size:13px;color:var(--muted)">Where to get API keys — links verified at time of publishing, but provider sites change over time:</p>
           <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:1rem">
             <thead>
-              <tr style="border-bottom:1px solid rgba(255,255,255,0.08)">
+              <tr style="border-bottom:1px solid rgba(20,23,28,0.1)">
                 <th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:500">Provider</th>
                 <th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:500">Key features</th>
                 <th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:500">API data policy</th>
@@ -1321,58 +1371,58 @@
               </tr>
             </thead>
             <tbody>
-              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+              <tr style="border-bottom:1px solid rgba(20,23,28,0.06)">
                 <td style="padding:6px 8px;color:var(--white);font-weight:600">Anthropic (Claude)</td>
-                <td style="padding:6px 8px;color:#9ca3b8">Claude Sonnet, Opus — best for legal/clinical reasoning</td>
+                <td style="padding:6px 8px;color:var(--muted)">Claude Sonnet, Opus — best for legal/clinical reasoning</td>
                 <td style="padding:6px 8px;color:#22c55e">✓ API data not used for training</td>
                 <td style="padding:6px 8px"><a href="https://console.anthropic.com" target="_blank" rel="noopener" style="color:var(--cyan)">console.anthropic.com</a></td>
               </tr>
-              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+              <tr style="border-bottom:1px solid rgba(20,23,28,0.06)">
                 <td style="padding:6px 8px;color:var(--white);font-weight:600">OpenAI API</td>
-                <td style="padding:6px 8px;color:#9ca3b8">GPT-4o, GPT-5 — widest ecosystem, strongest general use</td>
+                <td style="padding:6px 8px;color:var(--muted)">GPT-4o, GPT-5 — widest ecosystem, strongest general use</td>
                 <td style="padding:6px 8px;color:#22c55e">✓ API data not used for training · <span style="color:#f59e0b">⚠ ChatGPT.com (consumer) is a separate, weaker-protection product from this API</span></td>
                 <td style="padding:6px 8px"><a href="https://platform.openai.com" target="_blank" rel="noopener" style="color:var(--cyan)">platform.openai.com</a></td>
               </tr>
-              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+              <tr style="border-bottom:1px solid rgba(20,23,28,0.06)">
                 <td style="padding:6px 8px;color:var(--white);font-weight:600">Microsoft Azure OpenAI</td>
-                <td style="padding:6px 8px;color:#9ca3b8">OpenAI models on Microsoft infrastructure — enterprise grade. Note: Copilot is a separate Microsoft 365 product, not a BYOK API</td>
+                <td style="padding:6px 8px;color:var(--muted)">OpenAI models on Microsoft infrastructure — enterprise grade. Note: Copilot is a separate Microsoft 365 product, not a BYOK API</td>
                 <td style="padding:6px 8px;color:#22c55e">✓ No training on your data by contract; strong enterprise SLA</td>
                 <td style="padding:6px 8px"><a href="https://portal.azure.com" target="_blank" rel="noopener" style="color:var(--cyan)">portal.azure.com</a></td>
               </tr>
-              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+              <tr style="border-bottom:1px solid rgba(20,23,28,0.06)">
                 <td style="padding:6px 8px;color:var(--white);font-weight:600">Google (Gemini API)</td>
-                <td style="padding:6px 8px;color:#9ca3b8">Gemini 2.5 Pro — best multimodal, largest context window</td>
+                <td style="padding:6px 8px;color:var(--muted)">Gemini 2.5 Pro — best multimodal, largest context window</td>
                 <td style="padding:6px 8px;color:#f59e0b">⚠ API tier carries stronger protections; Gemini Advanced (consumer) does not — same tier distinction applies</td>
                 <td style="padding:6px 8px"><a href="https://aistudio.google.com" target="_blank" rel="noopener" style="color:var(--cyan)">aistudio.google.com</a></td>
               </tr>
-              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+              <tr style="border-bottom:1px solid rgba(20,23,28,0.06)">
                 <td style="padding:6px 8px;color:var(--white);font-weight:600">Groq</td>
-                <td style="padding:6px 8px;color:#9ca3b8">Llama, Mixtral — fastest inference, lowest cost</td>
+                <td style="padding:6px 8px;color:var(--muted)">Llama, Mixtral — fastest inference, lowest cost</td>
                 <td style="padding:6px 8px;color:#f59e0b">⚠ 7-day log retention by default</td>
                 <td style="padding:6px 8px"><a href="https://console.groq.com" target="_blank" rel="noopener" style="color:var(--cyan)">console.groq.com</a></td>
               </tr>
-              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+              <tr style="border-bottom:1px solid rgba(20,23,28,0.06)">
                 <td style="padding:6px 8px;color:var(--white);font-weight:600">Mistral AI</td>
-                <td style="padding:6px 8px;color:#9ca3b8">Mistral Large — EU data residency built in</td>
+                <td style="padding:6px 8px;color:var(--muted)">Mistral Large — EU data residency built in</td>
                 <td style="padding:6px 8px;color:#22c55e">✓ EU data residency, strong enterprise terms</td>
                 <td style="padding:6px 8px"><a href="https://console.mistral.ai" target="_blank" rel="noopener" style="color:var(--cyan)">console.mistral.ai</a></td>
               </tr>
-              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+              <tr style="border-bottom:1px solid rgba(20,23,28,0.06)">
                 <td style="padding:6px 8px;color:var(--white);font-weight:600">xAI (Grok)</td>
-                <td style="padding:6px 8px;color:#9ca3b8">Grok 4 — real-time web data, very low cost</td>
-                <td style="padding:6px 8px;color:#9ca3b8">Review current policy before sensitive use</td>
+                <td style="padding:6px 8px;color:var(--muted)">Grok 4 — real-time web data, very low cost</td>
+                <td style="padding:6px 8px;color:var(--muted)">Review current policy before sensitive use</td>
                 <td style="padding:6px 8px"><a href="https://console.x.ai" target="_blank" rel="noopener" style="color:var(--cyan)">console.x.ai</a></td>
               </tr>
-              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+              <tr style="border-bottom:1px solid rgba(20,23,28,0.06)">
                 <td style="padding:6px 8px;color:var(--white);font-weight:600">DeepSeek</td>
-                <td style="padding:6px 8px;color:#9ca3b8">DeepSeek V3 — very low cost, strong reasoning</td>
+                <td style="padding:6px 8px;color:var(--muted)">DeepSeek V3 — very low cost, strong reasoning</td>
                 <td style="padding:6px 8px;color:#f59e0b">⚠ China-based; review carefully for regulated work</td>
                 <td style="padding:6px 8px"><a href="https://platform.deepseek.com" target="_blank" rel="noopener" style="color:var(--cyan)">platform.deepseek.com</a></td>
               </tr>
               <tr>
                 <td style="padding:6px 8px;color:var(--white);font-weight:600">OpenRouter</td>
-                <td style="padding:6px 8px;color:#9ca3b8">400+ models via one key — broadest access available</td>
-                <td style="padding:6px 8px;color:#9ca3b8">Depends on underlying provider routed to</td>
+                <td style="padding:6px 8px;color:var(--muted)">400+ models via one key — broadest access available</td>
+                <td style="padding:6px 8px;color:var(--muted)">Depends on underlying provider routed to</td>
                 <td style="padding:6px 8px"><a href="https://openrouter.ai/keys" target="_blank" rel="noopener" style="color:var(--cyan)">openrouter.ai/keys</a></td>
               </tr>
             </tbody>
@@ -1469,7 +1519,7 @@
   <div class="waitlist-success" id="final-waitlist-success" style="margin:0 auto">
     <span style="font-size:1.2rem">🎉</span>
     <div>
-      <strong style="color:#fff">You're on the list.</strong><br>
+      <strong style="color:#14171C">You're on the list.</strong><br>
       We'll notify you the moment early access opens.
     </div>
   </div>
