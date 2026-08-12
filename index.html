@@ -1201,6 +1201,7 @@
         <div class="price-feature">30-day history</div>
         <div class="price-feature">5 Vault files</div>
         <div class="price-feature">Offline capable</div>
+        <div class="price-feature">1 local profile (no sharing)</div>
       </div>
       <div class="price-card"
            data-tier="starter"
@@ -1220,7 +1221,7 @@
         <div class="price-feature">Arena: 2 models</div>
         <div class="price-feature">Unlimited history</div>
         <div class="price-feature">20 Vault files</div>
-        <div class="price-feature">Voice input</div>
+        <div class="price-feature">2 local profiles</div>
         <button class="price-cta" data-tier="starter">Get Starter</button>
       </div>
       <div class="price-card featured"
@@ -1240,9 +1241,8 @@
         <div class="price-feature">Arena: up to 8 models</div>
         <div class="price-feature">Unlimited Vault + OCR</div>
         <div class="price-feature">All 8 professional personas</div>
-        <div class="price-feature">PDF / DOCX export</div>
-        <div class="price-feature">Gateway selector</div>
         <div class="price-feature">Custom avatar builder</div>
+        <div class="price-feature">5 local profiles</div>
         <button class="price-cta" data-tier="pro">Get Pro</button>
       </div>
       <div class="price-card"
@@ -1258,11 +1258,11 @@
         <div class="price-amount-inr" data-display="amount-inr">₹2,499<span class="price-amount-inr-suffix"> / month (India)</span></div>
         <div class="price-amount-equiv" data-display="equiv"></div>
         <div class="price-period" data-display="period">/ month · cancel anytime</div>
-        <div class="price-feature">HIPAA-aligned · GDPR-aligned · DPDP-aligned</div>
-        <div class="price-feature">BAA template included</div>
+        <div class="price-feature">HIPAA/GDPR/DPDP-aligned architecture (built into every plan)</div>
         <div class="price-feature">Team workspace (10 seats)</div>
         <div class="price-feature">Priority support</div>
-        <div class="price-feature">40% cheaper than Claude Team</div>
+        <div class="price-feature">40%+ cheaper than Claude Team for a 10-person team</div>
+        <div class="price-feature">10 local profiles</div>
         <button class="price-cta" data-tier="elite">Get Elite</button>
       </div>
       <div class="price-card" data-tier="lifetime" data-inr-paise="1499900">
@@ -1273,7 +1273,8 @@
         <div class="price-feature">Zero AIMAZZE charges forever</div>
         <div class="price-feature">Full Pro features forever</div>
         <div class="price-feature">All future updates included</div>
-        <div class="price-feature">Pays for itself in 13 months</div>
+        <div class="price-feature">Pays for itself in about 6 months</div>
+        <div class="price-feature">15 local profiles</div>
         <div class="price-feature">Connect your own accounts</div>
         <button class="price-cta" data-tier="lifetime">Get Lifetime</button>
       </div>
@@ -1291,6 +1292,15 @@
     <div class="checkout-modal-sub" id="checkoutModalSub">₹999 / month · billed via Razorpay</div>
     <input type="text" id="checkoutName" placeholder="Full name" autocomplete="name">
     <input type="email" id="checkoutEmail" placeholder="Email address" autocomplete="email">
+    <!-- Tier 1 promo codes (12 Aug 2026): Lifetime (one-time order) only —
+         Razorpay subscriptions charge a fixed Plan amount server-side and
+         aren't wired to accept a discount yet, see /create-subscription's
+         comment in the script below. Hidden for non-Lifetime tiers. -->
+    <div class="checkout-promo-row" id="checkoutPromoRow" style="display:none">
+      <input type="text" id="checkoutPromoCode" placeholder="Promo code (optional)" autocomplete="off" style="text-transform:uppercase">
+      <button type="button" class="checkout-promo-apply" id="checkoutPromoApplyBtn">Apply</button>
+    </div>
+    <div class="checkout-modal-warning" id="checkoutPromoStatus" style="display:none"></div>
     <!-- Interim batch, 11 Aug 2026: legal-doc acceptance harness. Hidden by
          default — index.html's LEGAL_ACCEPTANCE_ENFORCED flag (see script
          below) controls both visibility and whether Continue is blocked
@@ -1344,6 +1354,25 @@
 </div>
 
 <style>
+  .checkout-promo-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.7rem;
+  }
+  .checkout-promo-row input {
+    flex: 1;
+    margin-bottom: 0;
+  }
+  .checkout-promo-apply {
+    background: var(--surface2, #EDF0F3);
+    border: 1px solid rgba(20,23,28,0.1);
+    border-radius: 8px;
+    padding: 0 14px;
+    font-size: 13px;
+    font-family: var(--ff);
+    cursor: pointer;
+  }
+  .checkout-promo-apply:disabled { opacity: 0.5; cursor: not-allowed; }
   .checkout-modal-warning {
     display: none;
     font-size: 11px;
@@ -1377,7 +1406,7 @@
           <span class="faq-chevron">▼</span>
         </button>
         <div class="faq-a">
-          Yes, with one nuance worth understanding. <strong>Local models</strong> are the simplest answer: nothing leaves your device, so there's no compliance question to ask. <strong>BYOK (your own provider keys)</strong> routes device-to-provider with AIMAZZE never in the data path — but here the responsibility to verify comes from your <em>provider's</em> terms, not AIMAZZE's architecture. Public consumer AI apps are the category regulators and courts have been scrutinizing for privileged data ending up somewhere it shouldn't; AIMAZZE's BYOK connects you to provider APIs rather than consumer apps, which is a meaningfully different category — though it's always good practice to glance at your provider's data policy for anything privileged. See <a href="/security.html">how AIMAZZE protects your data</a> for the full breakdown. Elite tier also includes a BAA template for HIPAA contexts.
+          Yes, with one nuance worth understanding. <strong>Local models</strong> are the simplest answer: nothing leaves your device, so there's no compliance question to ask. <strong>BYOK (your own provider keys)</strong> routes device-to-provider with AIMAZZE never in the data path — but here the responsibility to verify comes from your <em>provider's</em> terms, not AIMAZZE's architecture. Public consumer AI apps are the category regulators and courts have been scrutinizing for privileged data ending up somewhere it shouldn't; AIMAZZE's BYOK connects you to provider APIs rather than consumer apps, which is a meaningfully different category — though it's always good practice to glance at your provider's data policy for anything privileged. See <a href="/security.html">how AIMAZZE protects your data</a> for the full breakdown.
         </div>
       </div>
       <div class="faq-item">
@@ -1769,8 +1798,13 @@
   var cancelBtn = document.getElementById("checkoutCancelBtn");
   var continueBtn = document.getElementById("checkoutContinueBtn");
   var warnEl = document.getElementById("checkoutWarning");
+  var promoRow = document.getElementById("checkoutPromoRow");
+  var promoCodeInput = document.getElementById("checkoutPromoCode");
+  var promoApplyBtn = document.getElementById("checkoutPromoApplyBtn");
+  var promoStatusEl = document.getElementById("checkoutPromoStatus");
 
   var activeTier = null;
+  var appliedPromoCode = null; // only set once /promo/validate has confirmed it
   var activeAmountSubunit = null; // paise (INR) or cents (USD) — same subunit convention
   var activeCurrency = "INR";    // "INR" or "USD"
   var activeBillingCycle = "monthly";
@@ -1813,6 +1847,15 @@
     nameInput.value = "";
     emailInput.value = upgradeEmail || "";
     emailInput.readOnly = !!upgradeEmail;
+
+    appliedPromoCode = null;
+    promoCodeInput.value = "";
+    promoStatusEl.style.display = "none";
+    promoApplyBtn.disabled = false;
+    promoApplyBtn.textContent = "Apply";
+    // Lifetime (one-time order) only — see the promo row's HTML comment.
+    promoRow.style.display = tier === "lifetime" ? "flex" : "none";
+
     overlay.classList.add("open");
     nameInput.focus();
   }
@@ -1823,7 +1866,52 @@
     activeAmountSubunit = null;
     activeCurrency = "INR";
     activeBillingCycle = "monthly";
+    appliedPromoCode = null;
   }
+
+  function setPromoStatus(text, isError) {
+    promoStatusEl.textContent = text;
+    promoStatusEl.style.display = text ? "block" : "none";
+    promoStatusEl.style.color = isError ? "var(--red)" : "var(--cyan, #0C6E62)";
+  }
+
+  promoApplyBtn.addEventListener("click", function () {
+    var code = promoCodeInput.value.trim().toUpperCase();
+    var email = emailInput.value.trim();
+    if (!code) { setPromoStatus("Enter a code first.", true); return; }
+    if (!isValidEmail(email)) { setPromoStatus("Enter your email above first.", true); return; }
+
+    promoApplyBtn.disabled = true;
+    setPromoStatus("Checking…", false);
+
+    fetch(WORKER_URL + "/promo/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: code, email: email, plan: activeTier, amount: activeAmountSubunit })
+    })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        promoApplyBtn.disabled = false;
+        if (data.valid) {
+          appliedPromoCode = code;
+          promoApplyBtn.textContent = "Applied";
+          var savedText = data.discountType === "percent"
+            ? data.discountValue + "% off applied."
+            : data.discountType === "flat"
+              ? "Discount applied."
+              : "Code applied.";
+          setPromoStatus(savedText, false);
+        } else {
+          appliedPromoCode = null;
+          promoApplyBtn.textContent = "Apply";
+          setPromoStatus(data.error || "Invalid code.", true);
+        }
+      })
+      .catch(function () {
+        promoApplyBtn.disabled = false;
+        setPromoStatus("Couldn't reach the server.", true);
+      });
+  });
 
   function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -1875,7 +1963,8 @@
         currency: activeCurrency,
         name: name,
         email: email,
-        confirmed: !!confirmed
+        confirmed: !!confirmed,
+        promoCode: appliedPromoCode || undefined
       })
     }).then(function (res) {
       if (!res.ok) throw new Error("Order creation failed");

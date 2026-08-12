@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIMAZZE Admin</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/chambers.css">
+<style>
+:root{
+  --bg:#F4F6F8;--surface:#FFFFFF;--surface2:#EDF0F3;
+  --border:rgba(20,23,28,0.1);
+  --cyan:#0C6E62;--cyan2:#E4F0EE;--cyan3:rgba(12,110,98,0.06);
+  --white:#14171C;--muted:#5B6472;--muted2:#8A93A1;
+  --amber:#B0721A;--amber2:#F6EEDF;
+  --red:#B4382F;--red2:#F7E7E5;
+  --font-display:'Fraunces',Georgia,serif;
+  --font-body:'Inter',sans-serif;
+  --font-mono:'DM Mono',monospace;
+  --radius:12px;--radius-lg:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--white);
+  min-height:100vh;
+  line-height:1.6;
+}
+.wrap{max-width:960px;margin:0 auto;padding:32px 24px}
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:1.75rem;
+  margin-bottom:1.5rem;
+}
+h1{font-family:var(--font-display);font-size:1.6rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:1.5rem}
+h2{font-family:var(--font-display);font-size:1.1rem;font-weight:700;margin-bottom:1rem}
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.login-card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem}
+input{
+  width:100%;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:11px 13px;
+  font-family:var(--font-body);
+  font-size:14px;
+  color:var(--white);
+  margin-bottom:0.75rem;
+  outline:none;
+}
+input:focus{border-color:var(--cyan)}
+.btn{
+  background:var(--cyan);
+  color:#07080d;
+  font-weight:700;
+  font-size:13px;
+  padding:10px 18px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-family:var(--font-body);
+  transition:opacity .15s;
+}
+.btn:hover{opacity:0.9}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.btn.secondary{background:var(--surface2);color:var(--white)}
+.status{font-size:12px;margin-top:0.5rem;min-height:16px}
+.status.error{color:var(--red)}
+.status.info{color:var(--muted)}
+.status.ok{color:var(--cyan)}
+.tabs{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap}
+.tab-btn{padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-size:13px;font-family:var(--font-body);color:var(--muted)}
+.tab-btn.active{background:var(--cyan2);color:var(--cyan);border-color:var(--cyan)}
+.panel{display:none}
+.panel.active{display:block}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)}
+th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.05em}
+.row{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.row input{flex:1;min-width:180px;margin-bottom:0}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600}
+.badge.open{background:var(--amber2);color:var(--amber)}
+.badge.resolved{background:var(--cyan2);color:var(--cyan)}
+.badge.escalated{background:var(--red2);color:var(--red)}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
+.muted{color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <h1>AIMAZZE Admin</h1>
+    <input type="email" id="loginEmail" placeholder="Admin email" autocomplete="username">
+    <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+    <button class="btn" id="loginBtn" style="width:100%">Log in</button>
+    <div class="status" id="loginStatus"></div>
+  </div>
+</div>
+
+<div class="wrap" id="dashboardWrap" style="display:none">
+  <div class="topbar">
+    <h1 style="margin-bottom:0">AIMAZZE Admin — Tier 1</h1>
+    <button class="btn secondary" id="logoutBtn">Log out</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-panel="tickets">Tickets</button>
+    <button class="tab-btn" data-panel="license">License lookup</button>
+    <button class="tab-btn" data-panel="analytics">Revenue &amp; geo</button>
+  </div>
+
+  <div class="panel active" id="panel-tickets">
+    <div class="card">
+      <h2>Support tickets</h2>
+      <p class="muted" style="margin-bottom:1rem">support@aimazze.com only — hello@aimazze.com stays a plain inbox by design.</p>
+      <div id="ticketsTable"><p class="muted">Loading…</p></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-license">
+    <div class="card">
+      <h2>License lookup &amp; resend</h2>
+      <p class="muted" style="margin-bottom:1rem">"License not received" runbook: look up by email, resend the existing key. Regenerating a brand-new key isn't supported from here yet — see the note below if resend isn't possible.</p>
+      <div class="row">
+        <input type="email" id="licenseEmail" placeholder="Customer email">
+        <button class="btn" id="licenseLookupBtn">Look up</button>
+      </div>
+      <div id="licenseResults"></div>
+      <div class="status" id="licenseStatus"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-analytics">
+    <div class="card">
+      <h2>Revenue by plan</h2>
+      <div id="revenueTable"><p class="muted">Loading…</p></div>
+    </div>
+    <div class="card">
+      <h2>Geo distribution</h2>
+      <div id="geoTable"><p class="muted">Loading…</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Tier 1 admin/growth module (12 Aug 2026). This page calls
+  // aimazze-worker directly (different origin) with credentials so the
+  // admin_session cookie rides along — the worker's adminCorsHeaders()
+  // echoes this exact origin and sets Allow-Credentials for that reason.
+  // No broader RBAC yet: a single admin_users table, one session, no
+  // roles — Tier 2 extends this rather than replacing it.
+  var WORKER_URL = "https://aimazze-worker.amrutcm1.workers.dev";
+
+  var loginWrap = document.getElementById('loginWrap');
+  var dashboardWrap = document.getElementById('dashboardWrap');
+  var loginEmail = document.getElementById('loginEmail');
+  var loginPassword = document.getElementById('loginPassword');
+  var loginBtn = document.getElementById('loginBtn');
+  var loginStatus = document.getElementById('loginStatus');
+  var logoutBtn = document.getElementById('logoutBtn');
+
+  function setStatus(el, text, kind){
+    el.textContent = text;
+    el.className = 'status' + (kind ? ' ' + kind : '');
+  }
+
+  function api(path, opts){
+    opts = opts || {};
+    opts.credentials = 'include';
+    opts.headers = Object.assign({ 'Content-Type': 'application/json' }, opts.headers || {});
+    return fetch(WORKER_URL + path, opts).then(function(res){
+      return res.json().catch(function(){ return {}; }).then(function(data){
+        return { ok: res.ok, status: res.status, data: data };
+      });
+    });
+  }
+
+  function showDashboard(){
+    loginWrap.style.display = 'none';
+    dashboardWrap.style.display = 'block';
+    loadTickets();
+    loadAnalytics();
+  }
+
+  loginBtn.addEventListener('click', function(){
+    var email = loginEmail.value.trim();
+    var password = loginPassword.value;
+    if (!email || !password) { setStatus(loginStatus, 'Enter email and password.', 'error'); return; }
+    loginBtn.disabled = true;
+    setStatus(loginStatus, 'Logging in…', 'info');
+    api('/admin/login', { method: 'POST', body: JSON.stringify({ email: email, password: password }) })
+      .then(function(result){
+        loginBtn.disabled = false;
+        if (result.ok && result.data.success) {
+          showDashboard();
+        } else {
+          setStatus(loginStatus, (result.data && result.data.error) || 'Login failed.', 'error');
+        }
+      })
+      .catch(function(){
+        loginBtn.disabled = false;
+        setStatus(loginStatus, "Couldn't reach the server.", 'error');
+      });
+  });
+
+  logoutBtn.addEventListener('click', function(){
+    api('/admin/logout', { method: 'POST' }).then(function(){
+      dashboardWrap.style.display = 'none';
+      loginWrap.style.display = 'flex';
+      loginEmail.value = '';
+      loginPassword.value = '';
+    });
+  });
+
+  // Tabs
+  Array.prototype.forEach.call(document.querySelectorAll('.tab-btn'), function(btn){
+    btn.addEventListener('click', function(){
+      Array.prototype.forEach.call(document.querySelectorAll('.tab-btn'), function(b){ b.classList.remove('active'); });
+      Array.prototype.forEach.call(document.querySelectorAll('.panel'), function(p){ p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
+    });
+  });
+
+  function escapeHtml(str){
+    return String(str == null ? '' : str).replace(/[&<>"']/g, function(c){
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function loadTickets(){
+    var el = document.getElementById('ticketsTable');
+    api('/admin/tickets').then(function(result){
+      if (!result.ok) { el.innerHTML = '<p class="muted">Session expired — log in again.</p>'; return; }
+      var tickets = result.data.tickets || [];
+      if (!tickets.length) { el.innerHTML = '<p class="muted">No tickets yet.</p>'; return; }
+      var rows = tickets.map(function(t){
+        return '<tr><td>' + escapeHtml(t.ticket_number) + '</td><td>' + escapeHtml(t.from_email) +
+          '</td><td>' + escapeHtml(t.subject) + '</td><td><span class="badge ' + escapeHtml(t.status) + '">' +
+          escapeHtml(t.status) + '</span></td><td>' + new Date(t.created_at).toLocaleString() + '</td></tr>';
+      }).join('');
+      el.innerHTML = '<table><thead><tr><th>Ticket</th><th>From</th><th>Subject</th><th>Status</th><th>Received</th></tr></thead><tbody>' + rows + '</tbody></table>';
+    });
+  }
+
+  document.getElementById('licenseLookupBtn').addEventListener('click', function(){
+    var email = document.getElementById('licenseEmail').value.trim();
+    var resultsEl = document.getElementById('licenseResults');
+    var statusEl = document.getElementById('licenseStatus');
+    if (!email) { setStatus(statusEl, 'Enter a customer email.', 'error'); return; }
+    setStatus(statusEl, 'Looking up…', 'info');
+    resultsEl.innerHTML = '';
+
+    api('/admin/license/lookup?email=' + encodeURIComponent(email)).then(function(result){
+      if (!result.ok) { setStatus(statusEl, (result.data && result.data.error) || 'Lookup failed.', 'error'); return; }
+      var licenses = result.data.licenses || [];
+      if (!licenses.length) { setStatus(statusEl, 'No license found for that email.', 'error'); return; }
+      setStatus(statusEl, '', '');
+
+      resultsEl.innerHTML = licenses.map(function(l){
+        var resendAttrs = l.keyRetrievable ? '' : 'disabled title="Key not retrievable via Keygen API — use the Keygen dashboard"';
+        return '<div style="padding:12px 0;border-bottom:1px solid var(--border)">' +
+          '<div><strong>' + escapeHtml(l.tier || 'unknown tier') + '</strong> — ' + escapeHtml(l.status || '') + '</div>' +
+          '<div class="muted">License ID: ' + escapeHtml(l.licenseId) + ' · created ' + escapeHtml(l.createdAt || '') + '</div>' +
+          '<button class="btn secondary resend-btn" style="margin-top:8px" data-license-id="' + escapeHtml(l.licenseId) + '" data-email="' + escapeHtml(email) + '" ' + resendAttrs + '>Resend license email</button>' +
+          '</div>';
+      }).join('');
+
+      Array.prototype.forEach.call(resultsEl.querySelectorAll('.resend-btn'), function(btn){
+        btn.addEventListener('click', function(){
+          btn.disabled = true;
+          setStatus(statusEl, 'Sending…', 'info');
+          api('/admin/license/resend', {
+            method: 'POST',
+            body: JSON.stringify({ email: btn.dataset.email, licenseId: btn.dataset.licenseId })
+          }).then(function(res){
+            btn.disabled = false;
+            if (res.ok) { setStatus(statusEl, 'License email resent.', 'ok'); }
+            else { setStatus(statusEl, (res.data && res.data.error) || 'Resend failed.', 'error'); }
+          });
+        });
+      });
+    });
+  });
+
+  function loadAnalytics(){
+    api('/admin/analytics/revenue').then(function(result){
+      var el = document.getElementById('revenueTable');
+      if (!result.ok) { el.innerHTML = '<p class="muted">Session expired.</p>'; return; }
+      var rows = result.data.revenue || [];
+      if (!rows.length) { el.innerHTML = '<p class="muted">No payment records yet (test-mode Razorpay key — real data lands once live keys go in).</p>'; return; }
+      el.innerHTML = '<table><thead><tr><th>Plan</th><th>Currency</th><th>Count</th><th>Total</th></tr></thead><tbody>' +
+        rows.map(function(r){ return '<tr><td>' + escapeHtml(r.plan) + '</td><td>' + escapeHtml(r.currency) + '</td><td>' + r.count + '</td><td>' + (r.total_amount || 0) + '</td></tr>'; }).join('') +
+        '</tbody></table>';
+    });
+
+    api('/admin/analytics/geo').then(function(result){
+      var el = document.getElementById('geoTable');
+      if (!result.ok) { el.innerHTML = '<p class="muted">Session expired.</p>'; return; }
+      var rows = result.data.geo || [];
+      if (!rows.length) { el.innerHTML = '<p class="muted">No payment records yet.</p>'; return; }
+      el.innerHTML = '<table><thead><tr><th>Country</th><th>Count</th><th>Total</th></tr></thead><tbody>' +
+        rows.map(function(r){ return '<tr><td>' + escapeHtml(r.country) + '</td><td>' + r.count + '</td><td>' + (r.total_amount || 0) + '</td></tr>'; }).join('') +
+        '</tbody></table>';
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
