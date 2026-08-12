@@ -565,6 +565,17 @@
     font-family: var(--mono);
     margin-top: 2px;
   }
+  .price-amount-was {
+    font-size: 0.7em;
+    font-weight: 600;
+    color: var(--muted);
+    text-decoration: line-through;
+    text-decoration-color: var(--muted);
+    margin-right: 7px;
+  }
+  .price-amount-now {
+    color: #0FA88F;
+  }
   .price-cta {
     width: 100%;
     margin-top: 1rem;
@@ -1197,8 +1208,8 @@
            data-monthly-inr-paise="49900" data-annual-inr-paise="499000">
         <div class="price-name">Starter</div>
         <div class="billing-toggle" data-toggle-for="starter">
-          <button type="button" class="active" data-cycle="monthly">Monthly</button>
-          <button type="button" data-cycle="annual">Annual</button>
+          <button type="button" data-cycle="monthly">Monthly</button>
+          <button type="button" class="active" data-cycle="annual">Annual</button>
         </div>
         <div class="price-amount" data-display="amount">$7</div>
         <div class="price-amount-inr" data-display="amount-inr">₹499<span class="price-amount-inr-suffix"> / month (India)</span></div>
@@ -1219,8 +1230,8 @@
         <div class="price-badge">Most popular</div>
         <div class="price-name">Pro</div>
         <div class="billing-toggle" data-toggle-for="pro">
-          <button type="button" class="active" data-cycle="monthly">Monthly</button>
-          <button type="button" data-cycle="annual">Annual</button>
+          <button type="button" data-cycle="monthly">Monthly</button>
+          <button type="button" class="active" data-cycle="annual">Annual</button>
         </div>
         <div class="price-amount" data-display="amount">$19</div>
         <div class="price-amount-inr" data-display="amount-inr">₹999<span class="price-amount-inr-suffix"> / month (India)</span></div>
@@ -1240,8 +1251,8 @@
            data-monthly-inr-paise="249900" data-annual-inr-paise="2499000">
         <div class="price-name">Elite</div>
         <div class="billing-toggle" data-toggle-for="elite">
-          <button type="button" class="active" data-cycle="monthly">Monthly</button>
-          <button type="button" data-cycle="annual">Annual</button>
+          <button type="button" data-cycle="monthly">Monthly</button>
+          <button type="button" class="active" data-cycle="annual">Annual</button>
         </div>
         <div class="price-amount" data-display="amount">$49</div>
         <div class="price-amount-inr" data-display="amount-inr">₹2,499<span class="price-amount-inr-suffix"> / month (India)</span></div>
@@ -1677,8 +1688,11 @@
           equivEl.textContent = "";
           periodEl.textContent = originalPeriodText;
         } else {
-          amountEl.textContent = formatUsdMonthlyEquiv(annualUsd);
-          amountInrEl.innerHTML = formatInrMonthlyEquiv(annualInrPaise) + "<span class=\"price-amount-inr-suffix\"> / month (India)</span>";
+          amountEl.innerHTML = "<span class=\"price-amount-was\">" + formatUsd(monthlyUsd) + "</span>" +
+            "<span class=\"price-amount-now\">" + formatUsdMonthlyEquiv(annualUsd) + "</span>";
+          amountInrEl.innerHTML = "<span class=\"price-amount-was\">" + formatInr(monthlyInrPaise) + "</span>" +
+            "<span class=\"price-amount-now\">" + formatInrMonthlyEquiv(annualInrPaise) + "</span>" +
+            "<span class=\"price-amount-inr-suffix\"> / month (India)</span>";
           equivEl.innerHTML = "(billed as " + formatUsd(annualUsd) + "/yr " +
             "<span class=\"save-badge\">&middot; 2 months free</span>)";
           periodEl.textContent = "/ month, billed annually" + (trailingClause ? " " + trailingClause : "");
@@ -1688,7 +1702,7 @@
       monthlyBtn.addEventListener("click", function () { render("monthly"); });
       annualBtn.addEventListener("click", function () { render("annual"); });
 
-      render("monthly"); // initial state — matches the static HTML defaults
+      render("annual"); // default to Annual per ACM's pricing-emphasis direction
     });
   })();
 </script>
