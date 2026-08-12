@@ -64,6 +64,28 @@
     opacity: 0.4;
   }
 
+  .top-banner {
+    position: relative;
+    width: 100%;
+  }
+  .top-banner img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .top-banner-logo {
+    position: absolute;
+    left: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--ff);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    font-size: clamp(1.3rem, 3.2vw, 2.4rem);
+    color: var(--white);
+  }
+  .top-banner-logo .cyan { color: var(--cyan); }
+
   nav {
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -833,6 +855,11 @@
 </head>
 <body>
 
+<div class="top-banner">
+  <img src="/assets/images/banner-hero.png" alt="AIMAZZE — built for doctors, lawyers, scientists, and researchers" loading="eager">
+  <div class="top-banner-logo"><span class="cyan">AI</span>MAZZE</div>
+</div>
+
 <nav>
   <div class="nav-brand"><span class="cyan">AI</span>MAZZE</div>
   <div class="nav-links">
@@ -941,10 +968,6 @@
     <span class="pill">₹ UPI accepted</span>
     <span class="pill" id="complianceBadge" style="display:none"></span>
     <span class="pill">Mac coming soon</span>
-  </div>
-
-  <div style="margin-top:3rem;max-width:900px;width:100%;border-radius:var(--r-lg,16px);overflow:hidden;border:1px solid var(--border2);box-shadow:0 20px 48px rgba(20,23,28,0.12)">
-    <img src="/assets/images/banner-hero.png" alt="" style="display:block;width:100%;height:auto" loading="lazy">
   </div>
 </section>
 
@@ -1106,8 +1129,8 @@
 
     <div class="personas-grid reveal">
       <div class="persona-card">
-        <img class="avatar-badge" src="/assets/images/professional-03.png" alt="" loading="lazy">
-        <div class="persona-name">Docs</div>
+        <img class="avatar-badge" src="/assets/images/professional-02.png" alt="" loading="lazy">
+        <div class="persona-name">Doctor</div>
         <div class="persona-role">Doctor · Clinician</div>
       </div>
       <div class="persona-card">
@@ -1121,7 +1144,7 @@
         <div class="persona-role">Engineer · Developer</div>
       </div>
       <div class="persona-card">
-        <img class="avatar-badge" src="/assets/images/professional-04.png" alt="" loading="lazy">
+        <img class="avatar-badge" src="/assets/images/professional-03.png" alt="" loading="lazy">
         <div class="persona-name">Scientific Discoverer</div>
         <div class="persona-role">Scientist · R&D</div>
       </div>
@@ -1141,7 +1164,7 @@
         <div class="persona-role">Professor · Academic</div>
       </div>
       <div class="persona-card">
-        <img class="avatar-badge" src="/assets/images/professional-02.png" alt="" loading="lazy">
+        <img class="avatar-badge" src="/assets/images/professional-04.png" alt="" loading="lazy">
         <div class="persona-name">Financial Wizard</div>
         <div class="persona-role">CA · Banker · CFO</div>
       </div>
