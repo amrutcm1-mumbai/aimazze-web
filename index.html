@@ -1221,6 +1221,7 @@
         <div class="price-feature">Arena: 2 models</div>
         <div class="price-feature">Unlimited history</div>
         <div class="price-feature">20 Vault files</div>
+        <div class="price-feature">Voice input</div>
         <div class="price-feature">2 local profiles</div>
         <button class="price-cta" data-tier="starter">Get Starter</button>
       </div>
@@ -1598,7 +1599,7 @@
     &nbsp;·&nbsp;
     <a href="#faq">FAQ</a>
     &nbsp;·&nbsp;
-    <a href="mailto:amrut@amrynnova.com">Contact</a>
+    <a href="mailto:hello@aimazze.com">Contact</a>
   </div>
   <div style="margin-bottom:0.75rem">
     <a href="/terms.html">Terms</a>
@@ -1739,7 +1740,7 @@
 <script>
 (function () {
   var WORKER_URL = "https://aimazze-worker.amrutcm1.workers.dev";
-  var RAZORPAY_KEY_ID = "rzp_test_T0eEA7nmapJ06k";
+  var RAZORPAY_KEY_ID = "rzp_test_TPA673MO18rbnH";
 
   // Interim batch, 11 Aug 2026: legal-doc acceptance harness. FALSE means
   // the checkbox stays hidden and checkout proceeds exactly as before —
@@ -2106,7 +2107,7 @@
       .catch(function (err) {
         continueBtn.disabled = false;
         continueBtn.textContent = "Continue to payment";
-        errorEl.textContent = "Something went wrong. Please try again or contact support.";
+        errorEl.innerHTML = 'Something went wrong. Please try again or email <a href="mailto:hello@aimazze.com">hello@aimazze.com</a>.';
         errorEl.style.display = "block";
         console.error("Checkout error:", err);
       });
