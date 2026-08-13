@@ -1069,7 +1069,9 @@
       <div class="feat-card">
         <div class="feat-icon">🔒</div>
         <div class="feat-title">Local-first by architecture</div>
-        <div class="feat-body">Your conversations, documents, and API keys live on your device only. With local models, nothing is transmitted at all; with your own provider keys, AIMAZZE is never in the data path. Independently auditable — not just a policy promise.</div>
+        <div class="feat-body">Your conversations, documents, and API keys live on your device only. With local models, nothing is transmitted at all; with your own provider keys, AIMAZZE is never in the data path. Independently auditable — not just a policy promise.
+          <span class="feat-note">One exception: voice input (Starter plan and up) sends your spoken audio to Microsoft's cloud speech service for transcription. Typing is unaffected and stays fully on-device.</span>
+        </div>
       </div>
       <div class="feat-card">
         <div class="feat-icon">⚔</div>
@@ -1112,7 +1114,9 @@
       <div class="feat-card accent-local">
         <div class="feat-icon">🔒</div>
         <div class="feat-title">Local Models — Never leaves your device</div>
-        <div class="feat-body">Runs entirely on your machine. No prompt, document, or output is transmitted anywhere. This is the only tier that's private by architecture, not by policy.</div>
+        <div class="feat-body">Runs entirely on your machine. No prompt, document, or output is transmitted anywhere. This is the only tier that's private by architecture, not by policy.
+          <span class="feat-note">Exception: if you dictate a prompt using voice input (Starter plan and up), that audio is sent to Microsoft's cloud for transcription before the resulting text is processed locally — type instead to keep dictation on-device too.</span>
+        </div>
       </div>
       <div class="feat-card accent-cloud">
         <div class="feat-icon">🔑</div>
@@ -1407,7 +1411,7 @@
           <span class="faq-chevron">▼</span>
         </button>
         <div class="faq-a">
-          Yes, with one nuance worth understanding. <strong>Local models</strong> are the simplest answer: nothing leaves your device, so there's no compliance question to ask. <strong>BYOK (your own provider keys)</strong> routes device-to-provider with AIMAZZE never in the data path — but here the responsibility to verify comes from your <em>provider's</em> terms, not AIMAZZE's architecture. Public consumer AI apps are the category regulators and courts have been scrutinizing for privileged data ending up somewhere it shouldn't; AIMAZZE's BYOK connects you to provider APIs rather than consumer apps, which is a meaningfully different category — though it's always good practice to glance at your provider's data policy for anything privileged. See <a href="/security.html">how AIMAZZE protects your data</a> for the full breakdown.
+          Yes, with a couple of nuances worth understanding. <strong>Local models</strong> are the simplest answer: nothing leaves your device, so there's no compliance question to ask — with one exception: if you use <strong>voice input</strong> (Starter plan and up) to dictate a message, that audio is sent to Microsoft's cloud speech service for transcription before the resulting text is processed; type instead of dictating to keep that content fully on-device too. <strong>BYOK (your own provider keys)</strong> routes device-to-provider with AIMAZZE never in the data path — but here the responsibility to verify comes from your <em>provider's</em> terms, not AIMAZZE's architecture. Public consumer AI apps are the category regulators and courts have been scrutinizing for privileged data ending up somewhere it shouldn't; AIMAZZE's BYOK connects you to provider APIs rather than consumer apps, which is a meaningfully different category — though it's always good practice to glance at your provider's data policy for anything privileged. See <a href="/security.html">how AIMAZZE protects your data</a> for the full breakdown.
         </div>
       </div>
       <div class="faq-item">
@@ -1415,7 +1419,7 @@
           Is my data safe? Can AIMAZZE see my conversations?
           <span class="faq-chevron">▼</span>
         </button>
-        <div class="faq-a">No. AIMAZZE is local-first — your conversations, documents, and API keys are stored on your device only. AIMAZZE has no servers that receive your chat data. We store only your email address, subscription tier, and license key — nothing else.</div>
+        <div class="faq-a">No. AIMAZZE is local-first — your conversations, documents, and API keys are stored on your device only. AIMAZZE has no servers that receive your chat data. We store only your email address, subscription tier, and license key — nothing else. One exception: voice input (Starter plan and up) sends your spoken audio to Microsoft's cloud speech service for transcription — see our <a href="/privacy-policy.html">Privacy Policy</a> for detail. Typing is unaffected.</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">
@@ -1758,7 +1762,7 @@
   // stay meaningfully tied to what was actually shown.
   var LEGAL_DOC_VERSIONS = {
     terms: "2026-06-30",
-    privacy: "2026-08-11",
+    privacy: "2026-08-13",
     refund: "2026-06-30",
   };
 

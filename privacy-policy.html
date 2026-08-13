@@ -148,12 +148,12 @@
 <main>
   <div class="doc-eyebrow">Legal</div>
   <h1>Privacy Policy</h1>
-  <p class="doc-updated">Last updated: August 11, 2026</p>
+  <p class="doc-updated">Last updated: August 13, 2026</p>
 
   <p>This Privacy Policy explains what information AmrynNova Private Limited ("AmrynNova", "we", "us") collects when you use AIMAZZE, and how it's handled. AIMAZZE is built local-first — most of what you'd expect a typical app to collect, we simply don't, because it never reaches our servers in the first place.</p>
 
   <h2>1. What stays on your device — and never reaches us</h2>
-  <p>The following data is stored exclusively on your local device and is never transmitted to AmrynNova's servers, regardless of which AI model or provider you use:</p>
+  <p>The following data is stored exclusively on your local device and is never transmitted to AmrynNova's servers, regardless of which AI model or provider you use. (Voice input is a narrow exception to the "never transmitted" principle generally — see Section 2.)</p>
   <table>
     <thead><tr><th>Data type</th><th>Where it lives</th></tr></thead>
     <tbody>
@@ -165,7 +165,14 @@
   </table>
   <p>When you use AIMAZZE's built-in local AI models, your prompts and the model's responses never leave your machine. When you use your own API key (BYOK) to connect to a provider like Anthropic, OpenAI, or Google, your conversation routes directly from your device to that provider — AmrynNova is never in that data path and does not receive, store, or process that content. That said, this is not the same as blanket privacy: once your data reaches the provider, their own data-handling terms govern it, not ours. See <a href="/security.html">How AIMAZZE Protects Your Data</a> for the full breakdown by tier.</p>
 
-  <h2>2. What we do collect</h2>
+  <h2>2. Voice input (optional feature, Starter plan and up)</h2>
+  <p>If you use AIMAZZE's voice input feature to dictate a message, that recording is sent to Microsoft's cloud speech-to-text service (<strong>speech.platform.bing.com</strong>) for transcription. This is different from everything described in Section 1 above: your spoken audio is not processed on your device, and it does leave your device during that transcription. AIMAZZE does not receive, store, or retain a copy of that audio or its transcript — it is sent from your device directly to Microsoft's service and the resulting text is returned to your device — but Microsoft's own handling of that audio during transcription is governed by Microsoft's privacy terms, not ours.</p>
+  <div class="callout warn">
+    <strong>Practical implication:</strong> if you're dictating something privileged, confidential, or regulated (for example, patient information or client details), that audio briefly leaves your device and is processed by a third party. If you'd prefer to keep that content fully on your device, type your message instead — typing is unaffected by this and stays entirely local, consistent with Section 1.
+  </div>
+  <p>Voice input only activates when you tap the microphone button — it does not run in the background. The first time you use it, AIMAZZE shows a one-time, explicit notice explaining that your audio will be sent to Microsoft's cloud for transcription, before any recording is sent anywhere.</p>
+
+  <h2>3. What we do collect</h2>
   <p>To operate the business side of AIMAZZE — license activation, billing, and support — we collect a limited amount of information:</p>
   <ul>
     <li><strong>Email address and name</strong> — collected at purchase, used to issue and validate your license key, and to send activation/billing emails</li>
@@ -177,10 +184,10 @@
   <p>That's the complete list of what we collect today. We do not collect your chat content, documents, or AI provider API keys.</p>
   <p>We may in the future add error and crash monitoring to help us find and fix bugs faster. If we do, it will be scoped strictly to technical error data — stack traces, error messages, and app version — and will never include your chat prompts, documents, or any content you generate. We'll update this policy with specifics before turning this on.</p>
 
-  <h2>3. Free-tier usage data</h2>
+  <h2>4. Free-tier usage data</h2>
   <p>To enforce daily usage limits on the Free tier, we track a message count per day against a locally-generated device identifier via our backend (Cloudflare Workers + KV). This is a usage counter only — it does not include the content of your messages, only that a message was sent.</p>
 
-  <h2>4. Third-party services we use</h2>
+  <h2>5. Third-party services we use</h2>
   <table>
     <thead><tr><th>Service</th><th>Purpose</th></tr></thead>
     <tbody>
@@ -188,23 +195,24 @@
       <tr><td>Razorpay</td><td>Payment processing</td></tr>
       <tr><td>Resend</td><td>Transactional emails (activation, receipts)</td></tr>
       <tr><td>Cloudflare</td><td>Website hosting and backend infrastructure</td></tr>
+      <tr><td>Microsoft (Bing Speech Platform)</td><td>Voice-to-text transcription — only when you use voice input (Starter plan and up); see Section 2</td></tr>
     </tbody>
   </table>
   <p>If you choose to connect your own API key to an AI provider (BYOK), your use of that provider is governed by their own privacy policy and terms — not ours. We encourage you to review your chosen provider's data handling commitments, particularly for sensitive or privileged work.</p>
 
-  <h2>5. Your rights</h2>
+  <h2>6. Your rights</h2>
   <p>You can request a copy of the limited data we hold about you (email, name, subscription status), or request its deletion, by emailing <a href="mailto:hello@aimazze.com">hello@aimazze.com</a>. Since your chat history and documents live entirely on your own device, you control and can delete that data at any time by uninstalling AIMAZZE or clearing the app's local storage — we have no copy to delete on our end.</p>
 
-  <h2>6. Data retention</h2>
+  <h2>7. Data retention</h2>
   <p>We retain your email, name, and license/billing records for as long as your account is active, and for a reasonable period afterward as required for tax, accounting, and legal compliance purposes.</p>
 
-  <h2>7. Children's privacy</h2>
+  <h2>8. Children's privacy</h2>
   <p>AIMAZZE is not directed at, and is not intended for use by, individuals under 18. We do not knowingly collect information from minors.</p>
 
-  <h2>8. Changes to this policy</h2>
+  <h2>9. Changes to this policy</h2>
   <p>We may update this Privacy Policy from time to time. Material changes will be reflected by updating the "Last updated" date above.</p>
 
-  <h2>9. Contact</h2>
+  <h2>10. Contact</h2>
   <p>Questions about this Privacy Policy or your data? Email us at <a href="mailto:hello@aimazze.com">hello@aimazze.com</a>.</p>
 
   <div class="callout">
