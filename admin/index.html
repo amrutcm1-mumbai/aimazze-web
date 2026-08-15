@@ -93,7 +93,7 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
 </head>
 <body>
 
-<div class="login-wrap" id="loginWrap">
+<div class="login-wrap" id="loginWrap" style="display:none">
   <div class="login-card">
     <h1>AIMAZZE Admin</h1>
     <input type="email" id="loginEmail" placeholder="Admin email" autocomplete="username">
@@ -189,6 +189,36 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
     dashboardWrap.style.display = 'block';
     loadTickets();
     loadAnalytics();
+  }
+
+  function showLogin(){
+    loginWrap.style.display = 'flex';
+    dashboardWrap.style.display = 'none';
+  }
+
+  // 15 Aug 2026: session-check on page load. Without this the page always
+  // rendered the login form and only ever reached the dashboard via the
+  // login button's success handler — so a reload forced a re-login even
+  // when the session cookie was perfectly valid (confirmed via CDP: cookie
+  // present after reload, dashboard still hidden). Falls through to the
+  // login form ONLY on a real 401; a network/server error keeps the
+  // "checking" state rather than falsely claiming the session is gone.
+  function checkExistingSession(){
+    api('/admin/me')
+      .then(function(result){
+        if (result.ok && result.data && result.data.success) {
+          showDashboard();
+        } else if (result.status === 401) {
+          showLogin();
+        } else {
+          showLogin();
+          setStatus(loginStatus, "Couldn't verify your session — please log in again.", 'error');
+        }
+      })
+      .catch(function(){
+        showLogin();
+        setStatus(loginStatus, "Couldn't reach the server. Please log in again.", 'error');
+      });
   }
 
   loginBtn.addEventListener('click', function(){
@@ -313,6 +343,11 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
         '</tbody></table>';
     });
   }
+
+  // Runs last, once every function above is defined. Both wrappers start
+  // hidden (see #loginWrap's inline style) so neither the login form nor the
+  // dashboard flashes before the session check resolves.
+  checkExistingSession();
 })();
 </script>
 
