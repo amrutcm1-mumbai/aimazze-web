@@ -150,13 +150,15 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
 
 <script>
 (function(){
-  // Tier 1 admin/growth module (12 Aug 2026). This page calls
-  // aimazze-worker directly (different origin) with credentials so the
-  // admin_session cookie rides along — the worker's adminCorsHeaders()
-  // echoes this exact origin and sets Allow-Credentials for that reason.
-  // No broader RBAC yet: a single admin_users table, one session, no
-  // roles — Tier 2 extends this rather than replacing it.
-  var WORKER_URL = "https://aimazze-worker.amrutcm1.workers.dev";
+  // Tier 1 admin/growth module (12 Aug 2026). Originally called
+  // aimazze-worker directly cross-origin with credentials — the
+  // admin_session cookie (SameSite=None; Secure, correctly set) still got
+  // dropped by default third-party-cookie blocking (Safari ITP, Chrome's
+  // phase-out, Firefox strict mode) since *.workers.dev is a different SITE
+  // from aimazze.com. Fixed 15 Aug 2026: aimazze.com/api/* Worker Route
+  // (see aimazze-worker/wrangler.jsonc) makes this a same-origin, first-
+  // party request instead — no more cross-site cookie problem.
+  var WORKER_URL = "https://aimazze.com/api";
 
   var loginWrap = document.getElementById('loginWrap');
   var dashboardWrap = document.getElementById('dashboardWrap');
