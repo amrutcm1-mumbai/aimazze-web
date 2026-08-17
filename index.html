@@ -1808,6 +1808,24 @@
   var upgradeEmail = params.get("upgrade_email");
   var upgradeFrom = params.get("upgrade_from");
 
+  // T-41 Stage 3.5 (17 Aug 2026): capture ?ref=CODE on landing so a referee
+  // converting minutes/days later (after browsing, closing the tab, coming
+  // back) still gets attributed. Cookie mirrors the existing aimazze_region
+  // pattern below — no other persistence mechanism exists on this page.
+  // Format matches generateReferralCode() server-side: 8-char uppercase hex.
+  (function captureReferralCode() {
+    var refParam = params.get("ref");
+    if (refParam && refParam.trim()) {
+      document.cookie = "aimazze_ref=" + encodeURIComponent(refParam.trim().toUpperCase()) +
+        ";path=/;max-age=" + (60 * 60 * 24 * 30);
+    }
+  })();
+
+  function getReferralCode() {
+    var match = document.cookie.match(/(^| )aimazze_ref=([^;]+)/);
+    return match ? decodeURIComponent(match[2]) : null;
+  }
+
   function getRegion() {
     var match = document.cookie.match(/(^| )aimazze_region=([^;]+)/);
     return match ? match[2] : "INTL";
@@ -1962,7 +1980,8 @@
         name: name,
         email: email,
         confirmed: !!confirmed,
-        billingCycle: activeBillingCycle
+        billingCycle: activeBillingCycle,
+        referralCode: getReferralCode()
       })
     }).then(function (res) {
       if (!res.ok) throw new Error("Subscription creation failed");
