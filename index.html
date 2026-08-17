@@ -507,7 +507,7 @@
 
   .pricing-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 12px;
   }
 
@@ -1270,19 +1270,9 @@
         <div class="price-feature">10 local profiles</div>
         <button class="price-cta" data-tier="elite">Get Elite</button>
       </div>
-      <div class="price-card" data-tier="lifetime" data-inr-paise="1499900">
-        <div class="price-name">Lifetime</div>
-        <div class="price-amount">$249</div>
-        <div class="price-amount-inr">₹14,999<span class="price-amount-inr-suffix"> (India)</span></div>
-        <div class="price-period">one-time · no renewals ever</div>
-        <div class="price-feature">Zero AIMAZZE charges forever</div>
-        <div class="price-feature">Full Pro features forever</div>
-        <div class="price-feature">All future updates included</div>
-        <div class="price-feature">Pays for itself in about 18 months</div>
-        <div class="price-feature">15 local profiles</div>
-        <div class="price-feature">Connect your own accounts</div>
-        <button class="price-cta" data-tier="lifetime">Get Lifetime</button>
-      </div>
+      <!-- Lifetime pulled from standing sale (17 Aug 2026) — existing
+           purchasers grandfathered, no new card/CTA. May return as a
+           time-boxed seasonal campaign; that's separate, future-scoped work. -->
     </div>
 
     <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:1.25rem;font-family:var(--mono)">
@@ -1957,26 +1947,6 @@
     if (e.target === overlay) closeCheckoutModal();
   });
 
-  // Lifetime ONLY — one-time Razorpay order.
-  function submitOrder(name, email, confirmed) {
-    return fetch(WORKER_URL + "/create-order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        tier: activeTier,
-        amount: activeAmountSubunit,
-        currency: activeCurrency,
-        name: name,
-        email: email,
-        confirmed: !!confirmed,
-        promoCode: appliedPromoCode || undefined
-      })
-    }).then(function (res) {
-      if (!res.ok) throw new Error("Order creation failed");
-      return res.json();
-    });
-  }
-
   // 8 July 2026 (trial-period reversal): Starter/Pro/Elite go through
   // Razorpay Subscriptions instead of one-time orders. Card authenticates
   // AND charges immediately (no start_at delay) — Keygen license creation
@@ -1998,32 +1968,6 @@
       if (!res.ok) throw new Error("Subscription creation failed");
       return res.json();
     });
-  }
-
-  function launchRazorpayOrder(data, name, email) {
-    var options = {
-      key: RAZORPAY_KEY_ID,
-      amount: data.amount,
-      currency: data.currency,
-      name: "AIMAZZE",
-      description: (TIER_LABELS[activeTier] || activeTier) + " plan",
-      order_id: data.orderId,
-      prefill: { name: name, email: email },
-      theme: { color: "#00d4e8" },
-      handler: function () {
-        alert(
-          "Payment received! Check " + email +
-          " for your activation email — it includes a link that " +
-          "opens AIMAZZE and activates your license automatically."
-        );
-      },
-      modal: {
-        ondismiss: function () {}
-      }
-    };
-
-    var rzp = new Razorpay(options);
-    rzp.open();
   }
 
   // Phase 2: subscription_id checkout — Razorpay's widget handles card
@@ -2073,14 +2017,23 @@
       logLegalAcceptance(email, "checkout:" + activeTier);
     }
 
+    // Lifetime pulled from standing sale (17 Aug 2026) — no pricing card
+    // links here anymore, but guard defensively in case activeTier is ever
+    // set to "lifetime" by some other path; submitOrder()/create-order must
+    // stay unreachable from the live UI. Grandfathered/support cases go
+    // through a different (non-public) flow, not this checkout modal.
+    if (activeTier === "lifetime") {
+      errorEl.innerHTML = 'Lifetime plans are no longer available for new purchases. Please choose another plan, or email <a href="mailto:hello@aimazze.com">hello@aimazze.com</a>.';
+      errorEl.style.display = "block";
+      return;
+    }
+
     var alreadyConfirmed = !!upgradeEmail || continueBtn.dataset.confirmed === "1";
 
     continueBtn.disabled = true;
     continueBtn.textContent = "Loading...";
 
-    var submitPromise = activeTier === "lifetime"
-      ? submitOrder(name, email, alreadyConfirmed)
-      : submitSubscription(name, email, alreadyConfirmed);
+    var submitPromise = submitSubscription(name, email, alreadyConfirmed);
 
     submitPromise
       .then(function (data) {
@@ -2101,12 +2054,7 @@
         continueBtn.textContent = "Continue to payment";
         continueBtn.dataset.confirmed = "";
         closeCheckoutModal();
-
-        if (activeTier === "lifetime") {
-          launchRazorpayOrder(data, name, email);
-        } else {
-          launchRazorpaySubscription(data, name, email);
-        }
+        launchRazorpaySubscription(data, name, email);
       })
       .catch(function (err) {
         continueBtn.disabled = false;
