@@ -1,2 +1,12 @@
 .wrangler/
 node_modules/
+
+# Release artifacts (.msi / -updater.exe) built by aimazze-app and dropped here
+# to be served from https://www.aimazze.com/downloads/. Deploy-only and
+# intentionally NOT source-controlled: wrangler uploads whatever is on disk
+# (assets directory is ".", and .assetsignore does not exclude this folder), so
+# they ship regardless of git state. Tracking them only added ~130MB of binaries
+# to history and left a confusing "modified locally but shipped anyway" state.
+# NOTE: a fresh clone therefore has an EMPTY downloads/ — rebuild or copy the
+# installers in before deploying, or the public download links will 404.
+downloads/
