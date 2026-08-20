@@ -141,8 +141,23 @@ h1{
 .error-state.show{display:block}
 .error-state h1{color:var(--white)}
 </style>
+<script defer src="/brand-loader.js"></script>
 </head>
 <body>
+<!-- Branded loading transition: logo mark + wordmark, centred.
+     Styles: chambers.css (BRAND SYSTEM block). Behaviour: /brand-loader.js
+     Must stay the FIRST child of <body> so it paints on the first frame. -->
+<div class="brand-loader brand-loader--armed" role="status" aria-live="polite" aria-label="Loading AIMAZZE">
+  <div class="brand-loader__mark" aria-hidden="true"></div>
+  <div class="brand-loader__wordmark" aria-hidden="true"></div>
+  <div class="brand-loader__bar" aria-hidden="true"></div>
+  <p class="brand-loader__note">Still loading&hellip;</p>
+</div>
+<noscript><style>.brand-loader{display:none}</style></noscript>
+
+<!-- Persistent top-left brand mark (this page has no nav bar). -->
+<a class="brand-corner" href="/" aria-label="AIMAZZE home"><span class="brand-mark"></span></a>
+
 
 <div class="card" id="card">
   <div class="icon">

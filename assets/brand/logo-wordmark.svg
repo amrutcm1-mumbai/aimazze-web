@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PLACEHOLDER wordmark for AIMAZZE.
+
+  Replace this file in place when the final wordmark lands; consumers read one
+  custom property (brand-wordmark) defined in chambers.css.
+
+  Known placeholder compromise: this file sets live <text>, and an SVG loaded
+  as an image cannot reach the page's Inter webfont, so it renders in whatever
+  system sans is available. The final asset should be outlined vector paths
+  (or a PNG), which removes the issue entirely.
+
+  Requirements for the replacement asset:
+    * Horizontal lockup, transparent background, tight bounds.
+    * Consumers scale it by HEIGHT and let width follow, so the viewBox aspect
+      ratio must match the real artwork. If it changes, update the
+      aspect-ratio on .brand-loader__wordmark in chambers.css to match.
+
+  (Note for whoever edits this header: an XML comment may not contain two
+  consecutive hyphens, so custom properties are named without their prefix.)
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 48" width="300" height="48" role="img" aria-label="AIMAZZE">
+  <text x="0" y="37" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+        font-size="42" font-weight="800" letter-spacing="-1.6" fill="#14171C">AIMAZZE</text>
+</svg>

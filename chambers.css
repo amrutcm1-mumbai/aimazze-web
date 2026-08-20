@@ -106,3 +106,278 @@
   width: 100%;
   height: 100%;
 }
+
+/* ==========================================================================
+   BRAND SYSTEM — persistent mark + loading transition
+   --------------------------------------------------------------------------
+   ASSET SWAP POINT. When the final logo lands there are exactly two values
+   to change (or, easier, just overwrite the two files at these paths and
+   change nothing at all). Nothing in this file or in any page hardcodes an
+   image path anywhere else.
+
+   The mark token is used three ways — as a visible full-colour image in the
+   top-left corner, and as an ALPHA MASK for the loading fill effect (the
+   silhouette is derived from the asset's own transparency, so a full-colour
+   or multi-colour asset needs no companion mask file).
+   ========================================================================== */
+
+:root {
+  /* ---- the two asset values ---- */
+  --brand-mark: url('/assets/brand/logo-mark.svg');
+  --brand-wordmark: url('/assets/brand/logo-wordmark.svg');
+
+  /* ---- canonical sizes. Every logo in the UI derives from these, so the
+          site cannot drift into per-page one-off logo sizes again. ---- */
+  --brand-mark-size: 26px;          /* persistent top-left corner mark */
+  --brand-mark-size-sm: 22px;       /* same, narrow viewports */
+  --brand-loader-mark: 88px;        /* mark in the centred loading state */
+  --brand-loader-wordmark: 30px;    /* wordmark height in the loading state */
+
+  /* ---- loading transition timing. Kept deliberately identical to
+          BRAND_TRANSITION in aimazze-app/src/config/brand.ts, so a navigation
+          feels the same on the site and in the desktop app. Mirrored again in
+          brand-loader.js (BRAND_LOADER.timing) because the no-JS / JS-failed
+          backstop below needs the numbers in CSS. Change all three together. ---- */
+  --brand-loader-cycle: 1400ms;     /* one fill cycle */
+  --brand-loader-fade: 180ms;       /* overlay fade-out */
+  --brand-loader-max: 8000ms;       /* hard cap before the overlay gives up */
+}
+
+/* --------------------------------------------------------------------------
+   Persistent top-left mark
+   Convention: small mark, top-left, identical on every page/view (GitHub,
+   Anthropic, Sentry, Resend). `.brand-mark` is the mark itself; `.nav-brand`
+   pages nest it beside the existing text wordmark, and the three card-only
+   pages (activate / join / admin) use `.brand-corner` to anchor it.
+   -------------------------------------------------------------------------- */
+.brand-mark {
+  display: inline-block;
+  flex-shrink: 0;
+  width: var(--brand-mark-size);
+  height: var(--brand-mark-size);
+  background-image: var(--brand-mark);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brand-corner {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+  opacity: 0.9;
+  transition: opacity 0.15s ease;
+}
+.brand-corner:hover { opacity: 1; }
+
+@media (max-width: 600px) {
+  :root { --brand-mark-size: var(--brand-mark-size-sm); }
+  .brand-corner { top: 14px; left: 14px; }
+}
+
+/* --------------------------------------------------------------------------
+   Loading / transition overlay
+   Mark + wordmark together, centred in the main content area. Present in the
+   markup of every page as the first child of <body> so it paints with the
+   first frame (no flash of unstyled content on initial load), then removed
+   by brand-loader.js.
+   -------------------------------------------------------------------------- */
+.brand-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.15rem;
+  background: var(--chambers-paper);
+}
+
+/* Backstop, and ONLY a backstop: the markup ships with `brand-loader--armed`,
+   and the first thing brand-loader.js does on parse is remove it. So if JS is
+   disabled, blocked, or throws before it can take over, the overlay still
+   fades itself out at --brand-loader-max rather than trapping the page. Once
+   JS is confirmed alive it owns every timing decision, which also means
+   re-showing the overlay for an outbound navigation can't collide with a
+   finished CSS animation. */
+.brand-loader--armed {
+  animation: brand-loader-giveup var(--brand-loader-fade) ease forwards;
+  animation-delay: var(--brand-loader-max);
+}
+
+/* JS-driven hide. */
+html.brand-ready .brand-loader {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--brand-loader-fade) ease, visibility 0s linear var(--brand-loader-fade);
+  animation: none;
+}
+
+@keyframes brand-loader-giveup {
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* The fill mark. Two stacked mask layers over the same silhouette: a static
+   trough, and a teal fill that rises through it. */
+.brand-loader__mark {
+  position: relative;
+  width: var(--brand-loader-mark);
+  height: var(--brand-loader-mark);
+}
+.brand-loader__mark::before,
+.brand-loader__mark::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  -webkit-mask-image: var(--brand-mark);
+          mask-image: var(--brand-mark);
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+          mask-position: center;
+  -webkit-mask-size: contain;
+          mask-size: contain;
+}
+/* trough — the un-filled mark */
+.brand-loader__mark::before {
+  background: var(--chambers-line2);
+}
+/* fill — teal rising, ochre glint at the leading edge */
+.brand-loader__mark::after {
+  background:
+    linear-gradient(to top,
+      var(--chambers-teal-ink) 0%,
+      var(--chambers-teal) 62%,
+      var(--chambers-ochre-edge) 100%);
+  background-size: 100% var(--brand-loader-mark);
+  background-position: bottom;
+  animation: brand-fill var(--brand-loader-cycle) cubic-bezier(0.66, 0, 0.34, 1) infinite;
+}
+
+/* Rises from the baseline, holds full for a beat, then drains off the top —
+   reads as one continuous pour rather than a restarting bar. */
+@keyframes brand-fill {
+  0%   { clip-path: inset(100% 0 0 0); }
+  58%  { clip-path: inset(0 0 0 0); }
+  72%  { clip-path: inset(0 0 0 0); }
+  100% { clip-path: inset(0 0 100% 0); }
+}
+
+/* Wordmark — masked so it takes the ink token rather than the asset's own
+   baked-in colour, which keeps it correct if the palette shifts. */
+.brand-loader__wordmark {
+  width: auto;
+  height: var(--brand-loader-wordmark);
+  aspect-ratio: 300 / 48;
+  background-color: var(--chambers-ink);
+  -webkit-mask-image: var(--brand-wordmark);
+          mask-image: var(--brand-wordmark);
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+          mask-position: center;
+  -webkit-mask-size: contain;
+          mask-size: contain;
+}
+
+/* Thin sweep under the lockup — motion that continues past the fill cycle so
+   a slow load still reads as "working", not "frozen". */
+.brand-loader__bar {
+  width: 132px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--chambers-line);
+  overflow: hidden;
+}
+.brand-loader__bar::after {
+  content: '';
+  display: block;
+  width: 42%;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--chambers-teal);
+  animation: brand-sweep var(--brand-loader-cycle) ease-in-out infinite;
+}
+@keyframes brand-sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(238%); }
+}
+
+/* Shown only once the overlay has been up long enough that a silent wait
+   would feel broken (brand-loader.js adds the class). */
+.brand-loader__note {
+  font-family: var(--chambers-fb);
+  font-size: 12px;
+  color: var(--chambers-slate);
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+html.brand-slow .brand-loader__note { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-loader__mark::after {
+    animation: none;
+    clip-path: inset(0 0 0 0);
+  }
+  .brand-loader__bar::after { animation: none; width: 100%; opacity: 0.5; }
+  html.brand-ready .brand-loader { transition: none; }
+}
+
+/* ==========================================================================
+   KNOWN LOGO / IMAGE SIZING DEFECTS — flagged 19 Aug 2026, NOT yet fixed
+   --------------------------------------------------------------------------
+   Found while building the brand system above. Recorded here, next to the
+   tokens they concern, rather than in a side document. None of these are
+   caused by the loading transition; all predate it. Deliberately left alone
+   so the swap-in of the final logo assets is not tangled up with unrelated
+   layout changes.
+
+   Counterpart list for the desktop app lives in
+   aimazze-app/src/config/brand.ts (ASSET_DEFECTS) — that one covers the PNG
+   asset defects, this one covers this site's sizing.
+
+   1. HIGH — the text wordmark is two different sizes depending on the page.
+      `.nav-brand` is font-size 1.25rem in index.html but 1.1rem in each of
+      privacy-policy / refund-policy / security / shipping-policy / terms
+      (each page redeclares it in its own <style> block). Navigating from the
+      home page to any policy page visibly shrinks the wordmark. The new
+      `.brand-mark` beside it is a single token and does NOT shrink, so the
+      mismatch is now more obvious, not less.
+
+   2. MEDIUM — index.html shows the wordmark at two sizes at once.
+      `.top-banner-logo` uses clamp(1.3rem, 3.2vw, 2.4rem) over the hero
+      banner while `.nav-brand` sits at a fixed 1.25rem, so the same wordmark
+      appears twice on first paint at different scales.
+
+   3. MEDIUM — no favicon anywhere. Not one of the 9 pages declares a
+      rel="icon". The mark at its smallest size is simply absent, and the
+      browser falls back to a default. Worth wiring to the same asset when
+      the final mark lands.
+
+   4. MEDIUM — `.avatar-badge` crops one source differently from the rest.
+      professional-04.png is 1168x896 (1.30:1); the other four are square
+      (1024x1024 / 1254x1254). All five render in the same 44px circle with
+      object-fit: cover, so -04 loses roughly 23% off its sides and is framed
+      noticeably tighter than its neighbours in the same avatar strip.
+
+   5. LOW — `.avatar-badge.lg` (56px) is defined above but never used by any
+      page. Dead size step; either adopt it or drop it.
+
+   6. LOW — image payloads are 20-30x larger than their render size, with no
+      intrinsic dimensions declared. The five professional-0*.png files total
+      ~8.3MB at 1024-1254px square and every one renders at 44px. banner-hero
+      .png is 1.5MB, full-width, and marked loading="eager". No <img> on the
+      site carries width/height attributes, so nothing reserves layout space
+      and the banner is the largest contributor to CLS on the home page.
+   ========================================================================== */

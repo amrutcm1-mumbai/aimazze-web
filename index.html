@@ -863,8 +863,20 @@
     .hero h1 { font-size: 2.4rem; }
   }
 </style>
+<script defer src="/brand-loader.js"></script>
 </head>
 <body>
+<!-- Branded loading transition: logo mark + wordmark, centred.
+     Styles: chambers.css (BRAND SYSTEM block). Behaviour: /brand-loader.js
+     Must stay the FIRST child of <body> so it paints on the first frame. -->
+<div class="brand-loader brand-loader--armed" role="status" aria-live="polite" aria-label="Loading AIMAZZE">
+  <div class="brand-loader__mark" aria-hidden="true"></div>
+  <div class="brand-loader__wordmark" aria-hidden="true"></div>
+  <div class="brand-loader__bar" aria-hidden="true"></div>
+  <p class="brand-loader__note">Still loading&hellip;</p>
+</div>
+<noscript><style>.brand-loader{display:none}</style></noscript>
+
 
 <div class="top-banner">
   <img src="/assets/images/banner-hero.png" alt="AIMAZZE — built for doctors, lawyers, scientists, and researchers" loading="eager">
@@ -872,7 +884,7 @@
 </div>
 
 <nav>
-  <div class="nav-brand"><span class="cyan">AI</span>MAZZE</div>
+  <div class="nav-brand"><span class="brand-mark" aria-hidden="true"></span><span class="cyan">AI</span>MAZZE</div>
   <div class="nav-links">
     <a href="#features">Features</a>
     <a href="#arena">The Arena</a>
