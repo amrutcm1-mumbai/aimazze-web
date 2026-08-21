@@ -115,16 +115,31 @@
    change nothing at all). Nothing in this file or in any page hardcodes an
    image path anywhere else.
 
-   The mark token is used three ways — as a visible full-colour image in the
-   top-left corner, and as an ALPHA MASK for the loading fill effect (the
-   silhouette is derived from the asset's own transparency, so a full-colour
-   or multi-colour asset needs no companion mask file).
+   Both tokens point at RASTER PNGs — there is no vector source for this
+   brand (confirmed 20 Aug 2026). Every consumer uses them as an ALPHA MASK
+   and paints the result in a design token, exactly as aimazze-app's
+   BRAND_GLYPH does: only the alpha channel is read, so the artwork's own
+   colours are irrelevant and one file works on any background.
+
+   Replacement assets therefore need only two things: a transparent
+   background, and tight cropping (no dead padding, since consumers scale by
+   `contain` against a token-defined box). If a replacement's aspect ratio
+   differs, update `aspect-ratio` on .brand-loader__wordmark to match.
+
+   Being raster, these have a resolution ceiling. Measured: logo-mark.png is
+   489x517 and logo-wordmark.png is 1457x523, both RGBA with genuine
+   anti-aliased edges (2.8% / 2.4% partially-transparent pixels). The largest
+   on-page use is the 88px loader mark = 176 device px at 2x DPR, against a
+   489px source: ~2.8x headroom. The mark only reaches 1:1 at 244 CSS px on a
+   2x display (163 on 3x), far above anything used here, so nothing upscales
+   and no softening is visible. If a future placement wants the mark larger
+   than ~240px, re-check it before shipping.
    ========================================================================== */
 
 :root {
   /* ---- the two asset values ---- */
-  --brand-mark: url('/assets/brand/logo-mark.svg');
-  --brand-wordmark: url('/assets/brand/logo-wordmark.svg');
+  --brand-mark: url('/assets/brand/logo-mark.png');
+  --brand-wordmark: url('/assets/brand/logo-wordmark.png');
 
   /* ---- canonical sizes. Every logo in the UI derives from these, so the
           site cannot drift into per-page one-off logo sizes again. ---- */
@@ -150,15 +165,31 @@
    pages nest it beside the existing text wordmark, and the three card-only
    pages (activate / join / admin) use `.brand-corner` to anchor it.
    -------------------------------------------------------------------------- */
+/* Painted via mask, not background-image, following the same reasoning as
+   aimazze-app's BRAND_GLYPH: only the alpha channel is read, so the artwork's
+   own colour is irrelevant, one file serves any background, and the mark
+   takes a design token colour.
+
+   The supplied mark is dark teal (~82% of its opaque pixels), which happens
+   to suit this light-only site as-is. Masking is still the right call: it
+   keeps the mark correct if the palette moves, lets the same file work on a
+   dark ground without a second asset (verified), and matches the monochrome
+   top-left convention this placement copies (GitHub, Anthropic, Sentry,
+   Resend). */
 .brand-mark {
   display: inline-block;
   flex-shrink: 0;
   width: var(--brand-mark-size);
   height: var(--brand-mark-size);
-  background-image: var(--brand-mark);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
+  background-color: var(--chambers-teal);
+  -webkit-mask-image: var(--brand-mark);
+          mask-image: var(--brand-mark);
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+          mask-position: center;
+  -webkit-mask-size: contain;
+          mask-size: contain;
 }
 
 .nav-brand {
@@ -279,7 +310,12 @@ html.brand-ready .brand-loader {
 .brand-loader__wordmark {
   width: auto;
   height: var(--brand-loader-wordmark);
-  aspect-ratio: 300 / 48;
+  /* Must match the ASSET CANVAS aspect (not the ink aspect): mask-size:
+     contain fits the whole file, padding included, inside this box. If the box
+     were narrower than the file, contain would letterbox and the wordmark
+     would render shorter than --brand-loader-wordmark asks for.
+     Measured from logo-wordmark.png: 1457x523 canvas (ink 1409x475). */
+  aspect-ratio: 1457 / 523;
   background-color: var(--chambers-ink);
   -webkit-mask-image: var(--brand-wordmark);
           mask-image: var(--brand-wordmark);
