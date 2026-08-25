@@ -122,6 +122,71 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
     <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
     <button class="btn" id="loginBtn" style="width:100%">Log in</button>
     <div class="status" id="loginStatus"></div>
+    <p style="margin-top:14px;text-align:center">
+      <a href="#" id="forgotLink" class="muted" style="font-size:13px">Forgot password?</a>
+    </p>
+  </div>
+</div>
+
+<!-- 24 Aug 2026: second-factor prompt. Until this existed, a login that came
+     back mfaRequired:true had nowhere to go — the page rendered a failed
+     login and the console became unreachable through the browser the moment
+     TOTP was enrolled. Both factors post to the SAME endpoint
+     (/admin/mfa/login-verify takes `code` OR `recoveryCode`), so this is one
+     card with a mode toggle rather than two flows. -->
+<div class="login-wrap" id="mfaWrap" style="display:none">
+  <div class="login-card">
+    <h1>Two-factor</h1>
+    <p class="muted" style="font-size:13px;line-height:1.5" id="mfaHint">
+      Enter the 6-digit code from your authenticator app.
+    </p>
+    <input type="text" id="mfaCode" placeholder="123456" autocomplete="one-time-code"
+           inputmode="numeric" maxlength="6">
+    <button class="btn" id="mfaSubmitBtn" style="width:100%">Verify</button>
+    <div class="status" id="mfaStatus"></div>
+    <p style="margin-top:14px;text-align:center">
+      <a href="#" id="mfaToggleLink" class="muted" style="font-size:13px">Use a recovery code instead</a>
+    </p>
+    <p style="margin-top:8px;text-align:center">
+      <a href="#" id="mfaBackLink" class="muted" style="font-size:13px">Back to log in</a>
+    </p>
+  </div>
+</div>
+
+<!-- 24 Aug 2026: account recovery. Both cards below are part of the safety
+     net built before the super-admin password rotation — a reset flow that
+     is curl-only is not a usable recovery path at the moment you are
+     actually locked out of the console. -->
+<div class="login-wrap" id="resetRequestWrap" style="display:none">
+  <div class="login-card">
+    <h1>Reset password</h1>
+    <p class="muted" style="font-size:13px;line-height:1.5">
+      Enter your admin email. If it matches an account, we'll send a reset link that
+      expires in 15 minutes.
+    </p>
+    <input type="email" id="resetRequestEmail" placeholder="Admin email" autocomplete="username">
+    <button class="btn" id="resetRequestBtn" style="width:100%">Send reset link</button>
+    <div class="status" id="resetRequestStatus"></div>
+    <p style="margin-top:14px;text-align:center">
+      <a href="#" id="backToLoginLink" class="muted" style="font-size:13px">Back to log in</a>
+    </p>
+  </div>
+</div>
+
+<div class="login-wrap" id="resetConfirmWrap" style="display:none">
+  <div class="login-card">
+    <h1>Choose a new password</h1>
+    <p class="muted" style="font-size:13px;line-height:1.5">
+      Minimum 12 characters. Completing this signs out every existing admin session,
+      including any still open elsewhere.
+    </p>
+    <input type="password" id="resetNewPassword" placeholder="New password" autocomplete="new-password">
+    <input type="password" id="resetNewPassword2" placeholder="Confirm new password" autocomplete="new-password">
+    <button class="btn" id="resetConfirmBtn" style="width:100%">Set new password</button>
+    <div class="status" id="resetConfirmStatus"></div>
+    <p style="margin-top:14px;text-align:center">
+      <a href="#" id="backToLoginLink2" class="muted" style="font-size:13px">Back to log in</a>
+    </p>
   </div>
 </div>
 
@@ -135,6 +200,7 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
     <button class="tab-btn active" data-panel="tickets">Tickets</button>
     <button class="tab-btn" data-panel="license">License lookup</button>
     <button class="tab-btn" data-panel="analytics">Revenue &amp; geo</button>
+    <button class="tab-btn" data-panel="security">Security</button>
   </div>
 
   <div class="panel active" id="panel-tickets">
@@ -168,6 +234,75 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
       <div id="geoTable"><p class="muted">Loading…</p></div>
     </div>
   </div>
+
+  <!-- 25 Aug 2026: MFA enrollment. Three mutually exclusive states, never
+       two at once — see renderMfaState(). The important one is 'pending':
+       /admin/mfa/enroll writes pending_totp_secret and nothing else, so a
+       secret can exist while MFA is still completely off. That state must
+       read as "not finished", never as "protected", or an admin walks away
+       believing they're covered when a login would not challenge them. -->
+  <div class="panel" id="panel-security">
+    <div class="card">
+      <h2>Two-factor authentication</h2>
+
+      <div id="mfaStateIdle" style="display:none">
+        <p class="muted" style="margin-bottom:1rem">
+          Two-factor is <strong>not enabled</strong> on this account. Once enabled, logging in
+          will also ask for a 6-digit code from your authenticator app.
+        </p>
+        <button class="btn" id="mfaEnrollStartBtn">Set up two-factor</button>
+        <div class="status" id="mfaEnrollStatus"></div>
+      </div>
+
+      <div id="mfaStatePending" style="display:none">
+        <p class="muted" style="margin-bottom:1rem">
+          <strong>Not finished yet.</strong> Two-factor is still off until you enter a code below.
+        </p>
+        <p style="font-size:13px;margin-bottom:6px">1. Add this secret to your authenticator app:</p>
+        <code id="mfaSecret" style="display:block;background:var(--surface2);padding:10px 12px;border-radius:8px;font-family:var(--font-mono);font-size:14px;letter-spacing:0.08em;word-break:break-all;margin-bottom:12px"></code>
+        <p style="font-size:13px;margin-bottom:6px">
+          Or paste this <code style="font-size:12px">otpauth://</code> URI into an app that accepts one:
+        </p>
+        <code id="mfaOtpauth" style="display:block;background:var(--surface2);padding:10px 12px;border-radius:8px;font-family:var(--font-mono);font-size:11px;word-break:break-all;margin-bottom:16px"></code>
+        <p style="font-size:13px;margin-bottom:6px">2. Enter the 6-digit code it shows:</p>
+        <div class="row">
+          <input type="text" id="mfaEnrollCode" placeholder="123456" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
+          <button class="btn" id="mfaEnrollConfirmBtn">Confirm &amp; enable</button>
+        </div>
+        <div class="status" id="mfaEnrollConfirmStatus"></div>
+        <p style="margin-top:12px">
+          <a href="#" id="mfaEnrollCancelLink" class="muted" style="font-size:13px">Cancel</a>
+        </p>
+      </div>
+
+      <div id="mfaStateEnabled" style="display:none">
+        <p class="muted" style="margin-bottom:1rem">
+          Two-factor is <strong>enabled</strong> on this account.
+        </p>
+        <button class="btn secondary" id="mfaReEnrollBtn">Re-enroll (new secret &amp; new recovery codes)</button>
+        <p class="muted" style="margin-top:10px;font-size:12px">
+          Re-enrolling replaces your authenticator secret and issues a fresh set of recovery
+          codes. Every code from the previous set stops working.
+        </p>
+      </div>
+
+      <!-- Shown exactly once, immediately after a successful confirm. The
+           server stores only PBKDF2 hashes, so nothing can reproduce these
+           afterwards. Deliberately no auto-copy and nothing written to
+           localStorage/sessionStorage — a recovery code that outlives this
+           render in browser storage defeats the point of hashing it. -->
+      <div id="mfaRecoveryPanel" style="display:none;margin-top:1.5rem;border:1px solid var(--amber);background:var(--amber2);border-radius:var(--radius);padding:1.25rem">
+        <h2 style="margin-bottom:0.5rem;color:var(--amber)">Save these now — they will not be shown again</h2>
+        <p style="font-size:13px;line-height:1.5;margin-bottom:1rem">
+          Each code works once. They are the only way back into this console if you lose your
+          authenticator. Write them down or put them in a password manager before you leave this
+          page — closing or reloading it loses them permanently.
+        </p>
+        <div id="mfaRecoveryCodes" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;font-family:var(--font-mono);font-size:15px;letter-spacing:0.1em"></div>
+        <button class="btn" id="mfaRecoveryDoneBtn" style="margin-top:1.25rem">I've saved them</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -189,6 +324,35 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
   var loginBtn = document.getElementById('loginBtn');
   var loginStatus = document.getElementById('loginStatus');
   var logoutBtn = document.getElementById('logoutBtn');
+  var resetRequestWrap = document.getElementById('resetRequestWrap');
+  var resetConfirmWrap = document.getElementById('resetConfirmWrap');
+  var resetRequestEmail = document.getElementById('resetRequestEmail');
+  var resetRequestBtn = document.getElementById('resetRequestBtn');
+  var resetRequestStatus = document.getElementById('resetRequestStatus');
+  var resetNewPassword = document.getElementById('resetNewPassword');
+  var resetNewPassword2 = document.getElementById('resetNewPassword2');
+  var resetConfirmBtn = document.getElementById('resetConfirmBtn');
+  var resetConfirmStatus = document.getElementById('resetConfirmStatus');
+  var mfaWrap = document.getElementById('mfaWrap');
+  var mfaCode = document.getElementById('mfaCode');
+  var mfaHint = document.getElementById('mfaHint');
+  var mfaSubmitBtn = document.getElementById('mfaSubmitBtn');
+  var mfaStatus = document.getElementById('mfaStatus');
+  var mfaToggleLink = document.getElementById('mfaToggleLink');
+  var mfaStateIdle = document.getElementById('mfaStateIdle');
+  var mfaStatePending = document.getElementById('mfaStatePending');
+  var mfaStateEnabled = document.getElementById('mfaStateEnabled');
+  var mfaEnrollStartBtn = document.getElementById('mfaEnrollStartBtn');
+  var mfaEnrollStatus = document.getElementById('mfaEnrollStatus');
+  var mfaSecret = document.getElementById('mfaSecret');
+  var mfaOtpauth = document.getElementById('mfaOtpauth');
+  var mfaEnrollCode = document.getElementById('mfaEnrollCode');
+  var mfaEnrollConfirmBtn = document.getElementById('mfaEnrollConfirmBtn');
+  var mfaEnrollConfirmStatus = document.getElementById('mfaEnrollConfirmStatus');
+  var mfaReEnrollBtn = document.getElementById('mfaReEnrollBtn');
+  var mfaRecoveryPanel = document.getElementById('mfaRecoveryPanel');
+  var mfaRecoveryCodes = document.getElementById('mfaRecoveryCodes');
+  var mfaRecoveryDoneBtn = document.getElementById('mfaRecoveryDoneBtn');
 
   function setStatus(el, text, kind){
     el.textContent = text;
@@ -206,9 +370,17 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
     });
   }
 
-  function showDashboard(){
+  // `me` is the /admin/me payload when the caller already has one, so the
+  // session check doesn't fetch it twice just to learn the MFA state.
+  function showDashboard(me){
     loginWrap.style.display = 'none';
+    mfaWrap.style.display = 'none';
     dashboardWrap.style.display = 'block';
+    if (me && typeof me.mfaEnabled === 'boolean') {
+      renderMfaState(me.mfaEnabled ? 'enabled' : 'idle');
+    } else {
+      refreshMfaState();
+    }
     loadTickets();
     loadAnalytics();
   }
@@ -216,6 +388,34 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
   function showLogin(){
     loginWrap.style.display = 'flex';
     dashboardWrap.style.display = 'none';
+    resetRequestWrap.style.display = 'none';
+    resetConfirmWrap.style.display = 'none';
+    mfaWrap.style.display = 'none';
+  }
+
+  function showMfa(){
+    loginWrap.style.display = 'none';
+    dashboardWrap.style.display = 'none';
+    resetRequestWrap.style.display = 'none';
+    resetConfirmWrap.style.display = 'none';
+    mfaWrap.style.display = 'flex';
+    mfaCode.focus();
+  }
+
+  function showResetRequest(){
+    loginWrap.style.display = 'none';
+    dashboardWrap.style.display = 'none';
+    mfaWrap.style.display = 'none';
+    resetConfirmWrap.style.display = 'none';
+    resetRequestWrap.style.display = 'flex';
+  }
+
+  function showResetConfirm(){
+    loginWrap.style.display = 'none';
+    dashboardWrap.style.display = 'none';
+    mfaWrap.style.display = 'none';
+    resetRequestWrap.style.display = 'none';
+    resetConfirmWrap.style.display = 'flex';
   }
 
   // 15 Aug 2026: session-check on page load. Without this the page always
@@ -229,7 +429,7 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
     api('/admin/me')
       .then(function(result){
         if (result.ok && result.data && result.data.success) {
-          showDashboard();
+          showDashboard(result.data);
         } else if (result.status === 401) {
           showLogin();
         } else {
@@ -253,6 +453,16 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
       .then(function(result){
         loginBtn.disabled = false;
         if (result.ok && result.data.success) {
+          // A pending-MFA session is NOT a session yet — the cookie is set
+          // but mfa_verified=0, and requireAdminRole rejects it until
+          // /admin/mfa/login-verify flips it. Going to the dashboard here
+          // would render a shell whose every panel 401s.
+          if (result.data.mfaRequired) {
+            loginPassword.value = '';
+            resetMfaCard();
+            showMfa();
+            return;
+          }
           showDashboard();
         } else {
           setStatus(loginStatus, (result.data && result.data.error) || 'Login failed.', 'error');
@@ -264,12 +474,382 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
       });
   });
 
+  // ── Second factor (24 Aug 2026) ─────────────────────────────────
+  //
+  // One card, two factors, one endpoint. /admin/mfa/login-verify takes
+  // `code` (TOTP) or `recoveryCode` and returns the SAME 401 "Invalid code"
+  // for either being wrong — so the no-leak property is the backend's, and
+  // the job here is simply not to undo it by rendering a factor-specific
+  // message. Every wrong answer below produces identical copy.
+  var mfaMode = 'totp'; // 'totp' | 'recovery'
+
+  function resetMfaCard(){
+    mfaMode = 'totp';
+    mfaCode.value = '';
+    applyMfaMode();
+    setStatus(mfaStatus, '', '');
+  }
+
+  function applyMfaMode(){
+    if (mfaMode === 'totp') {
+      mfaHint.textContent = 'Enter the 6-digit code from your authenticator app.';
+      mfaCode.placeholder = '123456';
+      mfaCode.setAttribute('inputmode', 'numeric');
+      mfaCode.setAttribute('maxlength', '6');
+      mfaCode.setAttribute('autocomplete', 'one-time-code');
+      mfaToggleLink.textContent = 'Use a recovery code instead';
+    } else {
+      mfaHint.textContent = 'Enter one of the 8-character recovery codes you saved when you set up two-factor. Each code works once.';
+      mfaCode.placeholder = 'ABCD2345';
+      mfaCode.setAttribute('inputmode', 'text');
+      // Room for a code typed with a separating space.
+      mfaCode.setAttribute('maxlength', '12');
+      mfaCode.setAttribute('autocomplete', 'off');
+      mfaToggleLink.textContent = 'Use an authenticator code instead';
+    }
+  }
+
+  mfaToggleLink.addEventListener('click', function(e){
+    e.preventDefault();
+    mfaMode = (mfaMode === 'totp') ? 'recovery' : 'totp';
+    mfaCode.value = '';
+    applyMfaMode();
+    setStatus(mfaStatus, '', '');
+    mfaCode.focus();
+  });
+
+  document.getElementById('mfaBackLink').addEventListener('click', function(e){
+    e.preventDefault();
+    // The pending-MFA cookie is left to expire on its own (5 min). Clearing
+    // it would need a logout call that this half-authenticated session
+    // isn't entitled to make.
+    resetMfaCard();
+    showLogin();
+  });
+
+  function submitMfa(){
+    var value = mfaCode.value.trim();
+    if (!value) {
+      setStatus(mfaStatus, mfaMode === 'totp' ? 'Enter your 6-digit code.' : 'Enter a recovery code.', 'error');
+      return;
+    }
+
+    var payload = (mfaMode === 'totp') ? { code: value } : { recoveryCode: value };
+    mfaSubmitBtn.disabled = true;
+    setStatus(mfaStatus, 'Verifying…', 'info');
+
+    api('/admin/mfa/login-verify', { method: 'POST', body: JSON.stringify(payload) })
+      .then(function(result){
+        mfaSubmitBtn.disabled = false;
+
+        if (result.ok && result.data && result.data.success) {
+          if (result.data.usedRecoveryCode) {
+            var left = result.data.remainingRecoveryCodes;
+            // Codes are only ever shown at enrollment, so this count is the
+            // only warning before the last one is spent.
+            if (left <= 2) {
+              window.alert(
+                'Recovery code accepted. You have ' + left + ' left.\n\n' +
+                'Re-enroll two-factor to generate a fresh set — once these run out ' +
+                'and your authenticator is gone, the console can only be recovered ' +
+                'by a password reset.'
+              );
+            }
+          }
+          resetMfaCard();
+          showDashboard();
+          return;
+        }
+
+        // The pending session is a distinct state from a wrong code, and
+        // saying so leaks nothing about which factor was entered — it's
+        // about the 5-minute window having closed, not the credential.
+        var err = (result.data && result.data.error) || '';
+        if (result.status === 401 && (err === 'No pending MFA session' || err === 'No pending session')) {
+          resetMfaCard();
+          showLogin();
+          setStatus(loginStatus, 'That took too long — please log in again.', 'error');
+          return;
+        }
+        if (result.status === 429) {
+          setStatus(mfaStatus, err || 'Too many attempts. Try again later.', 'error');
+          return;
+        }
+        // Deliberately uniform: never "wrong TOTP" vs "wrong recovery code".
+        mfaCode.value = '';
+        mfaCode.focus();
+        setStatus(mfaStatus, "That code wasn't accepted. Check it and try again.", 'error');
+      })
+      .catch(function(){
+        mfaSubmitBtn.disabled = false;
+        setStatus(mfaStatus, "Couldn't reach the server.", 'error');
+      });
+  }
+
+  mfaSubmitBtn.addEventListener('click', submitMfa);
+  mfaCode.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') { e.preventDefault(); submitMfa(); }
+  });
+
+  // ── MFA enrollment (25 Aug 2026) ────────────────────────────────
+  //
+  // Three states, exactly one visible at a time:
+  //   idle     — no totp_secret, no enrollment started
+  //   pending  — /admin/mfa/enroll has written pending_totp_secret, but MFA
+  //              is STILL OFF until a code is confirmed
+  //   enabled  — totp_secret set; logins are challenged
+  //
+  // 'pending' is the state worth being careful about. The secret exists and
+  // the authenticator app is already generating codes, which looks finished
+  // — but requireAdminRole is not challenging anything yet. It is labelled
+  // "Not finished yet" and never borrows the enabled copy.
+  //
+  // No QR code: rendering one needs either a CDN script (blocked by this
+  // site's static, dependency-free setup and the same reasoning the worker
+  // used when it skipped QR generation) or a vendored encoder. Manual secret
+  // entry and the otpauth:// URI cover every authenticator app.
+  var mfaUiState = 'idle';
+
+  function renderMfaState(state){
+    mfaUiState = state;
+    mfaStateIdle.style.display = (state === 'idle') ? 'block' : 'none';
+    mfaStatePending.style.display = (state === 'pending') ? 'block' : 'none';
+    mfaStateEnabled.style.display = (state === 'enabled') ? 'block' : 'none';
+  }
+
+  // Wipes every trace of an enrollment from the DOM. Called on cancel, on
+  // success (after the codes are dismissed), and on logout — the secret is
+  // a live credential for as long as it's rendered.
+  function clearMfaEnrollmentUi(){
+    mfaSecret.textContent = '';
+    mfaOtpauth.textContent = '';
+    mfaEnrollCode.value = '';
+    mfaRecoveryCodes.innerHTML = '';
+    mfaRecoveryPanel.style.display = 'none';
+    setStatus(mfaEnrollStatus, '', '');
+    setStatus(mfaEnrollConfirmStatus, '', '');
+  }
+
+  function startMfaEnrollment(btn, statusEl){
+    btn.disabled = true;
+    setStatus(statusEl, 'Generating a new secret…', 'info');
+    api('/admin/mfa/enroll', { method: 'POST' })
+      .then(function(result){
+        btn.disabled = false;
+        if (result.ok && result.data && result.data.secret) {
+          mfaSecret.textContent = result.data.secret;
+          mfaOtpauth.textContent = result.data.otpauthUri;
+          mfaEnrollCode.value = '';
+          setStatus(statusEl, '', '');
+          setStatus(mfaEnrollConfirmStatus, '', '');
+          mfaRecoveryPanel.style.display = 'none';
+          renderMfaState('pending');
+          mfaEnrollCode.focus();
+        } else if (result.status === 401) {
+          showLogin();
+          setStatus(loginStatus, 'Your session expired — please log in again.', 'error');
+        } else {
+          setStatus(statusEl, (result.data && result.data.error) || "Couldn't start setup.", 'error');
+        }
+      })
+      .catch(function(){
+        btn.disabled = false;
+        setStatus(statusEl, "Couldn't reach the server.", 'error');
+      });
+  }
+
+  mfaEnrollStartBtn.addEventListener('click', function(){
+    startMfaEnrollment(mfaEnrollStartBtn, mfaEnrollStatus);
+  });
+
+  mfaReEnrollBtn.addEventListener('click', function(){
+    if (!window.confirm(
+      'Re-enrolling replaces your authenticator secret and issues a new set of recovery codes.\n\n' +
+      'Every existing recovery code stops working. Continue?'
+    )) return;
+    startMfaEnrollment(mfaReEnrollBtn, mfaEnrollStatus);
+  });
+
+  document.getElementById('mfaEnrollCancelLink').addEventListener('click', function(e){
+    e.preventDefault();
+    // Only the client-side view is dropped. pending_totp_secret stays in the
+    // row until the next enroll overwrites it or a confirm consumes it —
+    // harmless, since it grants nothing on its own.
+    clearMfaEnrollmentUi();
+    refreshMfaState();
+  });
+
+  function confirmMfaEnrollment(){
+    var code = mfaEnrollCode.value.trim();
+    if (!code) { setStatus(mfaEnrollConfirmStatus, 'Enter the 6-digit code.', 'error'); return; }
+
+    mfaEnrollConfirmBtn.disabled = true;
+    setStatus(mfaEnrollConfirmStatus, 'Verifying…', 'info');
+    api('/admin/mfa/enroll/confirm', { method: 'POST', body: JSON.stringify({ code: code }) })
+      .then(function(result){
+        mfaEnrollConfirmBtn.disabled = false;
+
+        if (result.ok && result.data && result.data.success) {
+          var codes = result.data.recoveryCodes || [];
+          mfaRecoveryCodes.innerHTML = '';
+          codes.forEach(function(c){
+            var el = document.createElement('div');
+            // textContent, not innerHTML — these never go through the HTML
+            // parser.
+            el.textContent = c;
+            mfaRecoveryCodes.appendChild(el);
+          });
+          mfaEnrollCode.value = '';
+          setStatus(mfaEnrollConfirmStatus, '', '');
+          renderMfaState('enabled');
+          mfaRecoveryPanel.style.display = 'block';
+          mfaRecoveryPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          return;
+        }
+
+        if (result.status === 401 && result.data && result.data.error === 'Unauthorized') {
+          showLogin();
+          setStatus(loginStatus, 'Your session expired — please log in again.', 'error');
+          return;
+        }
+
+        // Wrong code and "no enrollment in progress" are the two real
+        // outcomes here. Neither reveals anything about the secret, and the
+        // field is cleared either way so a stale code isn't resubmitted.
+        mfaEnrollCode.value = '';
+        mfaEnrollCode.focus();
+        if (result.status === 400) {
+          // The pending secret is gone (another enroll superseded it, or the
+          // row was cleared) — restart rather than leave a dead form up.
+          clearMfaEnrollmentUi();
+          refreshMfaState();
+          setStatus(mfaEnrollStatus, 'That setup expired. Start again.', 'error');
+          return;
+        }
+        setStatus(mfaEnrollConfirmStatus, "That code wasn't accepted. Check it and try again.", 'error');
+      })
+      .catch(function(){
+        mfaEnrollConfirmBtn.disabled = false;
+        setStatus(mfaEnrollConfirmStatus, "Couldn't reach the server.", 'error');
+      });
+  }
+
+  mfaEnrollConfirmBtn.addEventListener('click', confirmMfaEnrollment);
+  mfaEnrollCode.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') { e.preventDefault(); confirmMfaEnrollment(); }
+  });
+
+  mfaRecoveryDoneBtn.addEventListener('click', function(){
+    // Codes leave the DOM here and exist nowhere else client-side. Clearing
+    // the whole enrollment view, not just the codes: a successful confirm
+    // leaves the TOTP secret sitting in #mfaSecret inside the now-hidden
+    // 'pending' block, where it would survive until logout or reload. It is
+    // the live authenticator seed, so it goes at the same moment the codes do.
+    clearMfaEnrollmentUi();
+  });
+
+  // Authoritative read of enrolled-vs-not. Never infers from a prior action:
+  // a reload lands back here, and /admin/me reports totp_secret only, so a
+  // half-finished enrollment resolves to 'idle' rather than 'enabled'.
+  function refreshMfaState(){
+    api('/admin/me').then(function(result){
+      if (result.ok && result.data && result.data.success) {
+        renderMfaState(result.data.mfaEnabled ? 'enabled' : 'idle');
+      }
+    });
+  }
+
+  // ── Account recovery (24 Aug 2026) ──────────────────────────────
+  //
+  // The reset token arrives as a ?resetToken= query parameter and is
+  // stripped from the URL as soon as it's read (history.replaceState): a
+  // live single-use credential should not survive in the address bar, the
+  // browser history, or a Referer header on the next navigation.
+  var pendingResetToken = null;
+
+  document.getElementById('forgotLink').addEventListener('click', function(e){
+    e.preventDefault();
+    resetRequestEmail.value = loginEmail.value.trim();
+    setStatus(resetRequestStatus, '', '');
+    showResetRequest();
+  });
+
+  document.getElementById('backToLoginLink').addEventListener('click', function(e){
+    e.preventDefault();
+    showLogin();
+  });
+
+  document.getElementById('backToLoginLink2').addEventListener('click', function(e){
+    e.preventDefault();
+    pendingResetToken = null;
+    showLogin();
+  });
+
+  resetRequestBtn.addEventListener('click', function(){
+    var email = resetRequestEmail.value.trim();
+    if (!email) { setStatus(resetRequestStatus, 'Enter your admin email.', 'error'); return; }
+    resetRequestBtn.disabled = true;
+    setStatus(resetRequestStatus, 'Sending…', 'info');
+    api('/admin/password-reset/request', { method: 'POST', body: JSON.stringify({ email: email }) })
+      .then(function(result){
+        resetRequestBtn.disabled = false;
+        if (result.ok && result.data && result.data.success) {
+          // Deliberately the server's own generic wording — the endpoint
+          // answers identically for unknown addresses, and echoing anything
+          // more specific here would undo that at the UI layer.
+          setStatus(resetRequestStatus, result.data.message, 'info');
+        } else if (result.status === 429) {
+          setStatus(resetRequestStatus, (result.data && result.data.error) || 'Too many requests. Try again later.', 'error');
+        } else {
+          setStatus(resetRequestStatus, (result.data && result.data.error) || 'Could not send the reset link.', 'error');
+        }
+      })
+      .catch(function(){
+        resetRequestBtn.disabled = false;
+        setStatus(resetRequestStatus, "Couldn't reach the server.", 'error');
+      });
+  });
+
+  resetConfirmBtn.addEventListener('click', function(){
+    var pw = resetNewPassword.value;
+    var pw2 = resetNewPassword2.value;
+    if (!pendingResetToken) { setStatus(resetConfirmStatus, 'This reset link is no longer active. Request a new one.', 'error'); return; }
+    if (pw.length < 12) { setStatus(resetConfirmStatus, 'Password must be at least 12 characters.', 'error'); return; }
+    if (pw !== pw2) { setStatus(resetConfirmStatus, 'The two passwords do not match.', 'error'); return; }
+
+    resetConfirmBtn.disabled = true;
+    setStatus(resetConfirmStatus, 'Setting new password…', 'info');
+    api('/admin/password-reset/confirm', { method: 'POST', body: JSON.stringify({ token: pendingResetToken, newPassword: pw }) })
+      .then(function(result){
+        resetConfirmBtn.disabled = false;
+        if (result.ok && result.data && result.data.success) {
+          // Burned — a success must not leave the token reusable from this
+          // page if the admin navigates back to it.
+          pendingResetToken = null;
+          resetNewPassword.value = '';
+          resetNewPassword2.value = '';
+          showLogin();
+          setStatus(loginStatus, 'Password updated. All other sessions were signed out — log in with your new password.', 'info');
+        } else {
+          setStatus(resetConfirmStatus, (result.data && result.data.error) || 'Could not reset the password.', 'error');
+        }
+      })
+      .catch(function(){
+        resetConfirmBtn.disabled = false;
+        setStatus(resetConfirmStatus, "Couldn't reach the server.", 'error');
+      });
+  });
+
   logoutBtn.addEventListener('click', function(){
     api('/admin/logout', { method: 'POST' }).then(function(){
       dashboardWrap.style.display = 'none';
       loginWrap.style.display = 'flex';
       loginEmail.value = '';
       loginPassword.value = '';
+      // A rendered secret or an unsaved recovery-code list must not survive
+      // into the next person's session on this browser.
+      clearMfaEnrollmentUi();
+      renderMfaState('idle');
     });
   });
 
@@ -366,10 +946,29 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
     });
   }
 
-  // Runs last, once every function above is defined. Both wrappers start
-  // hidden (see #loginWrap's inline style) so neither the login form nor the
-  // dashboard flashes before the session check resolves.
-  checkExistingSession();
+  // Runs last, once every function above is defined. Every wrapper starts
+  // hidden (see the inline styles) so nothing flashes before the boot path
+  // resolves.
+  //
+  // 24 Aug 2026: an inbound ?resetToken= short-circuits the session check
+  // entirely. Someone arriving on a reset link is by definition unable to
+  // authenticate, so /admin/me would only render the login form over the
+  // top of the reset card they were sent here to use.
+  (function boot(){
+    var params = new URLSearchParams(window.location.search);
+    var token = params.get('resetToken');
+    if (token) {
+      pendingResetToken = token;
+      // Strip it immediately: a single-use credential should not linger in
+      // the address bar, in history, or in a Referer header.
+      params.delete('resetToken');
+      var qs = params.toString();
+      window.history.replaceState({}, '', window.location.pathname + (qs ? '?' + qs : ''));
+      showResetConfirm();
+      return;
+    }
+    checkExistingSession();
+  })();
 })();
 </script>
 
