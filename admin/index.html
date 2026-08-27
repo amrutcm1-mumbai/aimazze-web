@@ -162,7 +162,7 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
     <h1>Reset password</h1>
     <p class="muted" style="font-size:13px;line-height:1.5">
       Enter your admin email. If it matches an account, we'll send a reset link that
-      expires in 15 minutes.
+      expires in 60 minutes.
     </p>
     <input type="email" id="resetRequestEmail" placeholder="Admin email" autocomplete="username">
     <button class="btn" id="resetRequestBtn" style="width:100%">Send reset link</button>
@@ -831,7 +831,35 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
           showLogin();
           setStatus(loginStatus, 'Password updated. All other sessions were signed out — log in with your new password.', 'info');
         } else {
-          setStatus(resetConfirmStatus, (result.data && result.data.error) || 'Could not reset the password.', 'error');
+          // The API collapses FOUR distinct causes into one 400 with one
+          // message: unknown token, superseded token, already-redeemed
+          // token, and expired token. That collapse is deliberate on the
+          // worker side -- a caller holding a bad token must not learn
+          // which kind of bad it is -- so this cannot be disambiguated
+          // here and should not be "fixed" by widening the API.
+          //
+          // Supersession is the case that actually bites in practice:
+          // requesting a reset twice DELETEs the first token outright, so
+          // clicking the link in the older email fails via the
+          // unknown-token branch with nothing on screen explaining why.
+          // The copy below names expiry and supersession (the two a real
+          // admin plausibly hits) and gives the one action that resolves
+          // all four, rather than guessing which fired.
+          //
+          // Matched on the server's string: if the worker ever rewords it
+          // this falls through to the pass-through below, i.e. back to
+          // today's behaviour rather than a break. The durable fix is a
+          // machine-readable code on that response -- same code for all
+          // four causes, so it leaks nothing -- which needs its own
+          // worker deploy.
+          var serverError = (result.data && result.data.error) || '';
+          if (/invalid or has expired/i.test(serverError)) {
+            setStatus(resetConfirmStatus,
+              'This reset link no longer works. Either it expired — links last 60 minutes — or a newer reset request replaced it, which cancels the earlier link. Request a fresh link and open the most recent email.',
+              'error');
+          } else {
+            setStatus(resetConfirmStatus, serverError || 'Could not reset the password.', 'error');
+          }
         }
       })
       .catch(function(){
