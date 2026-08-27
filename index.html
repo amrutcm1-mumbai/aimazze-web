@@ -251,6 +251,29 @@
     color: var(--muted2);
   }
 
+  /* T-69: SmartScreen note. Collapsed by default so the hero stays a
+     single clear CTA -- the label is what has to be findable, and it is
+     only looked for at the moment Windows has already thrown the dialog. */
+  .download-win-note {
+    font-size: 11px;
+    color: var(--muted2);
+    max-width: 420px;
+    text-align: center;
+  }
+  .download-win-note summary {
+    cursor: pointer;
+    color: var(--muted);
+    list-style: none;
+  }
+  .download-win-note summary::-webkit-details-marker { display: none; }
+  .download-win-note summary::before { content: "9 "; }
+  .download-win-note summary:hover { color: var(--cyan); }
+  .download-win-note p {
+    margin: 0.5rem 0 0;
+    line-height: 1.6;
+  }
+  .download-win-note strong { color: var(--white); font-weight: 600; }
+
   .waitlist-form {
     display: flex;
     gap: 10px;
@@ -958,6 +981,14 @@
     </a>
     <div class="download-meta"><span class="version">v0.1.31</span> · Windows</div>
     <div class="download-mac-note">Mac coming soon</div>
+    <details class="download-win-note">
+      <summary>Installing on Windows</summary>
+      <p>
+        Windows may show a &ldquo;Windows protected your PC&rdquo; screen the first time you
+        run the installer. That&rsquo;s SmartScreen flagging a download it hasn&rsquo;t seen
+        often yet. Click <strong>More info</strong>, then <strong>Run anyway</strong>.
+      </p>
+    </details>
   </div>
 
   <div id="waitlist-form-wrap">
