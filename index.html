@@ -251,26 +251,17 @@
     color: var(--muted2);
   }
 
-  /* T-69: SmartScreen note. Collapsed by default so the hero stays a
-     single clear CTA -- the label is what has to be findable, and it is
-     only looked for at the moment Windows has already thrown the dialog. */
+  /* T-65: SmartScreen note, always visible directly under the CTA. The
+     dialog fires before anyone would think to expand a disclosure, so the
+     copy has to be read on the way to the button, not looked up after.
+     Styled off the .download-mac-note tokens -- no new visual weight. */
   .download-win-note {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--muted2);
-    max-width: 420px;
+    max-width: 460px;
     text-align: center;
-  }
-  .download-win-note summary {
-    cursor: pointer;
-    color: var(--muted);
-    list-style: none;
-  }
-  .download-win-note summary::-webkit-details-marker { display: none; }
-  .download-win-note summary::before { content: "9 "; }
-  .download-win-note summary:hover { color: var(--cyan); }
-  .download-win-note p {
-    margin: 0.5rem 0 0;
-    line-height: 1.6;
+    line-height: 1.7;
+    margin: 0.2rem 0 0;
   }
   .download-win-note strong { color: var(--white); font-weight: 600; }
 
@@ -981,14 +972,12 @@
     </a>
     <div class="download-meta"><span class="version">v0.1.31</span> · Windows</div>
     <div class="download-mac-note">Mac coming soon</div>
-    <details class="download-win-note">
-      <summary>Installing on Windows</summary>
-      <p>
-        Windows may show a &ldquo;Windows protected your PC&rdquo; screen the first time you
-        run the installer. That&rsquo;s SmartScreen flagging a download it hasn&rsquo;t seen
-        often yet. Click <strong>More info</strong>, then <strong>Run anyway</strong>.
-      </p>
-    </details>
+    <p class="download-win-note">
+      Windows may show a &ldquo;Windows protected your PC&rdquo; screen when installing.
+      This is expected for newly-released apps &mdash; Windows needs time to build trust
+      in new software, even signed software. Click <strong>More info</strong> &rarr;
+      <strong>Run anyway</strong> to continue. Your download is safe.
+    </p>
   </div>
 
   <div id="waitlist-form-wrap">
