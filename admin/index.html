@@ -92,8 +92,15 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
 .row input{flex:1;min-width:180px;margin-bottom:0}
 .badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600}
 .badge.open{background:var(--amber2);color:var(--amber)}
+.badge.pending{background:var(--surface2);color:var(--muted)}
 .badge.resolved{background:var(--cyan2);color:var(--cyan)}
 .badge.escalated{background:var(--red2);color:var(--red)}
+select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 8px;font-family:var(--font-body);font-size:12px;color:var(--white);outline:none}
+select:focus{border-color:var(--cyan)}
+textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin-top:6px;font-family:var(--font-body);font-size:13px;line-height:1.5;color:var(--white);outline:none;resize:vertical}
+textarea:focus{border-color:var(--cyan)}
+tr.ticket-note-row td{background:var(--cyan3)}
+[hidden]{display:none !important}
 .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
 .muted{color:var(--muted);font-size:12px}
 </style>
@@ -207,6 +214,7 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
     <div class="card">
       <h2>Support tickets</h2>
       <p class="muted" style="margin-bottom:1rem">support@aimazze.com only — hello@aimazze.com stays a plain inbox by design.</p>
+      <p class="muted" style="margin-bottom:1rem">Resolving a ticket emails the resolution note to the customer, so the note is required — write it as the reply they will read.</p>
       <div id="ticketsTable"><p class="muted">Loading…</p></div>
     </div>
   </div>
@@ -897,6 +905,23 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
     });
   }
 
+  // 31 Aug 2026: the ticket table was read-only — an admin could see a
+  // ticket but had no way to act on it, so every status change happened by
+  // hand in D1. Rows are editable in place now: status, severity, and — for
+  // 'resolved' only — the resolution note the worker emails to the customer.
+  //
+  // Kept as an inline second row per ticket rather than a modal: the note is
+  // only ever relevant to one ticket at a time, and the surrounding console is
+  // plain string-built tables with no modal machinery to reuse.
+  var TICKET_STATUSES = ['open', 'pending', 'resolved', 'escalated'];
+  var TICKET_SEVERITIES = ['low', 'normal', 'high', 'urgent'];
+
+  function optionsHtml(values, selected){
+    return values.map(function(v){
+      return '<option value="' + v + '"' + (v === selected ? ' selected' : '') + '>' + v + '</option>';
+    }).join('');
+  }
+
   function loadTickets(){
     var el = document.getElementById('ticketsTable');
     api('/admin/tickets').then(function(result){
@@ -904,11 +929,92 @@ th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;l
       var tickets = result.data.tickets || [];
       if (!tickets.length) { el.innerHTML = '<p class="muted">No tickets yet.</p>'; return; }
       var rows = tickets.map(function(t){
-        return '<tr><td>' + escapeHtml(t.ticket_number) + '</td><td>' + escapeHtml(t.from_email) +
-          '</td><td>' + escapeHtml(t.subject) + '</td><td><span class="badge ' + escapeHtml(t.status) + '">' +
-          escapeHtml(t.status) + '</span></td><td>' + new Date(t.created_at).toLocaleString() + '</td></tr>';
+        var id = escapeHtml(t.id);
+        return '<tr data-ticket-row="' + id + '">' +
+            '<td>' + escapeHtml(t.ticket_number) + '</td>' +
+            '<td>' + escapeHtml(t.from_email) + '</td>' +
+            '<td>' + escapeHtml(t.subject) + '</td>' +
+            '<td><span class="badge ' + escapeHtml(t.status) + '">' + escapeHtml(t.status) + '</span></td>' +
+            '<td><select class="ticket-status" data-id="' + id + '">' + optionsHtml(TICKET_STATUSES, t.status) + '</select></td>' +
+            '<td><select class="ticket-severity" data-id="' + id + '">' + optionsHtml(TICKET_SEVERITIES, t.severity) + '</select></td>' +
+            '<td>' + new Date(t.created_at).toLocaleString() + '</td>' +
+            '<td><button class="btn secondary ticket-save" data-id="' + id + '">Save</button></td>' +
+          '</tr>' +
+          '<tr class="ticket-note-row" data-note-row="' + id + '"' + (t.status === 'resolved' ? '' : ' hidden') + '>' +
+            '<td colspan="8">' +
+              '<label class="muted" for="ticketNote-' + id + '">Resolution note — emailed to the customer. Required to resolve.</label>' +
+              '<textarea id="ticketNote-' + id + '" class="ticket-note" data-id="' + id + '" rows="3" ' +
+                'placeholder="What was done, in the words the customer should read."></textarea>' +
+              '<div class="status" data-status-for="' + id + '"></div>' +
+            '</td>' +
+          '</tr>';
       }).join('');
-      el.innerHTML = '<table><thead><tr><th>Ticket</th><th>From</th><th>Subject</th><th>Status</th><th>Received</th></tr></thead><tbody>' + rows + '</tbody></table>';
+      el.innerHTML = '<table><thead><tr><th>Ticket</th><th>From</th><th>Subject</th><th>Status</th>' +
+        '<th>Set status</th><th>Severity</th><th>Received</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+
+      // Filled through .value rather than interpolated into the markup: a note
+      // is free text an admin wrote, and a literal </textarea> inside it would
+      // otherwise close the element early.
+      tickets.forEach(function(t){
+        var noteEl = el.querySelector('.ticket-note[data-id="' + t.id + '"]');
+        if (noteEl) { noteEl.value = t.resolution_note || ''; }
+      });
+
+      wireTicketRows(el);
+    });
+  }
+
+  function wireTicketRows(el){
+    Array.prototype.forEach.call(el.querySelectorAll('.ticket-status'), function(sel){
+      sel.addEventListener('change', function(){
+        var noteRow = el.querySelector('[data-note-row="' + sel.dataset.id + '"]');
+        if (sel.value === 'resolved') { noteRow.removeAttribute('hidden'); }
+        else { noteRow.setAttribute('hidden', ''); }
+      });
+    });
+
+    Array.prototype.forEach.call(el.querySelectorAll('.ticket-save'), function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.dataset.id;
+        var statusEl = el.querySelector('.ticket-status[data-id="' + id + '"]');
+        var severityEl = el.querySelector('.ticket-severity[data-id="' + id + '"]');
+        var noteEl = el.querySelector('.ticket-note[data-id="' + id + '"]');
+        var msgEl = el.querySelector('[data-status-for="' + id + '"]');
+        var resolving = statusEl.value === 'resolved';
+        var note = noteEl.value.trim();
+
+        // Mirrors the worker's own 400 on resolve-with-a-blank-note. Checked
+        // here as well so the admin gets the reason in place rather than a
+        // bare server error — the server check stays the authority.
+        if (resolving && !note) {
+          el.querySelector('[data-note-row="' + id + '"]').removeAttribute('hidden');
+          setStatus(msgEl, 'A resolution note is required — it is emailed to the customer as the reply.', 'error');
+          noteEl.focus();
+          return;
+        }
+
+        // resolutionNote goes only with a resolve: the other three statuses
+        // keep using the note-less path the worker still accepts.
+        var payload = { status: statusEl.value, severity: severityEl.value };
+        if (resolving) { payload.resolutionNote = note; }
+
+        btn.disabled = true;
+        setStatus(msgEl, 'Saving…', 'info');
+        api('/admin/tickets/' + id, { method: 'PATCH', body: JSON.stringify(payload) }).then(function(res){
+          btn.disabled = false;
+          if (!res.ok) {
+            setStatus(msgEl, (res.data && res.data.error) || 'Update failed.', 'error');
+            return;
+          }
+          // Repaint the badge in place instead of reloading the table: a
+          // reload would discard every other row's unsaved edit and wipe this
+          // message before it could be read.
+          var badge = el.querySelector('[data-ticket-row="' + id + '"] .badge');
+          badge.className = 'badge ' + statusEl.value;
+          badge.textContent = statusEl.value;
+          setStatus(msgEl, resolving ? 'Resolved. Resolution note sent to the customer.' : 'Updated.', 'ok');
+        });
+      });
     });
   }
 
