@@ -151,7 +151,10 @@
   <p>AI is already showing up in regulated, privileged work — often through tools nobody vetted. The risk isn't AI itself. It's not knowing which tier of AI you're using, and what that tier actually does with your data. Here's the honest breakdown.</p>
 
   <h2>Tier 1 — Local Models: Private by Architecture</h2>
-  <p>Local models run entirely on your own hardware. There is no network call, no server round-trip, no third party in the loop. Nothing about your prompts, documents, or outputs is transmitted — not to AIMAZZE, not to any AI provider, not to anyone.</p>
+  <p>Local models run entirely on your own hardware. There is no network call, no server round-trip, no third party in the loop. Nothing about the prompts, documents, or outputs you <em>type</em> is transmitted — not to AIMAZZE, not to any AI provider, not to anyone.</p>
+  <div class="callout warn">
+    <strong>One exception — voice input:</strong> if you use voice input (Starter plan and up) to dictate a message instead of typing it, that audio is sent to Microsoft’s cloud speech-to-text service (<strong>speech.platform.bing.com</strong>) for transcription before the resulting text is processed locally. AIMAZZE does not receive, store, or retain that audio or its transcript, but it does leave your device, and Microsoft’s privacy terms govern their handling of it. If you’re working with privileged or regulated content and want the guarantee above to hold without exception, type instead of dictating. Full detail in the <a href="/privacy-policy.html">privacy policy</a>.
+  </div>
   <p>This is the only tier where privilege and confidentiality are protected structurally, not contractually. If your work involves attorney-client privilege, patient data, or anything you legally cannot risk exposing, this is the tier built for that constraint.</p>
   <div class="callout">
     <strong>Trade-off, stated honestly:</strong> local models are typically smaller and less capable than the largest cloud models, and require enough local hardware to run well.
