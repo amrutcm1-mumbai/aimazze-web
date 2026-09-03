@@ -148,6 +148,13 @@
   --brand-loader-mark: 88px;        /* mark in the centred loading state */
   --brand-loader-wordmark: 30px;    /* wordmark height in the loading state */
 
+  /* Wordmark placements. These two are the ONLY sizes the script wordmark
+     renders at outside the loader. Both live here rather than in a page's own
+     <style> block, which is what let the old text wordmark drift to 1.25rem on
+     index.html and 1.1rem on the five policy pages (retired defect 1 below). */
+  --brand-wordmark-nav: 24px;                        /* fixed top nav, all pages */
+  --brand-wordmark-banner: clamp(30px, 5.5vw, 64px); /* masthead over the hero banner */
+
   /* ---- loading transition timing. Kept deliberately identical to
           BRAND_TRANSITION in aimazze-app/src/config/brand.ts, so a navigation
           feels the same on the site and in the desktop app. Mirrored again in
@@ -192,10 +199,49 @@
           mask-size: contain;
 }
 
+/* The script wordmark, as a static placement (nav + hero masthead). Same mask
+   technique and same reasoning as .brand-mark above: only the alpha channel is
+   read, so the file's own ink is irrelevant and the colour comes from a token.
+
+   Painted --chambers-teal, which is #0C6E62 — byte-identical to the artwork's
+   own baked ink, and to the --cyan the old text wordmark used for its "AI".
+   So this is a shape change, not a colour change.
+
+   `aspect-ratio` must track the ASSET CANVAS (1457x523), not the ink bbox, for
+   the same reason spelled out on .brand-loader__wordmark: mask-size: contain
+   fits the whole file including its transparent padding, so a narrower box
+   would letterbox and render the wordmark shorter than its height token asks.
+
+   Raster ceiling: the largest placement is the 64px banner cap = 178px wide,
+   356 device px at 2x, against a 1457px source. ~4x headroom, nothing upscales. */
+.brand-wordmark {
+  display: inline-block;
+  flex-shrink: 0;
+  width: auto;
+  height: var(--brand-wordmark-nav);
+  aspect-ratio: 1457 / 523;
+  background-color: var(--chambers-teal);
+  -webkit-mask-image: var(--brand-wordmark);
+          mask-image: var(--brand-wordmark);
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+          mask-position: center;
+  -webkit-mask-size: contain;
+          mask-size: contain;
+}
+
+/* Only size modifier. index.html's masthead is the one oversized placement. */
+.brand-wordmark--banner {
+  height: var(--brand-wordmark-banner);
+}
+
 .nav-brand {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  /* the children are inline-blocks with no text, so kill the baseline gap */
+  line-height: 0;
 }
 
 .brand-corner {
@@ -371,35 +417,35 @@ html.brand-slow .brand-loader__note { opacity: 1; }
 }
 
 /* ==========================================================================
-   KNOWN LOGO / IMAGE SIZING DEFECTS — flagged 19 Aug 2026, NOT yet fixed
+   KNOWN LOGO / IMAGE SIZING DEFECTS — flagged 19 Aug 2026
    --------------------------------------------------------------------------
    Found while building the brand system above. Recorded here, next to the
    tokens they concern, rather than in a side document. None of these are
-   caused by the loading transition; all predate it. Deliberately left alone
-   so the swap-in of the final logo assets is not tangled up with unrelated
-   layout changes.
+   caused by the loading transition; all predate it.
 
    Counterpart list for the desktop app lives in
    aimazze-app/src/config/brand.ts (ASSET_DEFECTS) — that one covers the PNG
    asset defects, this one covers this site's sizing.
 
-   1. HIGH — the text wordmark is two different sizes depending on the page.
-      `.nav-brand` is font-size 1.25rem in index.html but 1.1rem in each of
-      privacy-policy / refund-policy / security / shipping-policy / terms
-      (each page redeclares it in its own <style> block). Navigating from the
-      home page to any policy page visibly shrinks the wordmark. The new
-      `.brand-mark` beside it is a single token and does NOT shrink, so the
-      mismatch is now more obvious, not less.
+   1. FIXED (T-75) — the text wordmark was two different sizes depending on
+      the page: `.nav-brand` was font-size 1.25rem in index.html but 1.1rem in
+      each of privacy-policy / refund-policy / security / shipping-policy /
+      terms, because every page redeclared it in its own <style> block.
+      Navigating home -> policy visibly shrank it, while the `.brand-mark`
+      beside it (a single token) did not, making the mismatch worse.
+      Root cause removed rather than patched: there is no per-page wordmark
+      declaration left anywhere. Every placement is now `.brand-wordmark`
+      sized from --brand-wordmark-nav / --brand-wordmark-banner above.
 
-   2. MEDIUM — index.html shows the wordmark at two sizes at once.
-      `.top-banner-logo` uses clamp(1.3rem, 3.2vw, 2.4rem) over the hero
-      banner while `.nav-brand` sits at a fixed 1.25rem, so the same wordmark
-      appears twice on first paint at different scales.
+   2. FIXED (T-75) — index.html showed the wordmark at two sizes at once,
+      `.top-banner-logo` at clamp(1.3rem, 3.2vw, 2.4rem) over the hero banner
+      against `.nav-brand` at a fixed 1.25rem. Still two sizes by design (a
+      masthead should outweigh a 56px nav), but they are now two named tokens
+      in one place instead of two unrelated font-size literals.
 
-   3. MEDIUM — no favicon anywhere. Not one of the 9 pages declares a
-      rel="icon". The mark at its smallest size is simply absent, and the
-      browser falls back to a default. Worth wiring to the same asset when
-      the final mark lands.
+   3. FIXED (e064931) — no favicon anywhere. A full favicon set is now
+      generated from assets/brand/logo-mark.png by scripts/build-favicons.py
+      and declared on every page.
 
    4. MEDIUM — `.avatar-badge` crops one source differently from the rest.
       professional-04.png is 1168x896 (1.30:1); the other four are square

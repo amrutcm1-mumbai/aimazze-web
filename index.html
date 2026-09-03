@@ -80,18 +80,15 @@
     width: 100%;
     height: auto;
   }
+  /* Positioning only. The wordmark itself is .brand-wordmark in chambers.css;
+     its size comes from --brand-wordmark-banner, not from anything here. */
   .top-banner-logo {
     position: absolute;
     left: 5%;
     top: 50%;
     transform: translateY(-50%);
-    font-family: var(--ff);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    font-size: clamp(1.3rem, 3.2vw, 2.4rem);
-    color: var(--white);
+    line-height: 0;
   }
-  .top-banner-logo .cyan { color: var(--cyan); }
 
   nav {
     position: fixed;
@@ -107,12 +104,6 @@
     border-bottom: 1px solid var(--border);
   }
 
-  .nav-brand {
-    font-size: 1.25rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-  }
-  .nav-brand .cyan { color: var(--cyan); }
 
   .nav-links {
     display: flex;
@@ -901,11 +892,11 @@
 
 <div class="top-banner">
   <img src="/assets/images/banner-hero.png" alt="AIMAZZE — built for doctors, lawyers, scientists, and researchers" loading="eager">
-  <div class="top-banner-logo"><span class="cyan">AI</span>MAZZE</div>
+  <div class="top-banner-logo"><span class="brand-wordmark brand-wordmark--banner" role="img" aria-label="AIMAZZE"></span></div>
 </div>
 
 <nav>
-  <div class="nav-brand"><span class="brand-mark" aria-hidden="true"></span><span class="cyan">AI</span>MAZZE</div>
+  <div class="nav-brand"><span class="brand-mark" aria-hidden="true"></span><span class="brand-wordmark" role="img" aria-label="AIMAZZE"></span></div>
   <div class="nav-links">
     <a href="#features">Features</a>
     <a href="#arena">The Arena</a>
