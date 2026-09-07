@@ -11,7 +11,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="description" content="Compare every major AI model side by side, pick the winner, keep going. Local-first — run models on your own hardware, or connect your own provider keys. Built for doctors, lawyers, engineers and scientists.">
+<meta name="description" content="Compare every major AI model side by side, pick the winner, keep going. Local-first — run models on your own hardware, or connect your own provider keys. Built for legal and clinical research professionals.">
 <meta property="og:title" content="AIMAZZE – The AI Workstation for Professionals">
 <meta property="og:description" content="Compare every major AI model side by side. Local-first — run models on your own hardware, or bring your own provider keys.">
 <meta property="og:url" content="https://www.aimazze.com">
@@ -197,11 +197,27 @@
     color: transparent;
   }
 
+  /* Headline + subhead, not two equal sentences. The contrast is carried by
+     three things at once -- size (~1.5x), weight (600 vs 400) and colour (ink
+     vs muted) -- so the pair still reads as a hierarchy if any one of them is
+     overridden. No new font: the lead takes --ff, leaving --fd to the h1 above
+     it so the two do not compete as display type. */
+  .hero-lead {
+    font-family: var(--ff);
+    font-size: clamp(1.25rem, 2.6vw, 1.6rem);
+    font-weight: 600;
+    color: var(--white);
+    max-width: 640px;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.85rem;
+  }
+
   .hero-sub {
-    font-size: clamp(1rem, 2vw, 1.15rem);
+    font-size: clamp(0.95rem, 1.7vw, 1.05rem);
     color: var(--muted);
     max-width: 560px;
-    line-height: 1.75;
+    line-height: 1.7;
     margin-bottom: 2.5rem;
   }
 
@@ -747,14 +763,15 @@
     display: none;
   }
 
+  /* No background/border/radius on purpose. As a bordered card this competed
+     with the hero's CTA and pill row as a second framed object right below the
+     fold; on open paper the four figures read as one quiet band instead. The
+     extra gap does the separating the border used to. */
   .moat-bar {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 2rem 2.5rem;
+    padding: 2.75rem 3rem;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
+    gap: 3.5rem;
     text-align: center;
   }
 
@@ -891,7 +908,7 @@
 
 
 <div class="top-banner">
-  <img src="/assets/images/banner-hero.png" alt="AIMAZZE — built for doctors, lawyers, scientists, and researchers" loading="eager">
+  <img src="/assets/images/banner-hero.png" alt="AIMAZZE — built for legal and clinical research professionals" loading="eager">
   <div class="top-banner-logo"><span class="brand-wordmark brand-wordmark--banner" role="img" aria-label="AIMAZZE"></span></div>
 </div>
 
@@ -953,8 +970,12 @@
     <span class="outline">Untangle it safely.</span>
   </h1>
 
+  <p class="hero-lead">
+    Private, personal AI for every professional bound by confidentiality.
+  </p>
+
   <p class="hero-sub">
-    The only AI workstation built for <strong>doctors, lawyers, engineers, and scientists</strong> — compare every major model side by side, pick the winner, keep going. <strong>Local models, your own API keys, or both — you choose what leaves your device.</strong>
+    Starting with legal and clinical research — with local models, what you type never leaves your device.
   </p>
 
   <div class="download-cta-wrap">
@@ -1012,7 +1033,7 @@
   </div>
 </section>
 
-<section style="padding: 2rem 2rem 4rem;">
+<section style="padding: 5rem 2rem 6.5rem;">
   <div class="container">
     <div class="moat-bar reveal">
       <div class="moat-stat">
