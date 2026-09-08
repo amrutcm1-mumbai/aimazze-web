@@ -1012,7 +1012,17 @@ tr.ticket-note-row td{background:var(--cyan3)}
           var badge = el.querySelector('[data-ticket-row="' + id + '"] .badge');
           badge.className = 'badge ' + statusEl.value;
           badge.textContent = statusEl.value;
-          setStatus(msgEl, resolving ? 'Resolved. Resolution note sent to the customer.' : 'Updated.', 'ok');
+          // The worker reports whether the closing email actually went out
+          // (resolutionEmail) and phrases the outcome itself (message), so
+          // render that string verbatim rather than composing one here. It is
+          // deliberately careful — "accepted by the mail provider" is the
+          // ceiling of what a 2xx from Resend proves, and a send that threw
+          // says so outright. The line this replaces claimed the note was
+          // "sent to the customer" on every resolve, including the ones where
+          // the mail failed. 'Updated.' is only a floor for a response that
+          // predates those two fields.
+          var emailFailed = res.data && res.data.resolutionEmail === 'failed';
+          setStatus(msgEl, (res.data && res.data.message) || 'Updated.', emailFailed ? 'error' : 'ok');
         });
       });
     });
