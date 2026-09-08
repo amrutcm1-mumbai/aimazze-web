@@ -33,11 +33,21 @@ body{
   color:var(--white);
   min-height:100vh;
   display:flex;
+  flex-direction:column;
   align-items:center;
   justify-content:center;
   padding:24px;
   line-height:1.6;
 }
+footer{
+  margin-top:1.5rem;
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+  font-family:var(--font-mono);
+}
+footer a{color:var(--muted)}
+footer a:hover{color:var(--cyan)}
 .card{
   width:100%;
   max-width:440px;
@@ -199,6 +209,10 @@ h1{
     <p class="sub">This link doesn't contain a valid license key. Please check your activation email and click the button there again, or email <a href="mailto:hello@aimazze.com">hello@aimazze.com</a>.</p>
   </div>
 </div>
+
+<footer>
+  <a href="mailto:hello@aimazze.com">Contact</a> · © 2026 AIMAZZE
+</footer>
 
 <script>
 (function(){
