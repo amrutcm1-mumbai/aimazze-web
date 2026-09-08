@@ -90,6 +90,66 @@
     line-height: 0;
   }
 
+  /* Mobile (<768px): a normal centered band under the photo, on porcelain --
+     not part of the overlay. Full two-line tagline, no truncation. */
+  .top-banner-tagline {
+    padding: 1.1rem 1.5rem 0;
+    text-align: center;
+  }
+  .top-banner-tagline-lead {
+    font-family: var(--ff);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.35;
+    margin-bottom: 0.3rem;
+  }
+  .top-banner-tagline-sub {
+    font-size: 0.95rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Desktop/tablet (>=768px): overlay directly on the photo, left-aligned in
+     the beige column below the wordmark. Soft scrim + text-shadow keep the
+     two lines legible against the portrait photo behind them. */
+  @media (min-width: 768px) {
+    .top-banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 45%;
+      background: linear-gradient(90deg, rgba(255,255,255,0.55), transparent 45%);
+      pointer-events: none;
+    }
+    /* Offset from the vertical centre by half the wordmark, so the tagline
+       clears the mark without the mark itself having to move. The type scales
+       down with the viewport because the banner gets shorter faster than the
+       copy gets shorter -- at a flat 1.15rem the second line falls out of the
+       bottom of the photo around 768px. */
+    .top-banner-tagline {
+      position: absolute;
+      left: 5%;
+      top: calc(50% + (clamp(30px, 5.5vw, 64px) / 2) + clamp(6px, 1vw, 14px));
+      width: 40%;
+      max-width: 420px;
+      padding: 0;
+      text-align: left;
+    }
+    .top-banner-tagline-lead {
+      font-size: clamp(0.85rem, 1.45vw, 1.15rem);
+    }
+    .top-banner-tagline-sub {
+      font-size: clamp(0.72rem, 1.2vw, 0.95rem);
+    }
+    .top-banner-tagline-lead,
+    .top-banner-tagline-sub {
+      text-shadow: 0 1px 2px rgba(255,255,255,0.45);
+    }
+  }
+
   nav {
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -910,6 +970,10 @@
 <div class="top-banner">
   <img src="/assets/images/banner-hero.png" alt="AIMAZZE — built for legal and clinical research professionals" loading="eager">
   <div class="top-banner-logo"><span class="brand-wordmark brand-wordmark--banner" role="img" aria-label="AIMAZZE"></span></div>
+  <div class="top-banner-tagline">
+    <p class="top-banner-tagline-lead">Private, personal AI for every professional bound by confidentiality.</p>
+    <p class="top-banner-tagline-sub">Starting with legal and clinical research — with local models, what you type never leaves your device.</p>
+  </div>
 </div>
 
 <nav>
