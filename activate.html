@@ -143,17 +143,60 @@ h1{
   font-size:11px;
   color:var(--muted2);
 }
-.download-note .tag{
-  display:inline-block;
+.download-note a{color:var(--cyan);font-weight:600}
+
+/* T-71 bug 1: the "app is not installed" branch. Hidden until the
+   post-deep-link timer decides the app never came to the foreground --
+   see the detection notes in the script block below. Deliberately louder
+   than .download-note, because at this point the customer is stuck and
+   the download is the only thing that unsticks them. */
+.install-fallback{
+  display:none;
+  margin-top:1.5rem;
+  padding:1.25rem;
   background:var(--amber2);
+  border:1px solid rgba(176,114,26,0.25);
+  border-radius:var(--radius);
+  text-align:left;
+}
+.install-fallback.show{display:block}
+.install-fallback .tag{
+  display:inline-block;
+  background:rgba(176,114,26,0.14);
   color:var(--amber);
   font-size:10px;
   font-weight:600;
   padding:2px 8px;
   border-radius:4px;
-  margin-bottom:6px;
+  margin-bottom:8px;
   font-family:var(--font-mono);
+  text-transform:uppercase;
+  letter-spacing:.06em;
 }
+.install-fallback h2{
+  font-family:var(--font-display);
+  font-size:15px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+.install-fallback p{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:0.9rem;
+}
+.install-fallback .btn{
+  color:#FFFFFF;
+  margin-bottom:0.5rem;
+  text-align:center;
+}
+.install-fallback .meta{
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--muted2);
+  margin-bottom:0;
+  text-align:center;
+}
+.install-fallback .meta .version{color:var(--cyan)}
 .error-state{display:none}
 .error-state.show{display:block}
 .error-state h1{color:var(--white)}
@@ -198,9 +241,21 @@ h1{
 
     <p class="help-text" id="help-text">If nothing happened when this page loaded, click "Open AIMAZZE" above. Your browser may ask to confirm opening the app &mdash; choose Allow.</p>
 
-    <div class="download-note">
-      <div class="tag">Coming soon</div>
-      <div>Don't have AIMAZZE installed yet? Download links will be available here shortly. In the meantime, email <a href="mailto:hello@aimazze.com">hello@aimazze.com</a> if you need the installer.</div>
+    <!-- Revealed by the not-installed branch. The download link carries the
+         activation params forward so the customer never has to find the
+         original email again after installing. -->
+    <div class="install-fallback" id="install-fallback">
+      <div class="tag">App not found</div>
+      <h2>AIMAZZE doesn't look installed yet</h2>
+      <p id="install-fallback-copy">Nothing opened, so this device probably doesn't have AIMAZZE on it yet. Install it first &mdash; your activation details travel with the link below, so you won't need this email again.</p>
+      <a href="/" class="btn" id="fallback-download-btn">Download AIMAZZE for Windows</a>
+      <p class="meta"><span class="version" id="fallback-version">v0.1.31</span> &middot; Windows &middot; Mac coming soon</p>
+    </div>
+
+    <!-- Always-visible quiet download line. It stays put even when the
+         detection above guesses "opened", so this page is never a dead end. -->
+    <div class="download-note" id="download-note">
+      Don't have AIMAZZE installed yet? <a href="/" id="note-download-link">Download for Windows</a>. Mac is still coming soon.
     </div>
   </div>
 
@@ -216,6 +271,12 @@ h1{
 
 <script>
 (function(){
+  // Latest published Windows build. Kept beside the links it feeds so there
+  // is one place to bump. downloads/ is gitignored, so scripts/deploy.ps1
+  // and scripts/smoke-downloads.mjs are what prove the file is really on
+  // disk and serving -- not git status.
+  var WIN_VERSION = '0.1.31';
+
   var params = new URLSearchParams(window.location.search);
   var key = params.get('key') || '';
   var plan = params.get('plan') || '';
@@ -238,17 +299,73 @@ h1{
       + (plan ? '&plan=' + encodeURIComponent(plan) : '')
       + (email ? '&email=' + encodeURIComponent(email) : '');
 
+  // The download page is the homepage CTA. Carry the activation params
+  // through so it can offer a one-click way back here after installing.
+  var forward = new URLSearchParams();
+  if (key) forward.set('key', key);
+  if (plan) forward.set('plan', plan);
+  if (email) forward.set('email', email);
+  if (inviteToken) forward.set('inviteToken', inviteToken);
+  var downloadUrl = '/?' + forward.toString() + '#download';
+
+  document.getElementById('fallback-download-btn').setAttribute('href', downloadUrl);
+  document.getElementById('note-download-link').setAttribute('href', downloadUrl);
+  document.getElementById('fallback-version').textContent = 'v' + WIN_VERSION;
+  document.getElementById('note-download-link').textContent =
+    'Download for Windows (v' + WIN_VERSION + ')';
+
   // An invite has no license key to display/copy — the manual-activation
   // fallback section only makes sense for the key flow.
   if (inviteToken) {
     document.getElementById('manual-key-section').style.display = 'none';
     document.querySelector('#default-state h1').textContent = 'Join your team on AIMAZZE';
+    document.getElementById('install-fallback-copy').textContent =
+      'Nothing opened, so this device probably does not have AIMAZZE on it yet. '
+      + 'Install it first — your invite travels with the link below, so you '
+      + 'will not need this email again.';
   } else {
     document.getElementById('key-box').textContent = key;
   }
   document.getElementById('open-app-btn').setAttribute('href', deepLink);
 
   var statusEl = document.getElementById('status-text');
+
+  // --- did the app actually open? ------------------------------------------
+  //
+  // A custom-protocol navigation gives no callback, so this uses the standard
+  // heuristic: if the page loses focus or visibility shortly after the
+  // aimazze:// navigation, something came to the foreground and we assume it
+  // was AIMAZZE. If nothing takes focus inside the window, assume the handler
+  // is not registered on this device.
+  //
+  // The heuristic is not exact -- browsers disagree on whether their own
+  // "Open AIMAZZE?" confirm dialog counts as a blur. Rather than tune that,
+  // both mistakes are made survivable:
+  //   * false "not installed" -> the panel appears next to an app that did
+  //     open. Harmless; it is only extra information.
+  //   * false "opened"        -> #download-note is still on the page, so a
+  //     real download link stays one line away either way.
+  var FALLBACK_DELAY_MS = 2000;
+  var wentAway = false;
+  var fallbackArmed = false;
+
+  function markWentAway(){ wentAway = true; }
+  window.addEventListener('blur', markWentAway);
+  window.addEventListener('pagehide', markWentAway);
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) markWentAway();
+  });
+
+  function armFallback(){
+    if (fallbackArmed) return;
+    fallbackArmed = true;
+    setTimeout(function(){
+      if (wentAway || document.hidden) return;   // app took the foreground
+      document.getElementById('install-fallback').classList.add('show');
+      document.getElementById('download-note').style.display = 'none';
+      statusEl.textContent = 'AIMAZZE did not respond on this device.';
+    }, FALLBACK_DELAY_MS);
+  }
 
   // Auto-attempt the deep link once, on page load — this is a normal
   // user-initiated https page navigation, which is treated very differently
@@ -261,12 +378,18 @@ h1{
     } catch(e) {
       statusEl.textContent = 'Use the button above to open AIMAZZE.';
     }
+    armFallback();
   }
   setTimeout(attemptOpen, 600);
 
   document.getElementById('open-app-btn').addEventListener('click', function(e){
     e.preventDefault();
+    // A manual click is a fresh attempt: re-arm so the panel can still
+    // appear if this try also goes nowhere.
+    fallbackArmed = false;
+    wentAway = false;
     window.location.href = deepLink;
+    armFallback();
   });
 
   document.getElementById('copy-btn').addEventListener('click', function(){

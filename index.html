@@ -332,6 +332,42 @@
   }
   .download-win-note strong { color: var(--white); font-weight: 600; }
 
+  /* T-71 bug 2: shown only when activate.html forwarded a license key here
+     because the app was not installed. It is the customer's way back into
+     activation after installing, so they never have to re-open the original
+     email. Rendered by the activation-handoff script in <head>. */
+  .activation-banner {
+    display: none;
+    width: 100%;
+    max-width: 460px;
+    padding: 1rem 1.1rem;
+    background: var(--cyan-dim);
+    border: 1px solid var(--cyan);
+    border-radius: 10px;
+    text-align: center;
+  }
+  .activation-banner.show { display: block; }
+  .activation-banner .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--cyan);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .activation-banner p {
+    font-size: 13px;
+    color: var(--white);
+    line-height: 1.6;
+    margin: 0;
+  }
+  .activation-banner a {
+    color: var(--cyan);
+    font-weight: 700;
+    text-decoration: underline;
+  }
+
   .waitlist-form {
     display: flex;
     gap: 10px;
@@ -953,6 +989,92 @@
   }
 </style>
 <script defer src="/brand-loader.js"></script>
+<!-- T-71 bug 1/2: activation handoff from activate.html.
+     Runs in <head>, ahead of every third-party script on this page, so the
+     forwarded license key is read and then stripped from the visible URL
+     via replaceState before anything else can see location.search. The
+     values live in this closure only -- never in the URL, never in storage. -->
+<script>
+  (function () {
+    var q = new URLSearchParams(window.location.search);
+    var key = q.get("key") || "";
+    var plan = q.get("plan") || "";
+    var email = q.get("email") || "";
+    var inviteToken = q.get("inviteToken") || "";
+
+    if (!key && !inviteToken) return;
+
+    // Rebuild the activation link before dropping the params from the URL.
+    var forward = new URLSearchParams();
+    if (key) forward.set("key", key);
+    if (plan) forward.set("plan", plan);
+    if (email) forward.set("email", email);
+    if (inviteToken) forward.set("inviteToken", inviteToken);
+    var activateUrl = "/activate.html?" + forward.toString();
+
+    try {
+      var kept = new URLSearchParams(window.location.search);
+      ["key", "plan", "email", "inviteToken"].forEach(function (n) {
+        kept.delete(n);
+      });
+      var rest = kept.toString();
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + (rest ? "?" + rest : "") + window.location.hash
+      );
+    } catch (e) {
+      /* replaceState is best-effort; the banner still works without it. */
+    }
+
+    // "pro_monthly" -> "Pro Monthly". Plan strings arrive from the checkout,
+    // so strip anything that is not a word character before displaying them.
+    function planLabel(raw) {
+      var words = String(raw).replace(/[^A-Za-z0-9]+/g, " ").trim().split(" ");
+      if (!words[0]) return "";
+      return words
+        .map(function (w) {
+          return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+        })
+        .join(" ");
+    }
+
+    function render() {
+      var banner = document.getElementById("activation-banner");
+      var copy = document.getElementById("activation-banner-copy");
+      if (!banner || !copy) return;
+
+      var link = document.createElement("a");
+      link.setAttribute("href", activateUrl);
+
+      if (inviteToken) {
+        copy.appendChild(document.createTextNode("Once installed, "));
+        link.textContent = "click here to join your team on AIMAZZE";
+        copy.appendChild(link);
+        copy.appendChild(document.createTextNode("."));
+      } else {
+        var label = planLabel(plan);
+        copy.appendChild(document.createTextNode("Once installed, "));
+        link.textContent =
+          "click here to activate your " + (label ? label + " " : "") + "license";
+        copy.appendChild(link);
+        copy.appendChild(
+          document.createTextNode(
+            ". Your key is already in that link — no need to find the email again."
+          )
+        );
+      }
+
+      banner.classList.add("show");
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", render);
+    } else {
+      render();
+    }
+  })();
+</script>
 </head>
 <body>
 <!-- Branded loading transition: logo mark + wordmark, centred.
@@ -1042,7 +1164,11 @@
     Starting with legal and clinical research — with local models, what you type never leaves your device.
   </p>
 
-  <div class="download-cta-wrap">
+  <div class="download-cta-wrap" id="download">
+    <div class="activation-banner" id="activation-banner">
+      <span class="label">Your purchase</span>
+      <p id="activation-banner-copy"></p>
+    </div>
     <a href="/downloads/AIMAZZE-Setup-0.1.31.msi" class="download-btn" download>
       ⬇ Download for Windows
     </a>
