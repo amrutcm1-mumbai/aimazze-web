@@ -582,6 +582,69 @@
   .cta-link:hover { color: #00eeff; }
   .feat-body .feat-note { display: block; margin-top: 0.5rem; color: var(--muted2); font-size: 12px; }
 
+  /* Alternating screenshot/copy rows. The shot column is a fixed 16:10 frame
+     rather than a bare <img>, so the row keeps its height whether the file on
+     disk is the shipped placeholder or a real capture -- swapping the PNG in
+     never reflows the page. Screenshots live at their final paths from day
+     one: assets/screenshots/feature-<name>.png, authored at 1600x1000. */
+  .feature-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 4.5rem;
+  }
+
+  .feature-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3.5rem;
+    align-items: center;
+  }
+
+  /* Alternate the sides. Source order stays shot-then-copy on every row, so
+     the stacked mobile layout gets the screenshot first without any reorder. */
+  .feature-row:nth-child(even) .feature-shot { order: 2; }
+
+  .feature-shot {
+    aspect-ratio: 16 / 10;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--surface2);
+    box-shadow: 0 12px 32px rgba(20,23,28,0.07);
+  }
+
+  .feature-shot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .feature-index {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 0.6rem;
+  }
+
+  .feature-title {
+    font-family: var(--fd);
+    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    margin-bottom: 0.6rem;
+  }
+
+  .feature-body {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 44ch;
+  }
+
   .personas-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -944,6 +1007,12 @@
 
   @media (max-width: 900px) {
     .features-grid { grid-template-columns: 1fr 1fr; }
+    /* Stack: one column, screenshot above copy on every row. The nth-child
+       flip is undone here or the even rows would put copy first. */
+    .feature-rows { gap: 3rem; }
+    .feature-row { grid-template-columns: 1fr; gap: 1.5rem; }
+    .feature-row:nth-child(even) .feature-shot { order: 0; }
+    .feature-body { max-width: none; }
     .pricing-grid { grid-template-columns: 1fr 1fr; }
     .personas-grid { grid-template-columns: 1fr 1fr; }
     .arena-cols { grid-template-columns: 1fr; }
@@ -1273,28 +1342,59 @@
     <div class="section-title">Everything a professional needs.<br>Nothing they don't.</div>
     <p class="section-sub">Every feature was designed around the constraints of regulated professions — where data confidentiality is not optional.</p>
 
-    <div class="features-grid reveal">
+    <div class="feature-rows reveal">
+
+      <div class="feature-row">
+        <div class="feature-shot">
+          <img src="/assets/screenshots/feature-arena.png"
+               alt="The Arena comparing several model answers to one prompt side by side"
+               width="1600" height="1000" loading="lazy" decoding="async">
+        </div>
+        <div class="feature-copy">
+          <div class="feature-index">01 · The Arena</div>
+          <h3 class="feature-title">Ask once. Compare eight answers.</h3>
+          <p class="feature-body">Put one prompt to up to 8 models at once and watch them stream in parallel. Pick the strongest answer and carry that thread forward — no retyping, no tab-juggling.</p>
+        </div>
+      </div>
+
+      <div class="feature-row">
+        <div class="feature-shot">
+          <img src="/assets/screenshots/feature-personas.png"
+               alt="The persona picker showing profession-specific personas"
+               width="1600" height="1000" loading="lazy" decoding="async">
+        </div>
+        <div class="feature-copy">
+          <div class="feature-index">02 · Persona picker</div>
+          <h3 class="feature-title">A specialist for every matter.</h3>
+          <p class="feature-body">Docs, Law Upkeeper, Tech Innovator, Scientific Discoverer and more — each preloaded with reasoning tuned to its profession. Build your own, and the app greets you by persona when you return.</p>
+        </div>
+      </div>
+
+      <div class="feature-row">
+        <div class="feature-shot">
+          <img src="/assets/screenshots/feature-vault.png"
+               alt="The Vault showing stored documents and local semantic search"
+               width="1600" height="1000" loading="lazy" decoding="async">
+        </div>
+        <div class="feature-copy">
+          <div class="feature-index">03 · The Vault</div>
+          <h3 class="feature-title">Your documents, searchable on your own machine.</h3>
+          <p class="feature-body">Drop in PDFs, DOCX, CSVs or scans — OCR reads them, and local vector embeddings make them semantically searchable. Attach any document to any chat. Nothing is uploaded to a server.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- The three claims below carry scoped legal wording (the voice-input
+         exception and the provider-terms note), so they are kept as cards
+         rather than dropped when the six-card grid became three rows. -->
+    <div class="features-grid reveal" style="margin-top: 4.5rem;">
       <div class="feat-card">
         <div class="feat-icon">🔒</div>
         <div class="feat-title">Local-first by architecture</div>
         <div class="feat-body">Your conversations, documents, and API keys live on your device only. With local models, nothing is transmitted at all; with your own provider keys, AIMAZZE is never in the data path. Independently auditable — not just a policy promise.
           <span class="feat-note">One exception: voice input (Starter plan and up) sends your spoken audio to Microsoft's cloud speech service for transcription. Typing is unaffected and stays fully on-device.</span>
         </div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">⚔</div>
-        <div class="feat-title">The Arena</div>
-        <div class="feat-body">Compare up to 8 models simultaneously. One prompt, parallel streaming, pick the winner, continue that thread. No other native desktop AI client offers this cleanly.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">🎭</div>
-        <div class="feat-title">Professional personas</div>
-        <div class="feat-body">Docs, Law Upkeeper, Tech Innovator, Scientific Discoverer and more — each pre-loaded with profession-specific reasoning. The app greets you by your persona when you return.</div>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">🗄</div>
-        <div class="feat-title">The Vault</div>
-        <div class="feat-body">Upload any document — PDF, DOCX, CSV, images. Local vector embeddings mean semantic search runs entirely on your machine. Attach documents to any chat. Nothing uploaded to a server.</div>
       </div>
       <div class="feat-card">
         <div class="feat-icon">🔑</div>
