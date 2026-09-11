@@ -1,4 +1,8 @@
 .git/**
+# In a git worktree .git is a FILE (a "gitdir:" pointer), not a directory, so
+# the glob above does not match it and wrangler ships it as a public asset.
+# Deploying from a clean worktree leaked /.git on 2026-09-11. Match both.
+.git
 .wrangler/**
 .claude/**
 node_modules/**
