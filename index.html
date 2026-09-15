@@ -588,7 +588,7 @@
      rather than a bare <img>, so the row keeps its height whether the file on
      disk is the shipped placeholder or a real capture -- swapping the PNG in
      never reflows the page. Screenshots live at their final paths from day
-     one: assets/screenshots/feature-<name>.png, authored at 1600x1000. */
+     one: assets/screenshots/feature-<name>.png, captured at ~1279x748. */
   .feature-rows {
     display: flex;
     flex-direction: column;
@@ -607,7 +607,7 @@
   .feature-row:nth-child(even) .feature-shot { order: 2; }
 
   .feature-shot {
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 16 / 9.4;
     border: 1px solid var(--border);
     border-radius: 14px;
     overflow: hidden;
@@ -1403,7 +1403,7 @@
         <div class="feature-shot">
           <img src="/assets/screenshots/feature-arena.png"
                alt="The Arena comparing several model answers to one prompt side by side"
-               width="1600" height="1000" loading="lazy" decoding="async">
+               width="1279" height="747" loading="lazy" decoding="async">
         </div>
         <div class="feature-copy">
           <div class="feature-index">01 · The Arena</div>
@@ -1416,7 +1416,7 @@
         <div class="feature-shot">
           <img src="/assets/screenshots/feature-personas.png"
                alt="The persona picker showing profession-specific personas"
-               width="1600" height="1000" loading="lazy" decoding="async">
+               width="1278" height="749" loading="lazy" decoding="async">
         </div>
         <div class="feature-copy">
           <div class="feature-index">02 · Persona picker</div>
@@ -1429,7 +1429,7 @@
         <div class="feature-shot">
           <img src="/assets/screenshots/feature-vault.png"
                alt="The Vault showing stored documents and local semantic search"
-               width="1600" height="1000" loading="lazy" decoding="async">
+               width="1279" height="751" loading="lazy" decoding="async">
         </div>
         <div class="feature-copy">
           <div class="feature-index">03 · The Vault</div>
