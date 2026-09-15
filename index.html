@@ -279,6 +279,8 @@
     transition: all 0.2s;
   }
   .download-btn:hover { background: #00eeff; transform: translateY(-1px); }
+  /* No href until the email gate passes, so <a> no longer supplies these. */
+  .download-btn { cursor: pointer; }
 
   .download-meta {
     font-family: var(--mono);
@@ -737,7 +739,12 @@
   .price-amount-now {
     color: #0FA88F;
   }
-  .price-cta {
+  /* .price-cta-free is the Free tier's "Get Free" button. It deliberately
+     does NOT carry the .price-cta class: the checkout script binds every
+     .price-cta to the Razorpay flow, and the free tier must never enter it.
+     Same visuals, separate wiring. */
+  .price-cta,
+  .price-cta-free {
     width: 100%;
     margin-top: 1rem;
     padding: 0.65rem 0;
@@ -751,9 +758,12 @@
     cursor: pointer;
     transition: opacity 0.15s;
   }
-  .price-cta:hover { opacity: 0.85; }
-  .price-cta:disabled { opacity: 0.5; cursor: not-allowed; }
-  .price-card:not(.featured) .price-cta {
+  .price-cta:hover,
+  .price-cta-free:hover { opacity: 0.85; }
+  .price-cta:disabled,
+  .price-cta-free:disabled { opacity: 0.5; cursor: not-allowed; }
+  .price-card:not(.featured) .price-cta,
+  .price-card:not(.featured) .price-cta-free {
     background: var(--surface2);
     color: var(--white);
     border: 1px solid var(--border2);
@@ -858,6 +868,28 @@
     flex-shrink: 0;
   }
   .checkout-legal-row a { color: var(--cyan); }
+  /* Free-gate consent row. Deliberately identical mechanics to
+     .checkout-legal-row above — same layout, same quiet register — because
+     consent is consent: DPDP wants an affirmative act, not a disclosure the
+     visitor can sail past. The one difference from checkout is that this row
+     is never hidden and never optional; checkout's equivalent sits behind
+     LEGAL_ACCEPTANCE_ENFORCED, this one is always on. */
+  .free-gate-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: 0.15rem;
+    cursor: pointer;
+  }
+  .free-gate-consent input[type="checkbox"] {
+    width: auto;
+    margin: 2px 0 0;
+    flex-shrink: 0;
+  }
+  .free-gate-consent a { color: var(--cyan); }
   .checkout-modal-actions {
     display: flex;
     gap: 8px;
@@ -1047,6 +1079,22 @@
 
     if (!key && !inviteToken) return;
 
+    // A `key` means this arrival came from a completed purchase: Razorpay
+    // already captured their email and the license is already issued. They
+    // are not a free-tier lead, so the free-tier email gate does not apply
+    // to them at all — flag it here, before replaceState scrubs the param,
+    // and the gate hands them the download directly. See the gate script at
+    // the end of <body>.
+    if (key) window.__aimazzePaidArrival = true;
+
+    // Stash the purchase email before replaceState scrubs it off the URL.
+    // Deliberately NOT paired with the bypass above: `key` means this
+    // person paid, `inviteToken` means someone else did. An invitee's
+    // address was never captured at checkout, so they are still a lead we
+    // have not collected — they keep going through the gate, and this only
+    // prefills it for them.
+    if (email) window.__aimazzeActivationEmail = email;
+
     // Rebuild the activation link before dropping the params from the URL.
     var forward = new URLSearchParams();
     if (key) forward.set("key", key);
@@ -1204,9 +1252,16 @@
       <span class="label">Your purchase</span>
       <p id="activation-banner-copy"></p>
     </div>
-    <a href="/downloads/AIMAZZE-Setup-0.1.33.msi" class="download-btn" download>
+    <a class="download-btn" id="freeDownloadBtn" role="button" tabindex="0"
+       data-download-href="/downloads/AIMAZZE-Setup-0.1.33.msi">
       ⬇ Download for Windows
     </a>
+    <noscript>
+      <p class="download-win-note">
+        Please enable JavaScript to download AIMAZZE, or email
+        <strong>hello@aimazze.com</strong> and we'll send you the installer.
+      </p>
+    </noscript>
     <div class="download-meta"><span class="version">v0.1.33</span> · Windows</div>
     <div class="download-mac-note">Mac coming soon</div>
     <p class="download-win-note">
@@ -1514,6 +1569,7 @@
         <div class="price-feature">5 Vault files</div>
         <div class="price-feature">Offline capable</div>
         <div class="price-feature">1 local profile (no sharing)</div>
+        <button class="price-cta-free" id="freeTierCta" type="button">Get Free</button>
       </div>
       <div class="price-card"
            data-tier="starter"
@@ -1620,6 +1676,37 @@
     <div class="checkout-modal-actions">
       <button class="checkout-modal-cancel" id="checkoutCancelBtn" type="button">Cancel</button>
       <button class="checkout-modal-continue" id="checkoutContinueBtn" type="button">Continue to payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Free-tier email gate. ONE modal serves BOTH free-download entry points
+     (the pricing grid's "Get Free" and the hero download button) so the two
+     can never drift apart. One field, one consent tick, one submit: no skip
+     control and no password. The tick is required rather than implied — DPDP
+     wants an affirmative act for a marketing opt-in, and it keeps this path's
+     consent mechanics identical to the checkout modal's.
+     Email ownership is proven later, post-install, by the activation PIN —
+     that is why nothing here waits on a verification round-trip.
+     Paid tiers do not come through here at all; Starter/Pro/Elite stay on
+     #checkoutModalOverlay and Razorpay, which captures email as part of
+     payment. -->
+<div class="checkout-modal-overlay" id="freeGateOverlay">
+  <div class="checkout-modal">
+    <div class="checkout-modal-title">Get AIMAZZE Free</div>
+    <div class="checkout-modal-sub">Free forever · no card · Windows</div>
+    <input type="email" id="freeGateEmail" placeholder="Email address" autocomplete="email">
+    <div class="checkout-modal-error" id="freeGateError">Please enter a valid email address.</div>
+    <label class="free-gate-consent" for="freeGateConsent">
+      <input type="checkbox" id="freeGateConsent">
+      <span>I agree to receive the download link and occasional product updates
+        by email. You can unsubscribe at any time &mdash; see our
+        <a href="/privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
+    </label>
+    <div class="checkout-modal-error" id="freeGateConsentError" style="display:none">Please tick the consent box to continue.</div>
+    <div class="checkout-modal-actions">
+      <button class="checkout-modal-cancel" id="freeGateCancelBtn" type="button">Cancel</button>
+      <button class="checkout-modal-continue" id="freeGateSubmitBtn" type="button">Get the download</button>
     </div>
   </div>
 </div>
@@ -2549,5 +2636,165 @@
     }
   })();
 </script>
+<script>
+  // Free-tier email gate. Both free-download entry points route through
+  // openFreeGate(), so "Get Free" and the hero download button enforce
+  // byte-for-byte the same rule; there is no second copy to drift.
+  (function () {
+    var FREE_WORKER_URL = "https://aimazze-worker.amrutcm1.workers.dev";
+
+    var overlay = document.getElementById("freeGateOverlay");
+    var emailInput = document.getElementById("freeGateEmail");
+    var errorEl = document.getElementById("freeGateError");
+    var cancelBtn = document.getElementById("freeGateCancelBtn");
+    var submitBtn = document.getElementById("freeGateSubmitBtn");
+    var downloadBtn = document.getElementById("freeDownloadBtn");
+    var freeTierCta = document.getElementById("freeTierCta");
+    var consentBox = document.getElementById("freeGateConsent");
+    var consentError = document.getElementById("freeGateConsentError");
+
+    // Same expression the checkout modal and the mobile waitlist use.
+    // Format only — deliverability is not this gate's job.
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    var activeSource = "hero";
+
+    function showError(message) {
+      errorEl.textContent = message;
+      errorEl.style.display = "block";
+    }
+
+    function openFreeGate(source) {
+      activeSource = source;
+      errorEl.style.display = "none";
+      errorEl.textContent = "Please enter a valid email address.";
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Get the download";
+      consentError.style.display = "none";
+      // Never inherited from a previous open — the affirmative act has to
+      // belong to this submission, not to whoever last used this browser.
+      consentBox.checked = false;
+      // A customer who arrived from their purchase email already handed us
+      // this address; prefilling saves them retyping it. It is a prefill,
+      // not a bypass — the gate still has to be submitted.
+      emailInput.value = window.__aimazzeActivationEmail || "";
+      overlay.classList.add("open");
+      emailInput.focus();
+    }
+
+    function closeFreeGate() {
+      overlay.classList.remove("open");
+    }
+
+    // Kicks the browser at the installer without navigating the page away,
+    // so the post-download notes (SmartScreen guidance, activation banner)
+    // stay on screen while the file lands.
+    function startDownload() {
+      var href = downloadBtn && downloadBtn.getAttribute("data-download-href");
+      if (!href) return;
+      var a = document.createElement("a");
+      a.href = href;
+      a.setAttribute("download", "");
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    cancelBtn.addEventListener("click", closeFreeGate);
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) closeFreeGate();
+    });
+    emailInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") submitBtn.click();
+    });
+
+    submitBtn.addEventListener("click", function () {
+      var email = emailInput.value.trim();
+      if (!isValidEmail(email)) {
+        showError("Please enter a valid email address.");
+        return;
+      }
+      errorEl.style.display = "none";
+
+      // Hard requirement, not a nudge: no capture and no download without an
+      // affirmative tick. Checked after the email so only one problem is
+      // reported at a time, matching the checkout modal's order.
+      if (!consentBox.checked) {
+        consentError.style.display = "block";
+        return;
+      }
+      consentError.style.display = "none";
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Starting download…";
+
+      fetch(FREE_WORKER_URL + "/leads/capture", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, source: activeSource }),
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error("Request failed");
+          return res.json();
+        })
+        .then(function () {
+          closeFreeGate();
+          startDownload();
+        })
+        .catch(function (err) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Get the download";
+          showError("Something went wrong. Please try again.");
+          console.error("Free lead capture error:", err);
+        });
+    });
+
+    // A paid arrival (activate.html forwarded a license `key`) is not a
+    // free-tier lead: Razorpay already took their email at checkout. The
+    // gate exists to capture free-tier leads, so for them it simply is not
+    // the applicable flow — they get the download with no interaction.
+    function isPaidArrival() {
+      return window.__aimazzePaidArrival === true;
+    }
+
+    if (downloadBtn) {
+      if (isPaidArrival()) {
+        // Give the anchor its real href back so it behaves like a plain
+        // download link — no interception, and it still works if the
+        // automatic start below is blocked or the customer ignores it.
+        downloadBtn.setAttribute("href", downloadBtn.getAttribute("data-download-href"));
+        downloadBtn.setAttribute("download", "");
+        downloadBtn.removeAttribute("role");
+        downloadBtn.removeAttribute("tabindex");
+        // Straight to the download, no click needed. Guarded so it can only
+        // ever fire once per page load.
+        if (!window.__aimazzePaidDownloadFired) {
+          window.__aimazzePaidDownloadFired = true;
+          startDownload();
+        }
+      } else {
+        downloadBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          openFreeGate("hero-download");
+        });
+        // role="button" without an href gets no keyboard activation for free.
+        downloadBtn.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openFreeGate("hero-download");
+          }
+        });
+      }
+    }
+
+    if (freeTierCta) {
+      freeTierCta.addEventListener("click", function () {
+        openFreeGate("pricing-free");
+      });
+    }
+  })();
+</script>
+
 </body>
 </html>
