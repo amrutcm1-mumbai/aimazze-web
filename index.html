@@ -2125,6 +2125,23 @@
   })();
 </script>
 
+<script>
+  // Each doc's own "Last updated" date (terms.html/privacy-policy.html/
+  // refund-policy.html) — kept in sync manually since these are static
+  // pages with no shared build-time source of truth. Update these
+  // whenever a doc's "Last updated" line changes, so logged acceptances
+  // stay meaningfully tied to what was actually shown.
+  //
+  // Top-level on purpose: both the checkout IIFE and the free-tier gate
+  // IIFE record a consented privacy version, and one shared definition is
+  // the only way those two can never disagree about what was shown.
+  var LEGAL_DOC_VERSIONS = {
+    terms: "2026-06-30",
+    privacy: "2026-08-13",
+    refund: "2026-08-31",
+  };
+</script>
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 (function () {
@@ -2139,17 +2156,6 @@
   // binding. Flip to true ONLY once ACM confirms final reviewed text is
   // live in terms.html/privacy-policy.html/refund-policy.html.
   var LEGAL_ACCEPTANCE_ENFORCED = false;
-
-  // Each doc's own "Last updated" date (terms.html/privacy-policy.html/
-  // refund-policy.html) — kept in sync manually since these are static
-  // pages with no shared build-time source of truth. Update these
-  // whenever a doc's "Last updated" line changes, so logged acceptances
-  // stay meaningfully tied to what was actually shown.
-  var LEGAL_DOC_VERSIONS = {
-    terms: "2026-06-30",
-    privacy: "2026-08-13",
-    refund: "2026-08-31",
-  };
 
   var legalRow = document.getElementById("legalAcceptRow");
   var legalCheckbox = document.getElementById("legalAcceptCheckbox");
@@ -2732,7 +2738,12 @@
       fetch(FREE_WORKER_URL + "/leads/capture", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, source: activeSource }),
+        body: JSON.stringify({
+          email: email,
+          source: activeSource,
+          consent: true,
+          privacyVersion: LEGAL_DOC_VERSIONS.privacy,
+        }),
       })
         .then(function (res) {
           if (!res.ok) throw new Error("Request failed");
