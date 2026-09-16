@@ -1651,10 +1651,15 @@
     <div class="checkout-modal-sub" id="checkoutModalSub">₹999 / month · billed via Razorpay</div>
     <input type="text" id="checkoutName" placeholder="Full name" autocomplete="name">
     <input type="email" id="checkoutEmail" placeholder="Email address" autocomplete="email">
-    <!-- Tier 1 promo codes (12 Aug 2026): Lifetime (one-time order) only —
-         Razorpay subscriptions charge a fixed Plan amount server-side and
-         aren't wired to accept a discount yet, see /create-subscription's
-         comment in the script below. Hidden for non-Lifetime tiers. -->
+    <!-- Tier 1 promo codes. Shown for every purchasable tier since
+         16 Sep 2026. The old "Lifetime only" gate here dated from when a
+         promo code meant a price discount, which Razorpay subscriptions
+         could not take (fixed Plan amount server-side). That constraint
+         died on 20 Aug 2026: a code now grants bonus subscription DAYS
+         applied post-payment to the licence expiry, so Razorpay is never
+         told about it and the fixed Plan amount is irrelevant. Lifetime
+         itself was pulled from sale on 17 Aug 2026, so gating on it left
+         the field unreachable by any real customer. -->
     <div class="checkout-promo-row" id="checkoutPromoRow" style="display:none">
       <input type="text" id="checkoutPromoCode" placeholder="Promo code (optional)" autocomplete="off" style="text-transform:uppercase">
       <button type="button" class="checkout-promo-apply" id="checkoutPromoApplyBtn">Apply</button>
@@ -2199,6 +2204,10 @@
   var promoApplyBtn = document.getElementById("checkoutPromoApplyBtn");
   var promoStatusEl = document.getElementById("checkoutPromoStatus");
 
+  // Mirrors SUBSCRIPTION_TIERS in the worker — the tiers /create-subscription
+  // accepts, and so the only tiers a promo code can be redeemed on.
+  var PROMO_ELIGIBLE_TIERS = ["starter", "pro", "elite"];
+
   var activeTier = null;
   var appliedPromoCode = null; // only set once /promo/validate has confirmed it
   var activeAmountSubunit = null; // paise (INR) or cents (USD) — same subunit convention
@@ -2267,8 +2276,9 @@
     promoStatusEl.style.display = "none";
     promoApplyBtn.disabled = false;
     promoApplyBtn.textContent = "Apply";
-    // Lifetime (one-time order) only — see the promo row's HTML comment.
-    promoRow.style.display = tier === "lifetime" ? "flex" : "none";
+    // Every purchasable tier — see the promo row's HTML comment. Lifetime
+    // is blocked at Continue below, so it never reaches a real checkout.
+    promoRow.style.display = PROMO_ELIGIBLE_TIERS.indexOf(tier) !== -1 ? "flex" : "none";
 
     overlay.classList.add("open");
     nameInput.focus();
@@ -2309,11 +2319,15 @@
         if (data.valid) {
           appliedPromoCode = code;
           promoApplyBtn.textContent = "Applied";
-          var savedText = data.discountType === "percent"
-            ? data.discountValue + "% off applied."
-            : data.discountType === "flat"
-              ? "Discount applied."
-              : "Code applied.";
+          // "trial_days" is what every code the admin module now generates
+          // is; percent/flat only survive on legacy one-time-path rows.
+          var savedText = data.bonusDays
+            ? data.bonusDays + " bonus day" + (data.bonusDays === 1 ? "" : "s") + " added to your plan."
+            : data.discountType === "percent"
+              ? data.discountValue + "% off applied."
+              : data.discountType === "flat"
+                ? "Discount applied."
+                : "Code applied.";
           setPromoStatus(savedText, false);
         } else {
           appliedPromoCode = null;
@@ -2382,10 +2396,27 @@
         email: email,
         confirmed: !!confirmed,
         billingCycle: activeBillingCycle,
-        referralCode: getReferralCode()
+        referralCode: getReferralCode(),
+        // Only ever the code /promo/validate confirmed. The worker
+        // re-validates and hard-400s a bad one, which would fail the whole
+        // checkout, so an unchecked string must not be sent — the Continue
+        // handler makes the customer press Apply first.
+        promoCode: appliedPromoCode
       })
     }).then(function (res) {
-      if (!res.ok) throw new Error("Subscription creation failed");
+      if (!res.ok) {
+        // Surface the worker's own message where there is one: a promo code
+        // that died or hit its cooldown between Apply and Continue is
+        // rejected here by design, and "something went wrong" would leave
+        // the customer no way to know the code was the problem.
+        return res.json()
+          .catch(function () { return {}; })
+          .then(function (data) {
+            var err = new Error(data.error || "Subscription creation failed");
+            err.serverMessage = data.error || null;
+            throw err;
+          });
+      }
       return res.json();
     });
   }
@@ -2426,6 +2457,14 @@
       return;
     }
     errorEl.style.display = "none";
+
+    // A code typed but never checked would otherwise be silently dropped and
+    // the customer would pay without the bonus days they expected.
+    var typedPromo = promoCodeInput.value.trim().toUpperCase();
+    if (typedPromo && typedPromo !== appliedPromoCode) {
+      setPromoStatus("Press Apply to check your promo code first.", true);
+      return;
+    }
 
     if (LEGAL_ACCEPTANCE_ENFORCED && !legalCheckbox.checked) {
       legalError.style.display = "block";
@@ -2479,7 +2518,11 @@
       .catch(function (err) {
         continueBtn.disabled = false;
         continueBtn.textContent = "Continue to payment";
-        errorEl.innerHTML = 'Something went wrong. Please try again or email <a href="mailto:hello@aimazze.com">hello@aimazze.com</a>.';
+        if (err && err.serverMessage) {
+          errorEl.textContent = err.serverMessage;
+        } else {
+          errorEl.innerHTML = 'Something went wrong. Please try again or email <a href="mailto:hello@aimazze.com">hello@aimazze.com</a>.';
+        }
         errorEl.style.display = "block";
         console.error("Checkout error:", err);
       });
