@@ -307,6 +307,7 @@
     margin: 0.2rem 0 0;
   }
   .download-win-note strong { color: var(--white); font-weight: 600; }
+  .download-msi-link { color: var(--cyan); text-decoration: underline; cursor: pointer; }
 
   /* T-71 bug 2: shown only when activate.html forwarded a license key here
      because the app was not installed. It is the customer's way back into
@@ -1252,8 +1253,11 @@
       <span class="label">Your purchase</span>
       <p id="activation-banner-copy"></p>
     </div>
+    <!-- Primary CTA is the NSIS setup.exe (same signed artifact the in-app
+         updater uses, despite the "-updater" filename). The MSI stays
+         available below for IT-managed / silent deployment. -->
     <a class="download-btn" id="freeDownloadBtn" role="button" tabindex="0"
-       data-download-href="/downloads/AIMAZZE-Setup-0.1.35.msi">
+       data-download-href="/downloads/AIMAZZE-Setup-0.1.35-updater.exe">
       ⬇ Download for Windows
     </a>
     <noscript>
@@ -1265,10 +1269,20 @@
     <div class="download-meta"><span class="version">v0.1.35</span> · Windows</div>
     <div class="download-mac-note">Mac coming soon</div>
     <p class="download-win-note">
+      Getting a disk space warning? It usually means your main drive (C:) is low on
+      space, even if you have room elsewhere &mdash; try Windows&rsquo; Storage Sense or
+      Disk Cleanup first.
+    </p>
+    <p class="download-win-note">
       Windows may show a &ldquo;Windows protected your PC&rdquo; screen when installing.
       This is expected for newly-released apps &mdash; Windows needs time to build trust
       in new software, even signed software. Click <strong>More info</strong> &rarr;
       <strong>Run anyway</strong> to continue. Your download is safe.
+    </p>
+    <p class="download-win-note">
+      IT admin deploying silently?
+      <a class="download-msi-link" id="msiDownloadLink" role="button" tabindex="0"
+         data-download-href="/downloads/AIMAZZE-Setup-0.1.35.msi">Download the MSI package</a>
     </p>
   </div>
 
@@ -2698,6 +2712,7 @@
     var cancelBtn = document.getElementById("freeGateCancelBtn");
     var submitBtn = document.getElementById("freeGateSubmitBtn");
     var downloadBtn = document.getElementById("freeDownloadBtn");
+    var msiLink = document.getElementById("msiDownloadLink");
     var freeTierCta = document.getElementById("freeTierCta");
     var consentBox = document.getElementById("freeGateConsent");
     var consentError = document.getElementById("freeGateConsentError");
@@ -2709,14 +2724,18 @@
     }
 
     var activeSource = "hero";
+    // Which installer the gate hands over on success: the hero CTA's
+    // setup.exe, or the secondary MSI link's package.
+    var activeHref = null;
 
     function showError(message) {
       errorEl.textContent = message;
       errorEl.style.display = "block";
     }
 
-    function openFreeGate(source) {
+    function openFreeGate(source, href) {
       activeSource = source;
+      activeHref = href || null;
       errorEl.style.display = "none";
       errorEl.textContent = "Please enter a valid email address.";
       submitBtn.disabled = false;
@@ -2740,8 +2759,8 @@
     // Kicks the browser at the installer without navigating the page away,
     // so the post-download notes (SmartScreen guidance, activation banner)
     // stay on screen while the file lands.
-    function startDownload() {
-      var href = downloadBtn && downloadBtn.getAttribute("data-download-href");
+    function startDownload(href) {
+      href = href || (downloadBtn && downloadBtn.getAttribute("data-download-href"));
       if (!href) return;
       var a = document.createElement("a");
       a.href = href;
@@ -2794,7 +2813,7 @@
         })
         .then(function () {
           closeFreeGate();
-          startDownload();
+          startDownload(activeHref);
         })
         .catch(function (err) {
           submitBtn.disabled = false;
@@ -2837,6 +2856,29 @@
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             openFreeGate("hero-download");
+          }
+        });
+      }
+    }
+
+    // Secondary MSI link: same gate, same paid-arrival bypass as the hero
+    // button, just a different file at the end of it.
+    if (msiLink) {
+      var msiHref = msiLink.getAttribute("data-download-href");
+      if (isPaidArrival()) {
+        msiLink.setAttribute("href", msiHref);
+        msiLink.setAttribute("download", "");
+        msiLink.removeAttribute("role");
+        msiLink.removeAttribute("tabindex");
+      } else {
+        msiLink.addEventListener("click", function (e) {
+          e.preventDefault();
+          openFreeGate("hero-download-msi", msiHref);
+        });
+        msiLink.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openFreeGate("hero-download-msi", msiHref);
           }
         });
       }
