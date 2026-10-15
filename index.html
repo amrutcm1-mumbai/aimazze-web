@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AIMAZZE – The AI Workstation for Professionals</title>
+<title>AIMAZZE: AI on your own computer for confidential work</title>
 <!-- Favicon set — generated from assets/brand/logo-mark.png by
      scripts/build-favicons.py. Regenerate if the mark changes. -->
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -11,9 +11,9 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="description" content="Compare every major AI model side by side, pick the winner, keep going. Local-first — run models on your own hardware, or connect your own provider keys. Built for legal and clinical research professionals.">
-<meta property="og:title" content="AIMAZZE – The AI Workstation for Professionals">
-<meta property="og:description" content="Compare every major AI model side by side. Local-first — run models on your own hardware, or bring your own provider keys.">
+<meta name="description" content="Desktop AI for lawyers and clinical researchers. Run a local model so client files stay on your PC, or use your own key for a cloud model.">
+<meta property="og:title" content="AIMAZZE: AI on your own computer for confidential work">
+<meta property="og:description" content="Desktop AI for lawyers and clinical researchers. Run a local model so client files stay on your PC, or use your own key for a cloud model.">
 <meta property="og:url" content="https://www.aimazze.com">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1186,7 +1186,7 @@
   <div class="top-banner-logo"><span class="brand-wordmark brand-wordmark--banner" role="img" aria-label="AIMAZZE"></span></div>
   <div class="top-banner-tagline">
     <p class="top-banner-tagline-lead">Private, personal AI for every professional bound by confidentiality.</p>
-    <p class="top-banner-tagline-sub">Starting with legal and clinical research — with local models, what you type never leaves your device.</p>
+    <p class="top-banner-tagline-sub">Starting with legal and clinical research. With local models, what you type never leaves your device.</p>
   </div>
 </div>
 
@@ -1198,7 +1198,7 @@
     <a href="#pricing">Pricing</a>
     <a href="#faq">FAQ</a>
   </div>
-  <button type="button" class="nav-cta" onclick="openMobileWaitlistModal()">Notify Me — iOS &amp; Mac</button>
+  <button type="button" class="nav-cta" onclick="openMobileWaitlistModal()">Mac waitlist</button>
 </nav>
 
 <section class="hero">
@@ -1239,7 +1239,7 @@
 
   <div class="hero-badge">
     <div class="dot"></div>
-    Early Access — Waitlist Open Now
+    Available now for Windows
   </div>
 
   <h1>
@@ -1258,7 +1258,7 @@
          available below for IT-managed / silent deployment. -->
     <a class="download-btn" id="freeDownloadBtn" role="button" tabindex="0"
        data-download-href="/downloads/AIMAZZE-Setup-0.1.36-updater.exe">
-      ⬇ Download for Windows
+      Download for Windows
     </a>
     <noscript>
       <p class="download-win-note">
@@ -1269,18 +1269,12 @@
     <div class="download-meta"><span class="version">v0.1.36</span> · Windows</div>
     <div class="download-mac-note">Mac coming soon</div>
     <p class="download-win-note">
-      Getting a disk space warning? It usually means your main drive (C:) is low on
-      space, even if you have room elsewhere &mdash; try Windows&rsquo; Storage Sense or
-      Disk Cleanup first.
+      Windows may show a blue &lsquo;Windows protected your PC&rsquo; screen for new apps.
+      The installer is signed by Amryn Nova Private Limited. Click <strong>More info</strong>,
+      then <strong>Run anyway</strong>.
     </p>
     <p class="download-win-note">
-      Windows may show a &ldquo;Windows protected your PC&rdquo; screen when installing.
-      This is expected for newly-released apps &mdash; Windows needs time to build trust
-      in new software, even signed software. Click <strong>More info</strong> &rarr;
-      <strong>Run anyway</strong> to continue. Your download is safe.
-    </p>
-    <p class="download-win-note">
-      IT admin deploying silently?
+      Installing for a whole office?
       <a class="download-msi-link" id="msiDownloadLink" role="button" tabindex="0"
          data-download-href="/downloads/AIMAZZE-Setup-0.1.36.msi">Download the MSI package</a>
     </p>
@@ -1302,16 +1296,15 @@
       >
       <input type="hidden" name="_subject" value="AIMAZZE Early Access Request">
       <input type="hidden" name="source" value="Landing Page Hero">
-      <button type="submit">Join Waitlist →</button>
+      <button type="submit">Get updates</button>
     </form>
-    <p class="waitlist-note">No credit card · No spam · Early access ships to waitlist first</p>
+    <p class="waitlist-note">Occasional product updates by email · No spam</p>
   </div>
 
   <div class="waitlist-success" id="waitlist-success">
-    <span style="font-size:1.2rem">🎉</span>
     <div>
       <strong style="color:#14171C">You're on the list.</strong><br>
-      We'll notify you the moment early access opens.
+      We'll email you with product updates.
     </div>
   </div>
 
@@ -1320,9 +1313,9 @@
        this file fills it from the aimazze_compliance cookie and unhides it,
        so US/EU/IN see a fifth, region-specific pill here. -->
   <div class="pill-row">
-    <span class="pill hot">🔒 Local-first</span>
-    <span class="pill hot">400+ models</span>
-    <span class="pill hot">🏠 Offline capable</span>
+    <span class="pill hot">Runs on your PC</span>
+    <span class="pill hot">Works offline with local models</span>
+    <span class="pill hot">Use your own AI keys</span>
     <span class="pill">Cancel anytime</span>
     <span class="pill" id="complianceBadge" style="display:none"></span>
   </div>
@@ -1333,19 +1326,19 @@
     <div class="moat-bar reveal">
       <div class="moat-stat">
         <div class="moat-num">400+</div>
-        <div class="moat-label">AI models accessible</div>
+        <div class="moat-label">Models with your own keys</div>
       </div>
       <div class="moat-stat">
         <div class="moat-num">8</div>
         <div class="moat-label">Professional personas</div>
       </div>
       <div class="moat-stat">
-        <div class="moat-num">~8MB</div>
-        <div class="moat-label">App bundle (vs 150MB Electron)</div>
+        <div class="moat-num">8 MB</div>
+        <div class="moat-label">Download</div>
       </div>
       <div class="moat-stat">
-        <div class="moat-num">₹0</div>
-        <div class="moat-label">Data sent to AIMAZZE servers</div>
+        <div class="moat-num">0</div>
+        <div class="moat-label">Chats or documents stored on our servers</div>
       </div>
     </div>
   </div>
@@ -1353,10 +1346,11 @@
 
 <section id="arena" style="padding: 4rem 2rem;">
   <div class="container">
-    <div class="section-label">The killer feature</div>
-    <div class="section-title">One prompt.<br>Every model. Pick the winner.</div>
-    <p class="section-sub">Send one prompt to up to 8 AI models simultaneously. See responses side by side. Kill the losers. Continue with the winner. No switching tabs. No copy-pasting. No context loss.</p>
+    <div class="section-label">Arena</div>
+    <div class="section-title">Ask several AI models the same question and compare the answers</div>
+    <p class="section-sub">Send one prompt to up to eight models at once and read the answers side by side. Keep the one you prefer and carry on from there, without copying text between tabs.</p>
 
+    <div class="section-label">Sample output</div>
     <div class="arena-demo reveal">
       <div class="arena-topbar">
         <div class="arena-dot" style="background:#ef4444"></div>
@@ -1370,7 +1364,7 @@
             <div class="model-dot" style="background:#00d4e8"></div>
             <div class="model-name">Claude Sonnet</div>
             <div class="model-time">1.2s</div>
-            <div class="winner-btn">⭐ Winner</div>
+            <div class="winner-btn">Winner</div>
           </div>
           <div class="arena-text">
             The NDA contains <strong>three concerning clauses</strong>: an overly broad definition of confidential information in §2.1, an excessive 10-year duration in §4, and one-sided injunctive relief in §8. Recommend capping the confidentiality period at 36 months and adding mutual obligations before signing.
@@ -1407,9 +1401,9 @@
 
 <section id="features" style="padding: 4rem 2rem;">
   <div class="container">
-    <div class="section-label">Built different</div>
-    <div class="section-title">Everything a professional needs.<br>Nothing they don't.</div>
-    <p class="section-sub">Every feature was designed around the constraints of regulated professions — where data confidentiality is not optional.</p>
+    <div class="section-label">Features</div>
+    <div class="section-title">Made for people who handle confidential work</div>
+    <p class="section-sub">We built AIMAZZE for lawyers and clinical research teams, who can't paste client or trial data into any chatbot that comes along.</p>
 
     <div class="feature-rows reveal">
 
@@ -1421,8 +1415,8 @@
         </div>
         <div class="feature-copy">
           <div class="feature-index">01 · The Arena</div>
-          <h3 class="feature-title">Ask once. Compare eight answers.</h3>
-          <p class="feature-body">Put one prompt to up to 8 models at once and watch them stream in parallel. Pick the strongest answer and carry that thread forward — no retyping, no tab-juggling.</p>
+          <h3 class="feature-title">Compare answers from up to eight models</h3>
+          <p class="feature-body">Ask once and watch the answers arrive together. Pick the strongest and continue that conversation.</p>
         </div>
       </div>
 
@@ -1434,8 +1428,8 @@
         </div>
         <div class="feature-copy">
           <div class="feature-index">02 · Persona picker</div>
-          <h3 class="feature-title">A specialist for every matter.</h3>
-          <p class="feature-body">Docs, Law Upkeeper, Tech Innovator, Scientific Discoverer and more — each preloaded with reasoning tuned to its profession. Build your own, and the app greets you by persona when you return.</p>
+          <h3 class="feature-title">Personas for your profession</h3>
+          <p class="feature-body">Choose a persona such as Law Upkeeper or Docs and the assistant answers with that field's habits and vocabulary. You can also build your own.</p>
         </div>
       </div>
 
@@ -1447,7 +1441,7 @@
         </div>
         <div class="feature-copy">
           <div class="feature-index">03 · The Vault</div>
-          <h3 class="feature-title">Your documents, searchable on your own machine.</h3>
+          <h3 class="feature-title">Your documents, searchable on your own machine</h3>
           <p class="feature-body">Drop in PDFs, Word (.docx) documents, spreadsheets and text files. AIMAZZE reads text-based documents; scanned pages and images are not yet supported. Documents in your Vault stay on your computer and are indexed locally, so your local models can search them. If a chat uses a cloud model, text from documents attached in that chat is sent to the cloud provider. To keep a document entirely on your computer, use a local model for the whole chat.</p>
         </div>
       </div>
@@ -1459,23 +1453,23 @@
          rather than dropped when the six-card grid became three rows. -->
     <div class="features-grid reveal" style="margin-top: 4.5rem;">
       <div class="feat-card">
-        <div class="feat-icon">🔒</div>
-        <div class="feat-title">Local-first by architecture</div>
-        <div class="feat-body">Your conversations, documents, and API keys live on your device only. With local models, nothing is transmitted at all; with your own provider keys, AIMAZZE is never in the data path. Independently auditable — not just a policy promise.
-          <span class="feat-note">One exception: voice input (Starter plan and up) sends your spoken audio to Microsoft's cloud speech service for transcription. Typing is unaffected and stays fully on-device.</span>
+        <div class="feat-icon"></div>
+        <div class="feat-title">Your data stays on your device</div>
+        <div class="feat-body">Conversations, documents and API keys are stored on your computer. With a local model, nothing is sent anywhere. With your own provider key, your message goes straight to that provider and never passes through AIMAZZE.
+          <span class="feat-note">Voice input (Starter and up) is the exception: the audio goes to Microsoft's speech service to be turned into text. Typing stays on your device.</span>
         </div>
       </div>
       <div class="feat-card">
-        <div class="feat-icon">🔑</div>
+        <div class="feat-icon"></div>
         <div class="feat-title">Bring your own keys</div>
         <div class="feat-body">Connect Anthropic, OpenAI, Google, Groq, Mistral and more — calls go directly from your device to the provider's API, never through AIMAZZE servers. Your keys are stored on your device in AIMAZZE's local settings.
-          <span class="feat-note">Worth knowing: provider APIs are built differently from consumer chat apps, with their own data-handling terms — take a quick look at your provider's policy if you're working with sensitive material.</span>
+          <span class="feat-note">Each provider has its own data terms for its API. Check them before you send anything sensitive.</span>
         </div>
       </div>
       <div class="feat-card">
-        <div class="feat-icon">⚡</div>
-        <div class="feat-title">Native desktop · ~8MB</div>
-        <div class="feat-body">Built with Tauri — not Electron. The entire app bundle is ~8MB vs 150MB for Electron apps. Blazing fast startup, lower memory, and full offline capability via local open-source models.</div>
+        <div class="feat-icon"></div>
+        <div class="feat-title">Small and quick</div>
+        <div class="feat-body">The installer is about 8 MB. The app starts quickly, uses little memory and works offline when you use a local model.</div>
       </div>
     </div>
   </div>
@@ -1484,27 +1478,27 @@
 <section id="privacy-tiers" style="padding: 4rem 2rem;">
   <div class="container">
     <div class="section-label">Data & privacy</div>
-    <div class="section-title">Three ways to work with AI.<br>Only one of them is truly private.</div>
-    <p class="section-sub">Most AI tools ask you to trust their servers. AIMAZZE is built so you don't have to guess.</p>
+    <div class="section-title">Three ways to use AI, and what happens to your data in each</div>
+    <p class="section-sub">Most AI tools ask you to trust their servers. Here is exactly where your words go in AIMAZZE.</p>
 
     <div class="features-grid reveal">
       <div class="feat-card accent-local">
-        <div class="feat-icon">🔒</div>
-        <div class="feat-title">Local Models — Never leaves your device</div>
+        <div class="feat-icon"></div>
+        <div class="feat-title">Local models</div>
         <div class="feat-body">Runs entirely on your machine. No prompt, document, or output is transmitted anywhere. This is the only tier that's private by architecture, not by policy.
           <span class="feat-note">Exception: if you dictate a prompt using voice input (Starter plan and up), that audio is sent to Microsoft's cloud for transcription before the resulting text is processed locally — type instead to keep dictation on-device too.</span>
         </div>
       </div>
       <div class="feat-card accent-cloud">
-        <div class="feat-icon">🔑</div>
-        <div class="feat-title">Bring Your Own Key (Cloud) — AIMAZZE never in the middle</div>
+        <div class="feat-icon"></div>
+        <div class="feat-title">Your own key, cloud model</div>
         <div class="feat-body">Your prompts go straight from your device to the AI provider you choose, using your own API key. AIMAZZE never receives, stores, or transmits your data.
           <span class="feat-note">But you're still bound by that provider's own terms — read them before sending anything privileged or regulated.</span>
         </div>
       </div>
       <div class="feat-card accent-risk">
-        <div class="feat-icon">⚠️</div>
-        <div class="feat-title">Public Consumer AI Tools — What most professionals are already exposed to</div>
+        <div class="feat-icon"></div>
+        <div class="feat-title">Consumer AI apps</div>
         <div class="feat-body">Free consumer chatbots and browser extensions often use your inputs for training, retain them indefinitely, or share them with third parties. This is the category regulators and courts have already started scrutinizing when privileged or client data ends up there.</div>
       </div>
     </div>
@@ -1516,8 +1510,8 @@
 <section style="padding: 3rem 2rem;">
   <div class="container">
     <div class="section-label">Professional personas</div>
-    <div class="section-title">The app knows who you are.</div>
-    <p class="section-sub">Select your profession &mdash; switch anytime on Pro and up. Every session is shaped by a system prompt tuned for your field. The app greets you by name and persona every time you return.</p>
+    <div class="section-title">Choose your profession</div>
+    <p class="section-sub">Pick a persona and each session starts with instructions written for your field. On Pro and above you can switch at any time.</p>
 
     <div class="personas-grid reveal">
       <div class="persona-card">
@@ -1567,8 +1561,8 @@
 <section id="pricing" style="padding: 4rem 2rem;">
   <div class="container">
     <div class="section-label">Pricing</div>
-    <div class="section-title">Less than one subscription.<br>All the models.</div>
-    <p class="section-sub">Claude Pro alone costs $20/month. AIMAZZE Pro at $19/month gives you Claude plus 7 more models, local AI, and full professional features.</p>
+    <div class="section-title">Plans</div>
+    <p class="section-sub">AIMAZZE plans cover the app. Cloud models are billed by each provider on your own API key. Local models cost nothing to run.</p>
 
     <div class="pricing-grid reveal">
       <div class="price-card">
@@ -1577,7 +1571,7 @@
         <div class="price-amount-inr">₹0</div>
         <div class="price-period">forever</div>
         <div class="price-feature">Local AI models — zero cost</div>
-        <div class="price-feature">3 BYOK connections</div>
+        <div class="price-feature">1 cloud provider key (Anthropic)</div>
         <div class="price-feature">Arena: 2 models</div>
         <div class="price-feature">30-day history</div>
         <div class="price-feature">5 Vault files</div>
@@ -1598,8 +1592,7 @@
         <div class="price-amount-inr" data-display="amount-inr">₹499<span class="price-amount-inr-suffix"> / month (India)</span></div>
         <div class="price-amount-equiv" data-display="equiv"></div>
         <div class="price-period" data-display="period">/ month · cancel anytime</div>
-        <div class="price-feature">All BYOK providers</div>
-        <div class="price-feature">Managed multi-model access</div>
+        <div class="price-feature">Up to 3 cloud provider keys</div>
         <div class="price-feature">Arena: 2 models</div>
         <div class="price-feature">Unlimited history</div>
         <div class="price-feature">20 Vault files</div>
@@ -1641,10 +1634,7 @@
         <div class="price-amount-inr" data-display="amount-inr">₹2,499<span class="price-amount-inr-suffix"> / month (India)</span></div>
         <div class="price-amount-equiv" data-display="equiv"></div>
         <div class="price-period" data-display="period">/ month · cancel anytime</div>
-        <div class="price-feature">HIPAA/GDPR/DPDP-aligned architecture (built into every plan)</div>
-        <div class="price-feature">Team workspace (10 seats)</div>
         <div class="price-feature">Priority support</div>
-        <div class="price-feature">40%+ cheaper than Claude Team for a 10-person team</div>
         <div class="price-feature">10 local profiles</div>
         <button class="price-cta" data-tier="elite">Get Elite</button>
       </div>
@@ -1732,8 +1722,8 @@
 
 <div class="checkout-modal-overlay" id="mobileWaitlistOverlay">
   <div class="checkout-modal">
-    <div class="checkout-modal-title">Notify me — iOS &amp; Mac</div>
-    <div class="checkout-modal-sub" style="font-family:var(--ff);font-size:13px;color:var(--muted);text-transform:none;letter-spacing:normal">Get notified the moment AIMAZZE ships on iOS and Mac.</div>
+    <div class="checkout-modal-title">Mac waitlist</div>
+    <div class="checkout-modal-sub" style="font-family:var(--ff);font-size:13px;color:var(--muted);text-transform:none;letter-spacing:normal">Get an email when AIMAZZE is ready for Mac.</div>
 
     <div id="mobileWaitlistForm">
       <input type="email" id="mobileWaitlistEmail" placeholder="Email address" autocomplete="email">
@@ -1745,7 +1735,6 @@
     </div>
 
     <div class="waitlist-success" id="mobileWaitlistSuccess" style="display:none;margin-top:0.25rem">
-      <span style="font-size:1.2rem">🎉</span>
       <div>
         <strong style="color:#14171C">You're on the list.</strong><br>
         We'll email you when it's ready.
@@ -1753,10 +1742,9 @@
     </div>
 
     <div class="waitlist-success" id="mobileWaitlistAlreadySubscribed" style="display:none;margin-top:0.25rem">
-      <span style="font-size:1.2rem">👍</span>
       <div>
         <strong style="color:#14171C">You're already on the list.</strong><br>
-        We'll notify you as soon as it's ready!
+        We'll email you when it's ready.
       </div>
     </div>
   </div>
@@ -1807,15 +1795,15 @@
           How is AIMAZZE different from ChatGPT or Claude?
           <span class="faq-chevron">▼</span>
         </button>
-        <div class="faq-a">AIMAZZE is not an AI — it is a professional workstation that connects to all AIs simultaneously. You compare Claude vs GPT vs Gemini vs 400+ models side by side in one click. With <strong>local models</strong>, what you type stays on your device — the one exception being <strong>voice input</strong> (Starter plan and up), where dictated audio goes to Microsoft’s cloud for transcription. With <strong>BYOK</strong>, your prompts go straight from your device to the provider you chose, with AIMAZZE never in the data path — though that provider’s own terms then apply. ChatGPT and Claude are single-model tools. AIMAZZE is the cockpit that flies them all.</div>
+        <div class="faq-a">ChatGPT and Claude are each one company's assistant. AIMAZZE is a desktop app that can run a local model on your computer or connect to several providers with your own keys, so you can compare their answers in one place. With a local model your words stay on your device. With your own key they go straight to the provider you chose, under that provider's terms.</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">
-          Can doctors, lawyers, and engineers use AIMAZZE without compliance risk?
+          Is AIMAZZE safe for confidential work?
           <span class="faq-chevron">▼</span>
         </button>
         <div class="faq-a">
-          Yes, with a couple of nuances worth understanding. <strong>Local models</strong> are the simplest answer: nothing leaves your device, so there's no compliance question to ask — with one exception: if you use <strong>voice input</strong> (Starter plan and up) to dictate a message, that audio is sent to Microsoft's cloud speech service for transcription before the resulting text is processed; type instead of dictating to keep that content fully on-device too. <strong>BYOK (your own provider keys)</strong> routes device-to-provider with AIMAZZE never in the data path — but here the responsibility to verify comes from your <em>provider's</em> terms, not AIMAZZE's architecture. Public consumer AI apps are the category regulators and courts have been scrutinizing for privileged data ending up somewhere it shouldn't; AIMAZZE's BYOK connects you to provider APIs rather than consumer apps, which is a meaningfully different category — though it's always good practice to glance at your provider's data policy for anything privileged. See <a href="/security.html">how AIMAZZE protects your data</a> for the full breakdown.
+          It depends on which kind of model you use. A local model runs on your computer and sends nothing out, apart from voice input if you use it. A cloud model on your own key sends your message to that provider under its API terms, which you should check. AIMAZZE can't make a provider compliant on your behalf, and we don't claim to. See <a href="/security.html">how AIMAZZE protects your data</a> for the full breakdown.
         </div>
       </div>
       <div class="faq-item">
@@ -1908,7 +1896,7 @@
           What happens to my data if I cancel?
           <span class="faq-chevron">▼</span>
         </button>
-        <div class="faq-a">Nothing — because your data was never on our servers. All chat history, documents, and settings are on your device. Cancelling stops future charges; you keep every paid feature through the end of the period you've already paid for, then your paid features switch off and you keep whatever the Free tier offers. Nothing is deleted. Nothing is held hostage.</div>
+        <div class="faq-a">Nothing — because your data was never on our servers. All chat history, documents, and settings are on your device. Cancelling stops future charges; you keep every paid feature through the end of the period you've already paid for, then your paid features switch off and you keep whatever the Free tier offers. Nothing is deleted.</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">
@@ -1916,7 +1904,7 @@
           <span class="faq-chevron">▼</span>
         </button>
         <div class="faq-a">
-          Yes, exactly that. A "local model" is an AI that runs directly on your laptop instead of talking to a server somewhere else. AIMAZZE comes with local models built in, so you can use AI completely offline — on a flight, in a secure facility, anywhere. Nothing about your work ever has to leave your machine if you choose this option. It's also the simplest way to sidestep any data-privacy question entirely, since there's no transmission to worry about.
+          It's an AI that runs on your own computer instead of a company's server, so it works without the internet. AIMAZZE sets it up with a free program called Ollama and downloads a model for you. You need some free memory on your PC; the app tells you if there isn't enough.
         </div>
       </div>
       <div class="faq-item">
@@ -1925,16 +1913,16 @@
           <span class="faq-chevron">▼</span>
         </button>
         <div class="faq-a">
-          No technical background needed. AIMAZZE installs like any normal desktop app and walks you through setup with plain-language prompts — pick your profession, and you're ready to go. The advanced options (like BYOK, explained below) are entirely optional; if you skip them, AIMAZZE just works with the built-in local AI out of the box. There's nothing to configure that could "break" — worst case, you can always reset to defaults in Settings.
+          No. AIMAZZE installs like any desktop app and walks you through setup. Local AI needs one extra free download, which the app guides you through. Adding your own API key is optional.
         </div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">
-          Does AIMAZZE replace my existing ChatGPT or Claude subscription?
+          Does AIMAZZE replace my ChatGPT or Claude subscription?
           <span class="faq-chevron">▼</span>
         </button>
         <div class="faq-a">
-          It can, or it can work alongside what you already have — your choice. Many professionals keep their existing ChatGPT Plus or Claude Pro subscription and simply connect it to AIMAZZE as a BYOK key, so they get one workspace that compares Claude, GPT, and others side by side instead of switching between separate apps. Nothing from your existing subscriptions is lost — your AIMAZZE workspace, history, and documents are separate and additive, not a replacement that erases anything.
+          No, and it can't use them. A ChatGPT Plus or Claude Pro subscription doesn't include an API key. To use those models in AIMAZZE you create a key on the provider's developer site, which is billed separately by how much you use it. Local models need no key at all.
         </div>
       </div>
       <div class="faq-item">
@@ -1958,12 +1946,12 @@
 </section>
 
 <div class="final-cta" id="waitlist">
-  <div class="section-label" style="justify-content:center;display:flex">Early Access</div>
+  <div class="section-label" style="justify-content:center;display:flex">Get updates</div>
   <h2 style="font-size:clamp(2rem,4vw,3.2rem);font-weight:800;letter-spacing:-0.03em;margin-bottom:1rem">
-    Be first in.<br><span style="color:var(--cyan)">Shape what AIMAZZE becomes.</span>
+    Tell us what you need
   </h2>
   <p style="color:var(--muted);font-size:15px;max-width:480px;margin:0 auto 2rem;line-height:1.7">
-    Early access users get a direct line to the founder, lifetime pricing locked in, and features shaped by their feedback.
+    AIMAZZE is new, and early users shape what we build next. Reply to any email from us and it reaches the founder.
   </p>
 
   <div id="final-waitlist-wrap">
@@ -1983,16 +1971,15 @@
       >
       <input type="hidden" name="_subject" value="AIMAZZE Early Access Request">
       <input type="hidden" name="source" value="Landing Page Footer CTA">
-      <button type="submit">Get Early Access →</button>
+      <button type="submit">Get updates</button>
     </form>
-    <p class="waitlist-note" style="margin-top:0.75rem">Windows · Mac coming soon · Free tier available · No credit card to start</p>
+    <p class="waitlist-note" style="margin-top:0.75rem">Windows · Mac coming later · Free plan available · No card needed</p>
   </div>
 
   <div class="waitlist-success" id="final-waitlist-success" style="margin:0 auto">
-    <span style="font-size:1.2rem">🎉</span>
     <div>
       <strong style="color:#14171C">You're on the list.</strong><br>
-      We'll notify you the moment early access opens.
+      We'll email you with product updates.
     </div>
   </div>
 </div>
@@ -2018,7 +2005,7 @@
     &nbsp;·&nbsp;
     <a href="/shipping-policy.html">Shipping &amp; Delivery</a>
   </div>
-  <div>© 2026 AIMAZZE · AmrynNova · Built lean. Built fast. Built to win.</div>
+  <div>© 2026 Amryn Nova Private Limited</div>
 </footer>
 
 <script>
@@ -2662,24 +2649,17 @@
   // detection the currency/UPI display already uses (src/index.js sets
   // both aimazze_region and aimazze_compliance cookies from the same
   // request, see that file's comment). Copy is deliberately NOT phrased as
-  // a certification claim ("HIPAA" / "GDPR" / "DPDP" bare) since none has
-  // had a legal review yet — "aligned"/"architected"/"by design" communicates
-  // the real value honestly without asserting formal compliance. Revisit
-  // this wording once ACM's legal reviewer has looked at the Terms/Privacy
-  // draft alongside it.
+  // a certification claim. Emptied in the 15 Oct 2026 copy pass: the
+  // region pills implied regulatory alignment the app does not have, so no
+  // region gets a pill until ACM signs off on reviewed wording. The hook
+  // below stays so a future entry here shows up without markup changes.
   (function () {
     function getCookie(name) {
       const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
       return match ? match[2] : null;
     }
 
-    const COMPLIANCE_COPY = {
-      US: "Built for HIPAA-aligned workflows",
-      EU: "Architected for GDPR",
-      IN: "DPDP-aligned by design",
-      // OTHER: no badge — the "🔒 Local-first" pill already in this row
-      // covers the honest, universally-true claim for every region.
-    };
+    const COMPLIANCE_COPY = {};
 
     function applyComplianceBadge() {
       const region = getCookie("aimazze_compliance");
